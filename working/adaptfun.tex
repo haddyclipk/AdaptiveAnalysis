@@ -878,20 +878,21 @@ A combination of DFS and BFS Algorithm:
             % $r[s] =  r[s] + $$\kw{flowcapacity}$[s] * querynum[s].
             % \RETURN  \qquad $r[s]$.      
             \STATE \qquad {\bf for}  all vertex $v$ having directed edge from $c$:
-            \STATE \qquad \qquad \qquad $\kw{flowcapacity}$[v] = min($\weights(v)$, $\kw{flowcapacity}$[c]);
+            \STATE \qquad \qquad {\bf if} $\kw{visited}[v] = \efalse$:
+            \STATE \qquad \qquad \qquad $\kw{flowcapacity[v] = \min(\weights(v), {flowcapacity}[c])}$;
             \STATE \qquad \qquad \qquad $\kw{querynum[v] = querynum[c] + \qflag(v)}$;
             % \STATE \qquad \qquad \qquad \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
             \STATE \qquad \qquad \qquad $\kw{r[v] =  r[c]} $; \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
-            \STATE \qquad \qquad {\bf if} $\kw{visited}[v] = \efalse$:
             \STATE \qquad \qquad \qquad  $\kw{visited}[v] = \etrue$; \#\{mark $v$ as visited\}
             \STATE \qquad \qquad \qquad $\kw{dfs_{refine}(G, v, visited)}$;
             \STATE \qquad \qquad {\bf else}: \#\{There is a cycle finished\}
             % \STATE \qquad \qquad \qquad \#\{update the length of the longest path reaching this vertex\}
             \STATE \qquad \qquad \qquad 
-             $\kw{r[v] =  \max(r[v], r[c] + flowcapacity[v] * querynum[v])}$; \#\{update the length of the longest walk reaching this vertex on this cycle\}
+            $\kw{r[v] =  \max(r[v], r[c] +  \min(\weights(v), {flowcapacity}[c]) * (querynum[c] + \qflag(v)))}$; \#\{update the length of the longest walk reaching this vertex on this cycle\}
+            %  $\kw{r[v] =  \max(r[v], r[c] + flowcapacity[v] * querynum[v])}$; \#\{update the length of the longest walk reaching this vertex on this cycle\}
             %  \STATE \qquad \qquad \qquad \#\{Recover the $\kw{flowcapacity}$ and querynumber to previous state, for different loops\}
-            \STATE \qquad \qquad \qquad $\kw{flowcapacity[v] = flowcapacity[c]}$; \#\{Recover the $\kw{flowcapacity}$\}
-            \STATE \qquad \qquad \qquad $\kw{querynum[v] = querynum[c]}$;\#\{Recover the $\kw{querynum}$\}
+            % \STATE \qquad \qquad \qquad $\kw{flowcapacity[v] = flowcapacity[c]}$; \#\{Recover the $\kw{flowcapacity}$\}
+            % \STATE \qquad \qquad \qquad $\kw{querynum[v] = querynum[c]}$;\#\{Recover the $\kw{querynum}$\}
             \STATE \qquad {\bf return}  $\kw{r[c]}$
             \STATE  {\bf for} every vertex $v$ in $\vertxs$:
             \STATE  \qquad initialize the $\kw{visited}$ list with $\efalse$.
