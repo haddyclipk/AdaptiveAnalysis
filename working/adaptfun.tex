@@ -882,7 +882,9 @@ A combination of DFS and BFS Algorithm:
             \STATE \qquad \qquad \qquad $\kw{flowcapacity[v] = \min(\weights(v), {flowcapacity}[c])}$;
             \STATE \qquad \qquad \qquad $\kw{querynum[v] = querynum[c] + \qflag(v)}$;
             % \STATE \qquad \qquad \qquad \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
-            \STATE \qquad \qquad \qquad $\kw{r[v] =  r[c]} $; \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
+            % \STATE \qquad \qquad \qquad $\kw{r[v] =  r[c] + flowcapacity[v] \times querynum[v]} $; \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
+            \STATE \qquad \qquad \qquad $\kw{r[v] =  \max(r[v], flowcapacity[v] \times querynum[v]}) $; 
+            % \#\{do not update the length of the longest walk reaching $v$ until the cycle is finished\}
             \STATE \qquad \qquad \qquad  $\kw{visited}[v] = \etrue$; \#\{mark $v$ as visited\}
             \STATE \qquad \qquad \qquad $\kw{dfs_{refine}(G, v, visited)}$;
             \STATE \qquad \qquad {\bf else}: \#\{There is a cycle finished\}
