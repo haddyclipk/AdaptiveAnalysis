@@ -646,15 +646,15 @@ an expression abstraction method by simplifying the method in paper \cite{sinn20
 \\
 Abstract Domain $ \absdom: \mathcal{P}(DC(VAR \cup \constdom) \cup \{\top \})$:
 \\
-$\constdom: \mathbb{Z} \cup \inpvar \cup \{\max{\dbdom}\} $ 
+$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{\dbdom}\} $ 
 The  constants in abstract domain consist of natural number $\mathbb{Z}$,
 the symbolic constants,  $\inpvar$ (i.e., the set of the program's input variables), 
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables'
 assigned by query expression.
 \\
-$DC : VAR \cup \constdom \to \mathcal{VAR \times (VAR \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$
+$DC : VAR \cup \constdom \to \mathcal{VAR \times (VAR \cup \constdom) } \times (\mathbb{N} \cup \{\infty\})$
 \\
-The difference constraint $DC$ over $VAR \cup \constdom$ is inequality of form $x \leq y + c$ where $x \in VAR$, $y \in VAR \cup \constdom$ and $c \in \mathbb{Z}$, $DC(VAR \cup \constdom)$ represents the set of inequality over all $VAR \cup \constdom$.
+The difference constraint $DC$ over $VAR \cup \constdom$ is inequality of form $x \leq y + c$ where $x \in VAR$, $y \in VAR \cup \constdom$ and $c \in \mathbb{N}$, $DC(VAR \cup \constdom)$ represents the set of inequality over all $VAR \cup \constdom$.
 \\
 We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 \\
@@ -673,14 +673,27 @@ computes the difference constraints for variable
 according to the expression $\expr$ assigned to it in the program.
 \[
   \begin{array}{ll} 
-    \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{Z} \land y \in (VAR \cup \constdom) \\
-    \absexpr(y - c, x)  = x' \leq y + c  & c \in \mathbb{Z} \land y \in (VAR \cup \constdom) \\
+    \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
+    \absexpr(y - c, x)  = x' \leq y - c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
     \absexpr(v, x)  = x' \leq v + 0  & v \in (VAR \cup \constdom) \\
-    \absexpr(\aexpr, x) = x \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
-    \absexpr(\qexpr, x)  = x \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
-    \absexpr(\bexpr, x) = x \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
+    \absexpr(\aexpr, x) = x' \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
+    \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
+    \absexpr(\bexpr, x) = x' \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
   \end{array}
   \]
+  \[
+    \begin{array}{ll} 
+      \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
+      \absexpr(y - c, x)  = x' \leq y - c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
+      \absexpr(v, x)  = x' \leq v + 0  & x \in \grdvar \land v \in (\grdvar \cup \constdom) \\
+      \absexpr(y + c, x)  = x' \leq y - c \grdvar = \grdvar \cup \{y\}  & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom) \\
+      \absexpr(\aexpr, x) = x' \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
+      \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
+      \absexpr(\bexpr, x) = x' \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
+    \end{array}
+    \]
+  Repeat above procedure until $\absexpr(\expr, x)$ is stabilized for every assignment command.
+  \\
 More specifically in understanding the intuition, we handle the same normalized guard expression in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}. More specifically as follows:
 \\
 The counter variables only increase, decrease or reset by expression in the form of arithmetic multiplication, minus and plus, max and min.
@@ -739,21 +752,22 @@ Abstract Execution Trace Computation:
 %   locations(\assign{x}{\expr})
 % \end{array}
 %   \]
-More specifically, given a program $c$, its control flow graph can be described as follows
-\\
-1. inserting the enter location $l_b$ before the starting of the program.
-\\
-2. For every sequence command $c_1;c_2$
-if $c_2$ doesn't start with a $\eif$ and $\ewhile$ command, don't insert any contro location. 
-\\
-if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
-inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
-\\
-if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
-inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
-\\
-if $c_2$ starts with a $\ewhile$ command, and the last control location inserted in $c_1$ is $l_i$,
-inserting a control location $l_{i+1}$, then recursively inserting on the while body and on the commands after $\ewhile$.
+% More specifically, given a program $c$, its control flow graph can be described as follows
+% \\
+% 1. inserting the enter location $l_b$ before the starting of the program.
+% \\
+% 2. For every sequence command $c_1;c_2$
+% if $c_2$ doesn't start with a $\eif$ and $\ewhile$ command, don't insert any contro location. 
+% \\
+% if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
+% inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
+% \\
+% if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
+% inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
+% \\
+% if $c_2$ starts with a $\ewhile$ command, and the last control location inserted in $c_1$ is $l_i$,
+% inserting a control location $l_{i+1}$, then recursively inserting on the while body and on the commands after $\ewhile$.
+% \\
 \\
 We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eskip}^{l_e}$ at the end of the program $c$, and compute the $\absflow(c) = \absflow'(c')$ where $c' = c;\clabel{\eskip}^{l_e}$  as follows:
 %

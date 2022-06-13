@@ -333,3 +333,18 @@ Given a program ${c}$, we have:
 % 5. Ranking function matches the pattern for every possibility and Give the max upper bound of changes for variable showing up inside the guard of the while.
 % \\
 % 6. By estimating the changes for all the variables in the boolean expression of the guard of the while in 1 iteration, computeBound divides the n by the changes of the boolean expression is the safe upper bound of how many times this while can looped. 
+
+
+\begin{lem}[Correspondance between $flow(c)$ and $\absflow(c)$]
+  \label{lem:flow_to_absflow}
+Given a program ${c}$, we have:
+%
+\[
+\forall \absevent = (l, dc, l') \st 
+\absevent \in \absflow(c) \land l' \neq l_e
+\implies (l, l') \in flow(c)
+\]
+\end{lem}
+\begin{proof}
+  This is proved trivially by induction on the program $c$.
+\end{proof}
