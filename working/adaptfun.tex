@@ -677,8 +677,8 @@ according to the expression $\expr$ assigned to it in the program.
     \absexpr(y - c, x)  = x' \leq y + c  & c \in \mathbb{Z} \land y \in (VAR \cup \constdom) \\
     \absexpr(v, x)  = x' \leq v + 0  & v \in (VAR \cup \constdom) \\
     \absexpr(\aexpr, x) = x \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
-    \absexpr(\qexpr, x)  = x \leq \max(\dbdom) & \qexpr \text{ is a query expression}  \\
-    \absexpr(\bexpr, x) = x \leq 1   & \bexpr \text{ is a boolean expression} \\
+    \absexpr(\qexpr, x)  = x \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
+    \absexpr(\bexpr, x) = x \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
   \end{array}
   \]
 More specifically in understanding the intuition, we handle the same normalized guard expression in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}. More specifically as follows:
@@ -709,15 +709,15 @@ computes the Abstract Final State of the command.
       (l, \absexpr \eapp \expr \eapp x)\}  \\
      \absfinal([\eskip]^{l})  
      & = \{(l, \top)\} \\
-     \absfinal([\eif [b]^l \ethen C_1 \eelse C_2]^{l})  & = \absfinal(C_1) \cup \absfinal(C_2) \\
+     \absfinal([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = \absfinal(c_1) \cup \absfinal(c_2) \\
      \absfinal([\ewhile [b]^l do c_w]^{l})  & = \{(l, \top)\} \\
-     \absfinal(C_1 ; C_2)  & =  \absfinal(C_2) \\
+     \absfinal(c_1 ; c_2)  & =  \absfinal(c_2) \\
  \end{array}
  \]
  %
  \paragraph{Abstract Execution Trace}
 Then, based on the abstract final and initial state, in order to analysis the reachability bound for each vertex, 
-we  extract the abstract execution trace for a program, as a set of the abstract events.
+we  extract the abstract execution trace for a program, which is a set of the abstract events.
 \\
 Abstract Execution Trace Computation:
  $\absflow: \cdom -> \mathcal{P}($Label $\times$ Label $\times \absdom$ $)$, 
@@ -762,14 +762,14 @@ We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eski
      \absflow'([x := \expr]^{l})  & = \emptyset  \\
      \absflow'([x := \query(\qexpr)]^{l})  & = \emptyset  \\
      \absflow'([\eskip]^{l})  & = \emptyset \\
-     \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow(c_t) \cup \absflow(c_f)\cup \{(l, \top,  \init(c_t) ) , 
+     \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)\cup \{(l, \top,  \init(c_t) ) , 
      (l, \top, \init(c_f)) \} \\
-     \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow(c_w) \cup \{(l, \top, \init(c_w)) \} \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
-     \absflow'(c_1 ; c_2)  & = \absflow(c_1) \cup  \absflow(c_2) \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
+     \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
+     \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
   \end{array}
   \]
 For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
-there is an abstract event in program's abstract execution trace of form $(l, \_, l')$. This soundness is proved in Appendix~\ref{apdx:reachability_soundness}.
+there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This soundness is proved in Appendix~\ref{apdx:reachability_soundness}.
 % We have a pre-processing algorithm to go through the programs and returns the list of labels associating with a loop and whose visiting times need to be analyzed.
 %
 \paragraph{Abstract Control Flow Graph} 
@@ -781,6 +781,8 @@ $\absG =(\absV, \absE)$:
 $\absE = \{(l_1, dc, l_2) | (l_1, dc, l_2) \in \absflow(c)\}$,
 \\
 $\absV = labels(c)\cup\{l_e\}$
+\\
+It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Appendix~\ref{apdx:reachability_soundness}.
 %
 \paragraph*{Variable Modification Tracking}
 Identify the abstract events where each variable is increased, decreased and reset:
@@ -1050,7 +1052,8 @@ A combination of DFS and BFS Algorithm:
       \STATE  \qquad $r_{scc} += \weights(v)*\qflag(v)$  
       \RETURN $r[c]$
       \end{algorithmic}
-      \end{algorithm}%
+      \end{algorithm}
+      %
 %
     % \begin{algorithm}
     %     \caption{
