@@ -652,14 +652,14 @@ the symbolic constants,  $\inpvar$ (i.e., the set of the program's input variabl
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables'
 assigned by query expression.
 \\
-$DC : VAR \cup \constdom \to \mathcal{VAR \times (VAR \cup \constdom) } \times (\mathbb{N} \cup \{\infty\})$
+$DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{N} \cup \{\infty\})$
 \\
-The difference constraint $DC$ over $VAR \cup \constdom$ is inequality of form $x \leq y + c$ where $x \in VAR$, $y \in VAR \cup \constdom$ and $c \in \mathbb{N}$, $DC(VAR \cup \constdom)$ represents the set of inequality over all $VAR \cup \constdom$.
+The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + c$ where $x \in VAR$, $y \in VAR \cup \constdom$ and $c \in \mathbb{N}$, $DC(VAR \cup \constdom)$ represents the set of inequality over all $VAR \cup \constdom$.
 \\
 We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 \\
 1. First normalize all the boolean expressions in the guards of $\ewhile$ header into the form 
-$ a > 0 $ or $a \geq 0$, generating a set of variables involved into these boolean expressions, $\grdvar$.
+$ a > 0 $ or $a \geq 0$, generating a set of variables involved into these boolean expressions, $\grdvar \subseteq \mathcal{VAR}$.
 \\
 2. Then, we symbolic executing the assignment commands 
 (substituting the variables in every expression by the symbolic expression assigned to it previously) until 
@@ -668,28 +668,30 @@ all the expressions stabilized.
 3. Then, abstract the stabilized expression in every assignment command into an abstract value in $\absdom$ as follows:
 \\
 Expression Abstraction:
-$\absexpr : \expr \to VAR \to \absdom$,
+$\absexpr : \expr \to \mathcal{VAR} \to \absdom$,
 computes the difference constraints for variable 
 according to the expression $\expr$ assigned to it in the program.
-\[
-  \begin{array}{ll} 
-    \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
-    \absexpr(y - c, x)  = x' \leq y - c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
-    \absexpr(v, x)  = x' \leq v + 0  & v \in (VAR \cup \constdom) \\
-    \absexpr(\aexpr, x) = x' \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
-    \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
-    \absexpr(\bexpr, x) = x' \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
-  \end{array}
-  \]
+% \[
+%   \begin{array}{ll} 
+%     \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
+%     \absexpr(y - c, x)  = x' \leq y - c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
+%     \absexpr(v, x)  = x' \leq v + 0  & v \in (VAR \cup \constdom) \\
+%     \absexpr(\aexpr, x) = x' \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
+%     \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
+%     \absexpr(\bexpr, x) = x' \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
+%   \end{array}
+%   \]
   \[
     \begin{array}{ll} 
       \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(y - c, x)  = x' \leq y - c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(v, x)  = x' \leq v + 0  & x \in \grdvar \land v \in (\grdvar \cup \constdom) \\
-      \absexpr(y + c, x)  = x' \leq y - c \grdvar = \grdvar \cup \{y\}  & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom) \\
-      \absexpr(\aexpr, x) = x' \leq 0 + \infty   & \aexpr \text{ doesn't have any of the forms as above} \\
-      \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & \qexpr \text{ is a query expression}  \\
-      \absexpr(\bexpr, x) = x' \leq 0 + 1   & \bexpr \text{ is a boolean expression} \\
+      \absexpr(y + c, x)  = x' \leq y - c & \\
+      \grdvar = \grdvar \cup \{y\} & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom)  \\
+      \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & x \in \grdvar \land \qexpr \text{ is a query expression}  \\
+      \absexpr(\bexpr, x) = x' \leq 0 + 1   & x \in \grdvar \land \bexpr \text{ is a boolean expression} \\
+      \absexpr(\expr, x) = x' \leq \infty  &  x \in \grdvar \land \expr \text{ doesn't have any of the forms as above} \\
+      \absexpr(\expr, x) = \top  &  x \notin \grdvar \\
     \end{array}
     \]
   Repeat above procedure until $\absexpr(\expr, x)$ is stabilized for every assignment command.
