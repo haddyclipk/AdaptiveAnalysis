@@ -93,28 +93,53 @@ The two round strategy works well in our framework, we explore further to look a
      \clabel{\assign{cs}{0::cs}}^6; \\
      \clabel{\assign{ns}{0::ns}}^7
      \Big); \\
-     \clabel{\assign{j}{k}}^{8} ;\\
-     \ewhile ~ \clabel{j > 0}^{9} ~ \edo ~ \\
+     \clabel{\assign{w}{k}}^{8} ;\\
+     \ewhile ~ \clabel{w > 0}^{9} ~ \edo ~ \\
     \Big(
-    \clabel{\assign{j}{j-1}}^{10} ;\\
+    \clabel{\assign{w}{w-1}}^{10} ;\\
     \left[p \leftarrow c \right]^{11}; \\
     \left[q \leftarrow c \right]^{12}; \\
     \left[ a \leftarrow \query (\chi[I]) \right]^{13};\\
     \clabel{\assign{i}{N}}^{14} ; \\
     \ewhile ~ \clabel{i > 0}^{15} ~ \edo ~ \\
     \Big(
-    \clabel{\assign{i}{i-1}}^{5} ;\\
-    \clabel{\assign{cs(i)}{cs(i) + (a - p) * (q - p)}}^6; \\
-    \eif (\clabel{\kw{in} I i}, \clabel{\assign{ns(i)}{{ns(i) + (a - p) * (q - p)}}}^7,
-    \clabel{\assign{ns}{ns(i)}}^7    ) \\
-    \eif (\clabel{ns(i) > \kw{max}(cs)}, 
-    \clabel{\assign{I}{i::I}}^7,
-    \clabel{\assign{I}{I}}^7    ) \\
+    \clabel{\assign{i}{i-1}}^{16} ;\\
+    \clabel{\assign{cs(i)}{cs(i) + (a - p) * (q - p)}}^{17}; \\
+    \eif (\clabel{\kw{in} I i}^{18}, \clabel{\assign{ns(i)}{{ns(i) + (a - p) * (q - p)}}}^{19},
+    \clabel{\assign{ns}{ns(i)}}^{20}    )
     \Big); \\
-   \left[I \leftarrow \mathrel{\mathsf{update}} ( {I}, (a, p))  \right]^7
+    \clabel{\assign{i2}{N}}^{21} ; \\
+    \ewhile ~ \clabel{i2 > 0}^{22} ~ \edo ~ \\
+    \Big(
+    \clabel{\assign{i2}{i2-1}}^{23} ;\\
+    \eif (\clabel{ns(i2) > \kw{max}(cs)}^{24}, 
+    \clabel{\assign{I}{i::I}}^{25},
+    \clabel{\assign{I}{I}}^{26})
+    \Big)
     \Big) 
 \end{array}
 \]
+weight for Variable: cs of label 6 is: 0 + 1 * N \\
+weight for Variable: j of label 5 is: 0 + 1 * N \\
+weight for Variable: ns of label 7 is: 0 + 1 * N \\
+weight for Variable: csi of label 17 is: 0 + 0 + 1 * k * N \\
+weight for Variable: i of label 16 is: 0 + 0 + 1 * k * N \\
+weight for Variable: nsi of label 19 is: 0 + 0 + 1 * k * N \\
+weight for Variable: nsi of label 20 is: 0 + 0 + 1 * k * N \\
+weight for Variable: i2 of label 23 is: 0 + 0 + 1 * k * N \\
+weight for Variable: l of label 25 is: 0 + 0 + 1 * k * N \\
+weight for Variable: l of label 26 is: 0 + 0 + 1 * k * N \\
+weight for Variable: i2 of label 21 is: 0 + 1 * k \\
+weight for Variable: i of label 14 is: 0 + 1 * k \\
+weight for Variable: a of label 13 is: 0 + 1 * k \\
+weight for Variable: q of label 12 is: 0 + 1 * k \\
+weight for Variable: p of label 11 is: 0 + 1 * k \\
+weight for Variable: w of label 10 is: 0 + 1 * k \\
+weight for Variable: w of label 8 is: 1 \\
+weight for Variable: ns of label 3 is: 1 \\
+weight for Variable: cs of label 2 is: 1 \\
+weight for Variable: l of label 1 is: 1 \\
+weight for Variable: j of label 0 is: 1 \\
 %
 \end{example}
   We have seen the two round algorithm above. We show the multiple-round algorithm, which is an advanced algorithm.

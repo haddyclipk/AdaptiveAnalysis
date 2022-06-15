@@ -644,7 +644,7 @@ The Reaching definition is calculated by the Worklist algorithm as below.
 We define the abstract domain and
 an expression abstraction method by simplifying the method in paper \cite{sinn2017complexity}.
 \\
-Abstract Domain $ \absdom: \mathcal{P}(DC(VAR \cup \constdom) \cup \{\top \})$:
+Abstract Domain $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
 \\
 $\constdom: \mathbb{N} \cup \inpvar \cup \{\max{\dbdom}\} $ 
 The  constants in abstract domain consist of natural number $\mathbb{Z}$,
@@ -669,8 +669,8 @@ all the expressions stabilized.
 \\
 Expression Abstraction:
 $\absexpr : \expr \to \mathcal{VAR} \to \absdom$,
-computes the difference constraints for variable 
-according to the expression $\expr$ assigned to it in the program.
+computes the abstract value for each variable 
+according to the expression $\expr$ assigned to it in the command.
 % \[
 %   \begin{array}{ll} 
 %     \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
@@ -686,7 +686,7 @@ according to the expression $\expr$ assigned to it in the program.
       \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(y - c, x)  = x' \leq y - c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(v, x)  = x' \leq v + 0  & x \in \grdvar \land v \in (\grdvar \cup \constdom) \\
-      \absexpr(y + c, x)  = x' \leq y - c & \\
+      \absexpr(y + c, x)  = x' \leq y + c & \\
       \grdvar = \grdvar \cup \{y\} & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom)  \\
       \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & x \in \grdvar \land \qexpr \text{ is a query expression}  \\
       \absexpr(\bexpr, x) = x' \leq 0 + 1   & x \in \grdvar \land \bexpr \text{ is a boolean expression} \\
@@ -694,15 +694,22 @@ according to the expression $\expr$ assigned to it in the program.
       \absexpr(\expr, x) = \top  &  x \notin \grdvar \\
     \end{array}
     \]
-  Repeat above procedure until $\absexpr(\expr, x)$ is stabilized for every assignment command.
+  In line:4 of case where variable in the $\grdvar$ is updated by a variable $y$ not in this set, we add $y$ into the set $\grdvar$ and repeat 
+  above procedure  until $\grdvar$ and $\absexpr(\expr, x)$ is stabilized for every variable.
   \\
-More specifically in understanding the intuition, we handle the same normalized guard expression in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}. More specifically as follows:
+More specifically in understanding the intuition, we handle a simplified normalized guard expression ($ x > 0$ for $x^l \in \lvar_c$)
+ in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}.
 \\
-The counter variables only increase, decrease or reset by expression in the form of arithmetic multiplication, minus and plus, max and min.
+The counter variables only increase, decrease or reset by expression in the form of arithmetic minus and plus (able to extend to max and min.)
 \\
-For more complex cases where the counter reset, or calculated from Log, Query calculation, the bound will be approximated as $\infty$.
-\\ 
-The boolean expression in the guard of $\ewhile$ command is normalized into form of $ x > 0$ where $x^l \in \lvar_c$ for some $l$.
+For more complex expression assignments, where the counter reset, or calculated from $\elog$, 
+multiplication or division, and expressions involving multiple variables, the constraint is approximated as reset of $\infty$.
+\\
+This simplification doesn't affect our analysis results in our examples. It is easy to extend the normalized expression 
+into more complex forms as in \cite{sinn2017complexity}, as well as the 
+counter variable manipulation with more advanced expressions as in \cite{}.
+% \\ 
+% The boolean expression in the guard of $\ewhile$ command is normalized into form of $ x > 0$ where $x^l \in \lvar_c$ for some $l$.
 \paragraph{Program Event Abstraction} 
 Abstract event is a tuple of a pair of Labels with a difference constraint.
 \\
@@ -712,7 +719,18 @@ Label $\times$ Label $\times \absdom$
 \\
 Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
 \\
-Abstract Initial State of Each Command is its Initial Label, computed in the way defined in Definition~\ref{def:init_label}.
+Abstract Initial State of Each Command is its Initial Label, computed as follows:
+\\
+\[
+ \begin{array}{ll}
+    \absinit([x := e]^{l})  & = l  \\
+    \absinit([x := q(e)]^{l})  & = l \\
+    \absinit([\eskip]^{l})  & = l \\
+    \absinit([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = l \\
+    \absinit([\ewhile [b]^l \edo c]^{l})  & = l \\
+    \absinit(c_1 ; c_2)  & = \absinit(c_1) \\
+ \end{array}
+ \]
 \\
 Final State Abstraction: 
 $\absfinal: \cdom \to \mathcal{Label}$,
@@ -778,10 +796,15 @@ We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eski
      \absflow'([x := \expr]^{l})  & = \emptyset  \\
      \absflow'([x := \query(\qexpr)]^{l})  & = \emptyset  \\
      \absflow'([\eskip]^{l})  & = \emptyset \\
-     \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)\cup \{(l, \top,  \init(c_t) ) , 
-     (l, \top, \init(c_f)) \} \\
-     \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
-     \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
+     \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
+      \\ & \quad 
+      \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
+     \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
+     \\ & \quad 
+     \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
+     \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
+     \\ & \quad 
+     \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
   \end{array}
   \]
 For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
@@ -803,25 +826,25 @@ It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \ne
 \paragraph*{Variable Modification Tracking}
 Identify the abstract events where each variable is increased, decreased and reset:
 \\
-$\inc: VAR \to \mathcal{P}(\absevent) $
+$\inc: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 the set of the abstract events where the variable increase.
 \\
 $\inc(x) = \{(\absevent, c) | \absevent = (l, l', x' \leq x + c)\}$
 \\
-$\reset: VAR \to \mathcal{P}(\absevent) $
+$\reset: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 The set of the abstract events where the variable is reset.
 \\
-$\dec: VAR \to \mathcal{P}(\absevent) $
+$\dec: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 The set of abstract events where the variable decrease.
 \\
-$Incr(v) \triangleq \sum\limits_{(\absevent, c) \in \inc(v)}\{TB(\absevent) \times c\}$
+$Incr(v) \triangleq \sum\limits_{(\absevent, c) \in \inc(v)}\{\absclr(\absevent) \times c\}$
 %
 \paragraph*{Local Bounds}
 Given a program $c$ with its abstract control flow graph 
 $\absG(c) = (\absV, \absE)$
 \\
 Local Bounds Computation:
-$locbound: \absevent \to VAR \cup \constdom$.
+$\locbound: \absevent \to \mathcal{VAR} \cup \constdom$.
 %
 \[ 
 \begin{array}{ll}
@@ -834,7 +857,7 @@ $locbound: \absevent \to VAR \cup \constdom$.
   \locbound(\absevent) \triangleq x 
   & \absevent \in SCC(\absG(c)) \land 
   \absevent 
-  \notin \bigcup_{x \in VAR} \dec(x)
+  \notin \bigcup_{x \in \mathcal{VAR}} \dec(x)
   \land \absevent \notin SCC(\absG(c)/\dec(x)) 
 \end{array}
   \]
@@ -845,9 +868,9 @@ $locbound: \absevent \to VAR \cup \constdom$.
 \paragraph*{Abstract Event Closure and Bound Invariant}
 Then, computing the bound invariants for variables and the transition closures for abstract events:
 \\ 
-$VB: VAR \cup \constdom \to EXPR(\constdom)$
+$ \varinvar: \mathcal{VAR} \cup \constdom \to EXPR(\constdom)$
 \\
-$TB: \absevent \to EXPR(\constdom)$
+$\absclr: \absevent \to EXPR(\constdom)$
 \\
 Then, the symbolic invariant for each variable 
 as well as the symbolic transition closure for each transition is calculated as follows:
