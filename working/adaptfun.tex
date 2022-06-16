@@ -683,8 +683,8 @@ according to the expression $\expr$ assigned to it in the command.
 %   \]
   \[
     \begin{array}{ll} 
-      \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
-      \absexpr(y - c, x)  = x' \leq y - c  & x \in \grdvar \land c \in \mathbb{N} \land y \in (\grdvar \cup \constdom) \\
+      \absexpr(x - c, x)  = x' \leq x - c  & x \in \grdvar \land c \in \mathbb{N} \\
+      \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{z} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(v, x)  = x' \leq v + 0  & x \in \grdvar \land v \in (\grdvar \cup \constdom) \\
       \absexpr(y + c, x)  = x' \leq y + c & \\
       \grdvar = \grdvar \cup \{y\} & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom)  \\
@@ -829,15 +829,17 @@ Identify the abstract events where each variable is increased, decreased and res
 $\inc: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 the set of the abstract events where the variable increase.
 \\
-$\inc(x) = \{(\absevent, c) | \absevent = (l, l', x' \leq x + c)\}$
+$\inc(x) = \{(\absevent, c) | \absevent = (l, l', x' \leq x + v)\}$
 \\
 $\reset: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 The set of the abstract events where the variable is reset.
 \\
 $\dec: \mathcal{VAR} \to \mathcal{P}(\absevent) $
 The set of abstract events where the variable decrease.
+% \\
+% $\dec(x) = \{(\absevent, c) | \absevent = (l, l', x' \leq x - v)\}$
 \\
-$Incr(v) \triangleq \sum\limits_{(\absevent, c) \in \inc(v)}\{\absclr(\absevent) \times c\}$
+$Incr(v) \triangleq \sum\limits_{(\absevent, c) \in \inc(v)}\{\absclr(\absevent) \times v\}$
 %
 \paragraph*{Local Bounds}
 Given a program $c$ with its abstract control flow graph 
@@ -851,14 +853,12 @@ $\locbound: \absevent \to \mathcal{VAR} \cup \constdom$.
   \locbound(\absevent) \triangleq 1 
   & \absevent \notin SCC(\absG(c))
   \\
-  \locbound(\absevent) \triangleq x 
-  & \absevent \in SCC(\absG(c)) \land \absevent \in \dec(x)
-  \\
-  \locbound(\absevent) \triangleq x 
+  \locbound(\absevent) \triangleq (x, v) 
+  & \absevent \in SCC(\absG(c)) \land \absevent \in \dec(x) \land  \absevent = (\_, \_ , x' \leq x - v) \\
+  \locbound(\absevent) \triangleq (x, \max(\dec(x))) 
   & \absevent \in SCC(\absG(c)) \land 
-  \absevent 
-  \notin \bigcup_{x \in \mathcal{VAR}} \dec(x)
-  \land \absevent \notin SCC(\absG(c)/\dec(x)) 
+  \absevent  \notin \bigcup_{x \in \mathcal{VAR}} \dec(x)
+  \land \absevent \notin SCC(\absG(c) \setminus \dec(x)) 
 \end{array}
   \]
   The first case is straightforward. Since variable's visiting time outside of any while loop is at most 1, we do not need to analyze the visiting times of every node in the graph from phase 1.
@@ -884,11 +884,13 @@ as well as the symbolic transition closure for each transition is calculated as 
 \[ 
 \begin{array}{lll}
   \absclr(\absevent) 
-  & \triangleq \locbound(\absevent) & \locbound(\absevent) \in \constdom \\
+  & \triangleq x / v & \\ 
+  & \locbound(\absevent) = (x, v) \in \constdom \times \mathbb{N} & \\
   \absclr(\absevent) 
-  & \triangleq Incr(\locbound(\absevent)) + 
-  \sum\limits_{(\absevent', a, c) \in \reset(\locbound(\absevent))}
-  \absclr(\absevent') \times \max(\varinvar(a) + c, 0)  & \locbound(\absevent) \notin \constdom
+  & \triangleq (Incr(x) + 
+  \sum\limits_{(\absevent', y, v') \in \reset(x)}
+  \absclr(\absevent') \times \max(\varinvar(y) + v', 0) ) / v & \\
+  & \locbound(\absevent) = (x, v) \land x \notin \constdom & 
 \end{array}
   \]
 %
