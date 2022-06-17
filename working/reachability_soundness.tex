@@ -333,8 +333,21 @@ Given a program ${c}$, we have:
 % 5. Ranking function matches the pattern for every possibility and Give the max upper bound of changes for variable showing up inside the guard of the while.
 % \\
 % 6. By estimating the changes for all the variables in the boolean expression of the guard of the while in 1 iteration, computeBound divides the n by the changes of the boolean expression is the safe upper bound of how many times this while can looped. 
-
-
+%
+\begin{lem}[Uniqueness of the Abstract Event]
+  \label{lem:absevent_unique}
+Given a program ${c}$, we have:
+%
+\[
+  \begin{array}{l}
+    \forall x^l \in \lvar_c \st
+\exists \absevent = (l, \_, \_) \in Label(c) \times Label(c) \times \absdom \st 
+\absevent \in \absflow(c)
+\end{array}
+\]
+\end{lem}
+%
+%
 \begin{lem}[Correspondance between $flow(c)$ and $\absflow(c)$]
   \label{lem:flow_to_absflow}
 Given a program ${c}$, we have:

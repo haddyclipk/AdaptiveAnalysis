@@ -646,7 +646,7 @@ an expression abstraction method by simplifying the method in paper \cite{sinn20
 \\
 Abstract Domain $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
 \\
-$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{\dbdom}\} $ 
+$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
 The  constants in abstract domain consist of natural number $\mathbb{Z}$,
 the symbolic constants,  $\inpvar$ (i.e., the set of the program's input variables), 
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables'
@@ -654,7 +654,8 @@ assigned by query expression.
 \\
 $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{N} \cup \{\infty\})$
 \\
-The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + c$ where $x \in VAR$, $y \in VAR \cup \constdom$ and $c \in \mathbb{N}$, $DC(VAR \cup \constdom)$ represents the set of inequality over all $VAR \cup \constdom$.
+The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
+$y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{N}$, $DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
 \\
 We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 \\
@@ -683,11 +684,11 @@ according to the expression $\expr$ assigned to it in the command.
 %   \]
   \[
     \begin{array}{ll} 
-      \absexpr(x - c, x)  = x' \leq x - c  & x \in \grdvar \land c \in \mathbb{N} \\
-      \absexpr(y + c, x)  = x' \leq y + c  & x \in \grdvar \land c \in \mathbb{z} \land y \in (\grdvar \cup \constdom) \\
+      \absexpr(x - v, x)  = x' \leq x - v  & x \in \grdvar \land v \in \mathbb{N} \\
+      \absexpr(y + v, x)  = x' \leq y + v  & x \in \grdvar \land v \in \mathbb{Z} \land y \in (\grdvar \cup \constdom) \\
       \absexpr(v, x)  = x' \leq v + 0  & x \in \grdvar \land v \in (\grdvar \cup \constdom) \\
-      \absexpr(y + c, x)  = x' \leq y + c & \\
-      \grdvar = \grdvar \cup \{y\} & x \in \grdvar \land c \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom)  \\
+      \absexpr(y + v, x)  = x' \leq y + v & \\
+      \grdvar = \grdvar \cup \{y\} & x \in \grdvar \land v \in \mathbb{Z} \land y \notin (\grdvar \cup \constdom)  \\
       \absexpr(\qexpr, x)  = x' \leq 0 + \max(\dbdom) & x \in \grdvar \land \qexpr \text{ is a query expression}  \\
       \absexpr(\bexpr, x) = x' \leq 0 + 1   & x \in \grdvar \land \bexpr \text{ is a boolean expression} \\
       \absexpr(\expr, x) = x' \leq \infty  &  x \in \grdvar \land \expr \text{ doesn't have any of the forms as above} \\
@@ -737,9 +738,9 @@ $\absfinal: \cdom \to \mathcal{Label}$,
 computes the Abstract Final State of the command. 
  \[
  \begin{array}{ll}
-    \absfinal([x := \expr]^{l})  & = \{(l, \absexpr \eapp \expr \eapp x)\}  \\
+    \absfinal([x := \expr]^{l})  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
      \absfinal([x := \query(\qexpr))]^{l})  & = \{
-      (l, \absexpr \eapp \expr \eapp x)\}  \\
+      (l, x' \leq 0 + \max(\dbdom) )\}  \\
      \absfinal([\eskip]^{l})  
      & = \{(l, \top)\} \\
      \absfinal([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = \absfinal(c_1) \cup \absfinal(c_2) \\
@@ -808,7 +809,10 @@ We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eski
   \end{array}
   \]
 For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
-there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This soundness is proved in Appendix~\ref{apdx:reachability_soundness}.
+there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
+\\
+For every labeled variable in program $c$, $x^l \in \lvar_c$, there is a unique abstract event in program's abstract execution trace $\absevent \in \absflow(c)$ of form $(l, \_, \_)$. This lemma and proof is also formalized in Lemma~\ref{lem:absevent_unique} in Appendix~\ref{apdx:reachability_soundness}.
+
 % We have a pre-processing algorithm to go through the programs and returns the list of labels associating with a loop and whose visiting times need to be analyzed.
 %
 \paragraph{Abstract Control Flow Graph} 
@@ -821,7 +825,7 @@ $\absE = \{(l_1, dc, l_2) | (l_1, dc, l_2) \in \absflow(c)\}$,
 \\
 $\absV = labels(c)\cup\{l_e\}$
 \\
-It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Appendix~\ref{apdx:reachability_soundness}.
+It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
 \paragraph*{Variable Modification Tracking}
 Identify the abstract events where each variable is increased, decreased and reset:
@@ -863,7 +867,7 @@ $\locbound: \absevent \to \mathcal{VAR} \cup \constdom$.
   \]
   The first case is straightforward. Since variable's visiting time outside of any while loop is at most 1, we do not need to analyze the visiting times of every node in the graph from phase 1.
   The second and third step is guaranteed by the \emph{Discussion on Soundness} in Section 4 of \cite{sinn2017complexity}.
-  Then complete soundness proof is in Appendix~\ref{apdx:reachability_soundness}.
+  Then complete soundness proof is in Lemma~\ref{lem:local_bound_sound} in Appendix~\ref{apdx:reachability_soundness}.
 %
 \paragraph*{Abstract Event Closure and Bound Invariant}
 Then, computing the bound invariants for variables and the transition closures for abstract events:
