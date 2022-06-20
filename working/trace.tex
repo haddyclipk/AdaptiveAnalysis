@@ -391,19 +391,70 @@ $$
   This case is proved in the same way as \textbf{case: $c = [\assign{x}{\expr}]^l$}.
   \caseL{$\ewhile [b]^{l_w} \edo c$}
   By the first rule applied to $c$, there are two cases:
-  \subcaseL{$\rname{while-t}$}
+  \subcaseL{$\textbf{while-t}$}
   If the first rule applied to is $\rname{while-t}$, we have
   \\
   $\config{{\ewhile [b]^{l_w} \edo c_w, \trace}}
     \xrightarrow{} 
     \config{{
     c_w; \ewhile [b]^{l_w} \edo c_w,
-    \trace :: (b, l_w, \etrue, \bullet)}}
-    \xrightarrow{*} 
-    \config{\eskip, \trace'}
+    \trace :: (b, l_w, \etrue, \bullet)}}~ (1)
   $.
   \\
-  \subcaseL{$\rname{while-f}$}
+  Let $\trace_w' \in \mathcal{T}$ be the trace satisfying following execution:
+  \\
+  $
+  \config{{
+  c_w,
+  \trace :: (b, l_w, \etrue, \bullet)}}
+  \xrightarrow{*} 
+  \config{{
+  \eskip, \trace_w'}}
+$
+\\
+By induction hypothesis on sub program $c_w$ with starting trace 
+$\trace :: (b, l_w, \etrue, \bullet)$ and ending trace $\trace_w'$, 
+we know there exist
+$\trace_w \in \mathcal{T}$ such that $\trace_w' = \trace :: (b, l_w, \etrue, \bullet) \tracecat \trace_w$.
+\\
+Then we have the following execution continued from $(1)$:
+\\
+$
+\config{{\ewhile [b]^{l_w} \edo c_w, \trace}}
+    \xrightarrow{} 
+    \config{{
+    c_w; \ewhile [b]^{l_w} \edo c_w,
+    \trace :: (b, l_w, \etrue, \bullet)}}
+    \xrightarrow{*} 
+    \config{\ewhile [b]^{l_w} \edo c_w, \trace :: (b, l_w, \etrue, \bullet) \tracecat \trace_w}
+    ~(2)
+$
+By repeating the execution (1) and (2) until the program is evaluated into $\eskip$,
+with trace $\trace_w^{i'} $ for $i = 1, \cdots, n n \geq 1$ in each iteration, we know 
+in the $i-th$ iteration,
+ there exists  $\trace_w^i \in \mathcal{T}$ such that  
+$\trace_w^{i'} = \trace_w^{(i-1)'} :: (b, l_w, \etrue, \bullet) ++ \trace_w^{i'}$
+\\
+Then we have the following execution:
+\\
+$
+\config{{\ewhile [b]^{l_w} \edo c_w, \trace}}
+    \xrightarrow{} 
+    \config{{
+    c_w; \ewhile [b]^{l_w} \edo c_w,
+    \trace :: (b, l_w, \etrue, \bullet)}}
+    \xrightarrow{*} 
+    \config{\ewhile [b]^{l_w} \edo c_w, \trace_w^{n'}}
+    \xrightarrow{}^\rname{{while-f}}
+    \config{\eskip, \trace_w^{n'}:: (b, l_w, \efalse, \bullet)}
+$ and $\trace_w^{n'} = \trace :: (b, l_w, \etrue, \bullet) \tracecat \trace_w^{1} :: \cdots :: (b, l_w, \etrue, \bullet) \tracecat \trace_w^{n} $.
+\\
+Picking $\trace' = \trace_w^{n'} :: (b, l_w, \efalse, \bullet)$ and $\trace'' = [(b, l_w, \etrue, \bullet)] \tracecat \trace_w^{1} :: \cdots :: (b, l_w, \etrue, \bullet) \tracecat \trace_w^{n}$,
+we have 
+$\trace ++ \trace'' = \trace'$.
+\\
+This case is proved.
+  \subcaseL{$\textbf{while-f}$}
   If the first rule applied to $c$ is $\rname{while-f}$, we have
   \\
   $
@@ -421,7 +472,7 @@ $$
   \caseL{$\eif([b]^l, c_t, c_f)$}
   This case is proved in the same way as \textbf{case: $c = \ewhile [b]^{l} \edo c$}.
   \caseL{$c = c_{s1};c_{s2}$}
- By the induction hypothesis on $c_{s1}$ and $c_{s2}$ separately, and the same step as case (2). of \textbf{case: $c = \ewhile [b]^{l} \edo c$},
+ By the induction hypothesis on $c_{s1}$ and $c_{s2}$ separately,
  we have this case proved.
 \end{proof}
 %
