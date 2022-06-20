@@ -1,6 +1,7 @@
 %
 %
 \subsection{Labeled Language}
+\mg{It is ok to list all the operations in the appendix but for the main paper it is better to save space.}
 \[
 \begin{array}{llll}
 \mbox{Arithmetic Operators} 
@@ -20,7 +21,7 @@
 \\  
 %
 \mbox{Label} 
-& l & := & \mathbb{N} 
+& l & := & \mathbb{N} \mg{\text{This should be} \in \text{since l is a label and not a set.}}
 \\ 
 %
 \mbox{Arithmetic Expression} 
@@ -53,7 +54,9 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 %
 \mbox{Query Value} & \qval & ::= 
 & {n ~|~ \chi[n] ~|~ \chi[n] \oplus_a  \chi[n] ~|~ n \oplus_a  \chi[n]
-~|~ \chi[n] \oplus_a  n}
+    ~|~ \chi[n] \oplus_a  n}\\
+&&& \text{\mg{I don’t think this is what we want. Isn’t $\chi[n+1]$ a query value?}}\\
+&&& \text{\mg{What about $\chi[i] + \chi[i] + \chi[i]$? They are not in the grammar}}
 \\
 %
 \mbox{Labeled Command} 
@@ -63,7 +66,8 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 &&&
 ~|~ {c};{c}  
 ~|~ \eif([\bexpr]{}^l , {c}, {c}) 
-~|~ [\eskip] 
+~|~ [\eskip]\\ 
+&&& \text{\mg{Is skip missing a label?}}
 \\
 %
 \mbox{Event} 
@@ -71,13 +75,17 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
     ({x}, l, v) ~|~ ({x}, l, \qval, v)  ~~~~~~~~~~~ \mbox{Assignment Event} \\
 &&& ~|~(\bexpr, l, v)   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \mbox{Testing Event}
 \\
+&&& \text{\mg{I think it would be better to use quadruples for events, where the}}\\
+&&& \text{\mg{first element is either a variable or a boolean expression and }}\\
+&&& \text{\mg{the last is either a query value or some default value $\bullet$}}\\
 %
 % \mbox{Trace} & \trace
 % & ::= & \cdot | \trace \cdot \event | \trace \tracecat \trace 
 % \\
 %
 \mbox{Trace} & \trace
-& ::= & [] ~|~ \event:: \trace ~|~ \trace \tracecat \trace  % \\
+& ::= & [] ~|~ \event:: \trace ~|~ \trace \tracecat \trace  \\
+&&& \text{\mg{I don't understand why you need both :: and ++ as constructors.}}
 % %
 % \mbox{Event Signature} & \sig
 % & ::= & (x, l, n) | (x, l, n, \query) | (b, l, n)
@@ -119,13 +127,15 @@ We use following notations to represent the set of corresponding terms:
 {\mathcal{T}} & : & \mbox{Set of Traces}
 \\
 %
-\qdom = {[-1,1]} & : & \mbox{{Domain of Query Results}}
+\qdom = {[-1,1]} & : & \mbox{{Domain of Query Results}}\\
+&&\text{\mg{I don't think you need to hard code [-1,1] here}}\\
 \end{array}
 \]
 %
 %
 %
 Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\bot\}$
+\mgside{The following definition is missing one case, also it is better to say that $y\neq x$.}
 \[
 \begin{array}{lll}
 \env(\trace  \tracecat [(x, l, v)]) x \triangleq v
@@ -160,7 +170,7 @@ Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\
 %
 
 %
-\subsection{Trace-based Operational Semantics for Language}
+\subsection{Trace-based Operational Semantics for Language \mg{What is ``Language''?}}
 %
 %
 %
@@ -168,7 +178,11 @@ Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\
 \begin{mathpar}
 \boxed{ \config{\trace,\aexpr} \aarrow v \, : \, \mbox{Trace  $\times$ Arithmetic Expr $\Rightarrow$ Arithmetic Value} }
 \\
+\text{\mg{Missing. Without these rules it is difficult to understand why we need a trace to evaluate expressions.}}
+\\
 \boxed{ \config{\trace, \bexpr} \barrow v \, : \, \mbox{Trace $\times$ Boolean Expr $\Rightarrow$ Boolean Value} }
+\\
+\text{\mg{Missing. Without these rules it is difficult to understand why we need a trace to evaluate expressions.}}
 \\
 \boxed{ \config{\trace, \expr} \earrow v \, : \, \mbox{Trace $\times$ Expression $\Rightarrow$ Value} }
 \\
@@ -234,9 +248,14 @@ Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\
 }
  \end{mathpar}
 %
-The trace based operational semantics are defined in Figure \ref{fig:os_ssa}.
+The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:os_ssa}.
 %
 \begin{figure}
+  \text{\mg{Several skip are missing labels. Do we need fresh labels or we reuse l?}}
+  \\
+\text{\mg{Also, why we use ++, cannot we just define lists as adding elements on the right?}}  
+  \\
+\text{\mg{It is also unclear why we store the boolean expression in if and while, besides the boolean value.}}
 {
 \begin{mathpar}
 \boxed{

@@ -47,6 +47,10 @@
 %   \right.
 % \]
 %
+\mg{I suggest to use more definition environments throughout this section.}
+
+\mg{Is ++ a constructor or a defined operation? It is in the grammar
+  but it seems that you are actually defining it here.}
 Trace concatenation: $\tracecat: \mathcal{T} \to \mathcal{T} \to \mathcal{T}$
 \[
   \trace_1 \tracecat \trace_2 \triangleq
@@ -60,6 +64,7 @@ Trace concatenation: $\tracecat: \mathcal{T} \to \mathcal{T} \to \mathcal{T}$
 %
 \todo{ need to consider the occurrence times }
 \\
+\mg{This definition is not well given. You use a different operator to define it t[:e] which you say it is a shorthand. It cannot be a shorthand because it is used in the definition. I think you need to define two operations, either in sequence or mutually recursive.}
 Subtrace: $[ : ] : \mathcal{{T} \to \eventset \to \eventset \to \mathcal{T}}$ 
 % \wqside{Confusing, I can not understand the subtraction, it takes a trace, and two events, and this operator is used to subtract these two events?}
 \[
@@ -98,6 +103,7 @@ We use $\trace[:\event_2] $ as the shorthand of subtrace starting from head and 
   \right.
 \]
 %
+\mg{why in the next definition you use ( ) while in the previous ones you didn't? They seem like the same cases. And why you use o.w. instead of []?}
 An event $\event \in \eventset$ belongs to a trace $\trace$, i.e., $\event \eventin \trace$ are defined as follows:
 %
 \begin{equation}
@@ -133,7 +139,8 @@ An event $\event \in \eventset$ belongs to a trace $\trace$, i.e., $\event \even
 %   \right.
 % \end{equation}
 %
-Counter $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$ 
+\mg{Why the previous definition used :: and now you switch to ++? Cannot this just be defined using ::? I am trying to anticipate places where a reader might be confused. Also, this definition would be much simpler if we defined event in a more uniform way. Ideally, we want to distinguish three cases, we don't need to distinguish 7 cases.}\\
+\mg{We introduce a counting operator $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$ whose behavior is defined as follows, \sout{Counter $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$ }}.
 % \wq{The operator counter actually provides the number of times a specific label appears in a trace. Only a number, the position of label is ignored.}
 % \[
 % \begin{array}{lll}
@@ -191,7 +198,7 @@ Counter $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$
 % \end{array}
 % \]
 %
-The Latest Label $\llabel : \mathcal{T} \to \mathcal{VAR} \to \mathbb{N}$ 
+\mg{This wording needs to be fixed. Also notice that the type is wrong, a label is not always returned.} The Latest Label $\llabel : \mathcal{T} \to \mathcal{VAR} \to \mathbb{N}$ 
 The label of the latest assignment event which assigns value to variable $x$.
 \[
   \begin{array}{lll}
@@ -210,6 +217,7 @@ The label of the latest assignment event which assigns value to variable $x$.
 \end{array}
 \]
 %
+\mg{This wording needs to be fixed but also the description does not make sense. This operator seems to just collect all the labels in a trace. Again, this definition would be shorter with a more uniform definition of events.}
 The Trace Label Set $\tlabel : \mathcal{T} \to \mathcal{P}{(\mathbb{N})}$ 
 The label of the latest assignment event which assigns value to variable $x$.
 \[
@@ -245,6 +253,7 @@ The label of the latest assignment event which assigns value to variable $x$.
 %
 
 %
+\mg{The next lemma is trivial but it still needs a proof sketch.}
 \begin{lem}
 [Trace Non-Decreasing].
 \\
@@ -255,6 +264,7 @@ $$
 $$
 \end{lem}
 %
+\mg{This corollary needs some explanation. In particular, we should stress that $\event$ and $\event'$ may differ in the query value.}
 \begin{coro}
 \label{coro:aqintrace}
 \[
@@ -271,6 +281,7 @@ Proof in File: {\tt ``coro\_aqintrace.tex''}
 % \\
 %
 %
+\mg{I'll skip the rest of this page because it seems not relevant.}
 \todo{Not Necessary but keep it for now}
 \\
 Given a trace $\trace$, its post-processed trace $\trace_p$ is computed by a function $p : \trace \to \trace_p$ as follows:
