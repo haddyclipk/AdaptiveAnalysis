@@ -87,7 +87,8 @@ $\tracecat$ is defined as:
 % \todo{ need to consider the occurrence times }
 % \\
 \mg{This definition is not well given. You use a different operator to define it t[:e] which you say it is a shorthand. It cannot be a shorthand because it is used in the definition. I think you need to define two operations, either in sequence or mutually recursive.}
-Subtrace: $[ : ] : \mathcal{{T} \to \eventset \to \eventset \to \mathcal{T}}$ 
+\jl{I moved this definition from the main paper into the appendix \ref{apdx:flowsto_event_soundness}. Because this operator is only being used in the soundness proof. And I also feel it doesn't worth to spend many lines in the main paper for defining this complex notation.}
+% Subtrace: $[ : ] : \mathcal{{T} \to \eventset \to \eventset \to \mathcal{T}}$ 
 % \wqside{Confusing, I can not understand the subtraction, it takes a trace, and two events, and this operator is used to subtract these two events?}
 % \[
 %   \trace[\event_1 : \event_2] \triangleq
@@ -124,43 +125,6 @@ Subtrace: $[ : ] : \mathcal{{T} \to \eventset \to \eventset \to \mathcal{T}}$
 %   \end{array}
 %   \right.
 % \]
-\begin{defn}[Subtrace]
-  \[
-    \trace[\event_1 : \event_2] \triangleq
-    \left\{
-    \begin{array}{ll} 
-    \trace'[\event_1: \event_2]             & \trace = \event :: \trace' \land \event \eventneq \event_1 \\
-    \event_1 :: \trace'[:\event_2]  & \trace = \event :: \trace' \land \event \eventeq \event_1 \\
-    {[]} & \trace = [] \\
-    \end{array}
-    \right.
-  \]
-  For any trace $\trace$ and two events $\event_1, \event_2 \in \eventset$,
-  $\trace[\event_1 : \event_2]$ takes the subtrace of $\trace$ starting with $\event_1$ and ending with $\event_2$ including $\event_1$ and $\event_2$.
-  \\
-  We use $\trace[:\event_2] $ as the shorthand of subtrace starting from head and ending with $\event_2$, and similary for $\trace[\event_1:]$.
-  \[
-    \trace[:\event] \triangleq
-    \left\{
-    \begin{array}{ll} 
-   \event' :: \trace'[: \event]             & \trace = \event' :: \trace' \land \event' \eventneq \event \\
-    \event'  & \trace = \event' :: \trace' \land \event' \eventeq \event \\
-    {[]}  & \trace = [] 
-    \end{array}
-    \right.
-  % \]
-  % \[
-    \quad
-    \trace[\event: ] \triangleq
-    \left\{
-    \begin{array}{ll} 
-    \trace'[\event: ]     & \trace =  \event' :: \trace' \land \event \eventneq \event' \\
-    \event' :: \trace'  & \trace = \event' :: \trace' \land \event \eventeq \event' \\
-    {[ ] } & \trace = []
-    \end{array}
-    \right.
-  \]
-\end{defn}
 % %
 \mg{why in the next definition you use ( ) while in the previous ones you didn't? They seem like the same cases. And why you use o.w. instead of []?}
 % An event $\event \in \eventset$ belongs to a trace $\trace$, i.e., $\event \eventin \trace$ are defined as follows:
@@ -401,7 +365,64 @@ $$
 \end{lem}
 \begin{proof}
   Taking arbitrary trace $\trace \in \mathcal{T}$, by induction on program $c$, we have the following cases:
-  \caseL{${c = \clabel{\assign{x}{\expr}}}^l$}
+  \caseL{$c = [\assign{x}{\expr}]^{l}$}
+  By the evaluation rule $\rname{assn}$, we have
+  $
+  {
+  \config{[\assign{{x}}{\aexpr}]^{l},  \trace } 
+  \xrightarrow{} 
+  \config{\eskip, \trace :: ({x}, l, v, \bullet)}
+  }$, for some $v \in \mathbb{N}$.
+  \\
+  Picking $\trace' = \trace ::({x}, l, v, \bullet)$ and $\trace'' =  [({x}, l, v, \bullet) ]$,
+  it is obvious that $\trace \tracecat \trace'' = \trace'$.
+  % \\
+  % There are 2 cases, where $l' = l$ and $l' \neq l$.
+  % \\
+  % In case of $l' \neq l$, we know $\event \not\eventin \trace$, then this Lemma is vacuously true.
+  %   \\
+  %   In case of $l' = l$, by the abstract Execution Trace computation, we know 
+  %   $\absflow(c) = \absflow'([x := \expr]^{l}; \clabel{\eskip}^{l_e}) = \{(l, \absexpr(\expr), l_e)\}$  
+  %   \\
+  % Then we have $\absevent = (l, \absexpr(\expr), l_e) $ and $\absevent \in \absflow(c)$.
+  \\
+  This case is proved.
+  \caseL{$c = [\assign{x}{\query(\qexpr)}]^{l'}$}
+  This case is proved in the same way as \textbf{case: $c = [\assign{x}{\expr}]^l$}.
+  \caseL{$\ewhile [b]^{l_w} \edo c$}
+  By the first rule applied to $c$, there are two cases:
+  \subcaseL{$\rname{while-t}$}
+  If the first rule applied to is $\rname{while-t}$, we have
+  \\
+  $\config{{\ewhile [b]^{l_w} \edo c_w, \trace}}
+    \xrightarrow{} 
+    \config{{
+    c_w; \ewhile [b]^{l_w} \edo c_w,
+    \trace :: (b, l_w, \etrue, \bullet)}}
+    \xrightarrow{*} 
+    \config{\eskip, \trace'}
+  $.
+  \\
+  \subcaseL{$\rname{while-f}$}
+  If the first rule applied to $c$ is $\rname{while-f}$, we have
+  \\
+  $
+  {
+    \config{{\ewhile [b]^{l_w} \edo c_w, \trace}}
+    \xrightarrow{}^\rname{while-f}
+    \config{{
+    \eskip,
+    \trace :: (b, l_w, \efalse, \bullet)}}
+  }$,
+  In this case, picking $\trace' = \trace ::(b, l_w, \efalse, \bullet)$ and $\trace'' =  [(b, l_w, \efalse, \bullet) ]$,
+  it is obvious that $\trace \tracecat \trace'' = \trace'$.
+  \\
+  This case is proved.
+  \caseL{$\eif([b]^l, c_t, c_f)$}
+  This case is proved in the same way as \textbf{case: $c = \ewhile [b]^{l} \edo c$}.
+  \caseL{$c = c_{s1};c_{s2}$}
+ By the induction hypothesis on $c_{s1}$ and $c_{s2}$ separately, and the same step as case (2). of \textbf{case: $c = \ewhile [b]^{l} \edo c$},
+ we have this case proved.
 \end{proof}
 %
 \mg{This corollary needs some explanation. In particular, we should stress that $\event$ and $\event'$ may differ in the query value.}
@@ -416,7 +437,7 @@ $\event$ and $\event'$ equivalent but may differ in their query value.
 \[
   \forall \event \in \eventset, \trace \in \mathcal{T} \st
 \event \in \trace \implies \exists \trace_1, \trace_2 \in \mathcal{T}, 
-\event' \in \eventset \st (\event = \event') \land \trace_1 \tracecat [\event'] \tracecat \trace_2 = \trace  
+\event' \in \eventset \st (\event \in \event') \land \trace_1 \tracecat [\event'] \tracecat \trace_2 = \trace  
 \]
 \end{coro}
 \begin{subproof}
