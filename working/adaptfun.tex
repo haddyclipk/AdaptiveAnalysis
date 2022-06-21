@@ -192,7 +192,7 @@ x^l \in \lvar({{c}})
 % \begin{array}{l}
 	\big\{ (x^l, w) \in \mathcal{VAR} \times \mathbb{N} \times (\mathbb{N} \cup \aexpr)
 	\mid
-	x^l \in \lvar_{{c}} \land w = \rb(x^l, c)
+	x^l \in \lvar_{{c}} \land w = \absclr(\absevent), \absevent = (l, \_, \_)
 	\big\} 
 	% \\
 	% \big\{(x^l, 1)  \in \mathcal{VAR} \times \mathbb{N} \times \{1\} 
@@ -247,7 +247,7 @@ x^l \in \lvar_{{c}}
 % \begin{array}{l}
 	\big\{ (x^l, w)
 	\mid
-	x^l \in \lvar_{{c}}, w = \rb(x^l, c)
+	x^l \in \lvar_{{c}}, w = \absclr(\absevent), \absevent = (l, \_, \_)
 	\big\} 
 	% \\
 	% \big\{(x^l, 1)  \in \mathcal{VAR} \times \mathbb{N} \times \{1\} 
@@ -272,6 +272,7 @@ x^l \in \lvar_{{c}}
 \right\}
 \end{array}
 \]
+, where the $\absclr(\absevent)$ is computed from the $\THESYSTEM$ algorithm second step in ~\ref{def:transition_closure}.
 \end{defn} 
 %
 Given a program ${c}$, we generate its program-based graph 
@@ -641,21 +642,23 @@ The Reaching definition is calculated by the Worklist algorithm as below.
 % \end{algorithm}
 
 \paragraph*{Expression Abstraction}
-We define the abstract domain and
-an expression abstraction method by simplifying the method in paper \cite{sinn2017complexity}.
+We define
+an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
 \\
-Abstract Domain $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
-\\
-$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
-The  constants in abstract domain consist of natural number $\mathbb{Z}$,
-the symbolic constants,  $\inpvar$ (i.e., the set of the program's input variables), 
-and a constant value $\max(\dbdom)$ for estimating the upper bound of variables'
-assigned by query expression.
-\\
-$DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{N} \cup \{\infty\})$
+Difference constraint: $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$
 \\
 The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
-$y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{N}$, $DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
+$y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{Z}$.
+% $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
+\\
+$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
+The  constant $\constdom$ consists of 
+natural number $\mathbb{N}$,
+the symbolic constants $\inpvar$ (i.e., the set of the program's input variables), 
+and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
+assigned by queries.
+\\
+$DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
 \\
 We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 \\
@@ -666,10 +669,11 @@ $ a > 0 $ or $a \geq 0$, generating a set of variables involved into these boole
 (substituting the variables in every expression by the symbolic expression assigned to it previously) until 
 all the expressions stabilized.
 \\
-3. Then, abstract the stabilized expression in every assignment command into an abstract value in $\absdom$ as follows:
+3. Then, abstract the stabilized expression in every assignment command into a constraint in $DC(\mathcal{VAR}  \cup \constdom)$, or a $\top$ representing
+$\etrue$, as follows:
 \\
 Expression Abstraction:
-$\absexpr : \expr \to \mathcal{VAR} \to \absdom$,
+$\absexpr : \expr \to \mathcal{VAR} \to DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\} $,
 computes the abstract value for each variable 
 according to the expression $\expr$ assigned to it in the command.
 % \[
@@ -716,7 +720,7 @@ Abstract event is a tuple of a pair of Labels with a difference constraint.
 \\
 Abstract Event: 
 $\absevent \in $
-Label $\times$ Label $\times \absdom$ 
+Label $\times$ Label $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ 
 \\
 Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
 \\
@@ -754,7 +758,7 @@ Then, based on the abstract final and initial state, in order to analysis the re
 we  extract the abstract execution trace for a program, which is a set of the abstract events.
 \\
 Abstract Execution Trace Computation:
- $\absflow: \cdom -> \mathcal{P}($Label $\times$ Label $\times \absdom$ $)$, 
+ $\absflow: \cdom -> \mathcal{P}($Label $\times$ Label $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $)$, 
  $\absflow(c)$ computes the Abstract Execution Trace for program $c$, as a set of the abstract events $\absevent$.
  \\
  For simplicity, we use $\mathcal{P}(\absevent)$ represent the power set of all abstract events, and we have $\absflow(c) \in \mathcal{P}(\absevent)$.
@@ -885,6 +889,8 @@ as well as the symbolic transition closure for each transition is calculated as 
 \end{array}
 \]
 %
+\begin{defn}
+  \label{def:transition_closure}
 \[ 
 \begin{array}{lll}
   \absclr(\absevent) 
@@ -897,7 +903,51 @@ as well as the symbolic transition closure for each transition is calculated as 
   & \locbound(\absevent) = (x, v) \land x \notin \constdom & 
 \end{array}
   \]
+\end{defn}
 %
+\paragraph*{Improved Variable Modification Tracking}
+Instead of just identifying the abstract events where each variable is reset,
+this improvement identifies the chain of the events where a given variable is reset by the 
+variables of the abstract events through the chain.
+\\
+$\resetchain: \mathcal{VAR} \to \mathcal{P}(\mathcal{P}(\absevent)) $
+The set of the chain of abstract events where the variable is reset through the chain.
+% \\
+% $Incr(v) \triangleq \sum\limits_{(\absevent, c) \in \inc(v)}\{\absclr(\absevent) \times v\}$
+%
+\paragraph*{Improved Bound Invariant Computation}
+Then, computing the bound invariants for variables and the transition closures for abstract events:
+\\ 
+$ \varinvar: \mathcal{VAR} \cup \constdom \to EXPR(\constdom)$
+\\
+$\absclr: \absevent \to EXPR(\constdom)$
+\\
+Then, the symbolic invariant for each variable 
+as well as the symbolic transition closure for each transition is calculated as follows:
+\[ 
+\begin{array}{lll}
+  \varinvar(x) & \triangleq c & c \in \constdom \\
+  \varinvar(x) & \triangleq Incr(v) + \max(\{\varinvar(a) + c | (t, a, c) \in \reset(x)\}) & c \notin \constdom
+\end{array}
+\]
+%
+\[ 
+\begin{array}{lll}
+  \absclr(\absevent) 
+  & \triangleq x / v & \\ 
+  & \locbound(\absevent) = (x, v) \in \constdom \times \mathbb{N} & \\
+  \absclr(\absevent) 
+  & \triangleq \Big(
+    \sum\limits_{y \in \{ y ~|~ 
+    ch \in \resetchain(x), (l_1, x, y, v, l_2) \in ch \} } Incr(x) & \\
+    & \quad + 
+  \sum\limits_{ch \in \resetchain(x)}
+  \big( \min\limits_{\absevent' \in ch}({\absclr(\absevent')}) \times 
+  \max(\varinvar(y) + \sum\limits_{(l_1, x, y, v, l_2) \in ch } v, 0)\big) \Big) / v & \\
+  & \locbound(\absevent) = (x, v) \land x \notin \constdom & 
+\end{array}
+  \]
+  %
 \paragraph*{Adding the Reachability Bounds for Every Vertex in the Data-Control Flow Graph}
 Updating the weight of every vertex in the $\progG(c) = (\progV, \progE, \progW, \progF)$ for program $c$ generated from phase 1. 
 For every $x^l \in \progV$, find the abstract event $\absevent \in \absflow(c)$ of the form $(l, \_, \_)$, updating the $\progW(x^l) $ by the transition closure of this event.

@@ -21,7 +21,7 @@
 \\  
 %
 \mbox{Label} 
-& l & := & \mathbb{N} \mg{\text{This should be} \in \text{since l is a label and not a set.}}
+& l & \in & \mathbb{N} \mg{\text{This should be} \in \text{since l is a label and not a set.}}
 \\ 
 %
 \mbox{Arithmetic Expression} 
@@ -58,7 +58,9 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 &&& \text{\mg{I don’t think this is what we want. Isn’t $\chi[n+1]$ a query value?}}\\
 &&& \text{\mg{What about $\chi[i] + \chi[i] + \chi[i]$? They are not in the grammar}}
 \\
-%
+&&& \text{\jl{ $\chi[i] + \chi[i] + \chi[i]$ and $\chi[n+1]$ are both expressions, they will be evaluated to a value 
+}}
+\\%
 \mbox{Labeled Command} 
 & {c} & ::= &   [\assign {{x}}{ {\expr}}]^{l} ~|~  [\assign {{x} } {{\query(\qexpr)}}]^{l}
 ~|~ {\ewhile [ \bexpr ]^{l} \edo {c} }
@@ -66,14 +68,23 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 &&&
 ~|~ {c};{c}  
 ~|~ \eif([\bexpr]{}^l , {c}, {c}) 
-~|~ [\eskip]\\ 
+~|~ [\eskip]^l\\ 
 &&& \text{\mg{Is skip missing a label?}}
 \\
-%
+&&& \text{\jl{I intentionally removed leabel for skip before}}
+\\%
+&&& \text{\jl{but I realized I need it after implementation}}
+\\%
+&&& \text{\jl{I haven't yet updated it here, thanks for reminding}}
+\\% \mbox{Event} 
+% & \event & ::= & 
+%     ({x}, l, v) ~|~ ({x}, l, \qval, v)  ~~~~~~~~~~~ \mbox{Assignment Event} \\
+% &&& ~|~(\bexpr, l, v)   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \mbox{Testing Event}
+% \\
 \mbox{Event} 
 & \event & ::= & 
-    ({x}, l, v) ~|~ ({x}, l, \qval, v)  ~~~~~~~~~~~ \mbox{Assignment Event} \\
-&&& ~|~(\bexpr, l, v)   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \mbox{Testing Event}
+    ({x}, l, v, \bullet) ~|~ ({x}, l, v, \qval)  ~~~~~~~~~~~ \mbox{Assignment Event} \\
+&&& ~|~(\bexpr, l, v, \bullet)   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \mbox{Testing Event}
 \\
 &&& \text{\mg{I think it would be better to use quadruples for events, where the}}\\
 &&& \text{\mg{first element is either a variable or a boolean expression and }}\\
@@ -83,9 +94,13 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 % & ::= & \cdot | \trace \cdot \event | \trace \tracecat \trace 
 % \\
 %
+% \mbox{Trace} & \trace
+% & ::= & [] ~|~ \event:: \trace ~|~ \trace \tracecat \trace  \\
 \mbox{Trace} & \trace
-& ::= & [] ~|~ \event:: \trace ~|~ \trace \tracecat \trace  \\
-&&& \text{\mg{I don't understand why you need both :: and ++ as constructors.}}
+& ::= & [] ~|~ \trace :: \event\\
+&&& \text{\mg{I don't understand why you need both :: and ++ as constructors.}}\\
+&&& \text{\jl{Because append is to the left but we are adding element to the left in the OS}}\\
+&&& \text{\jl{I was too sticky to the convention, it is a good idea to append to the left and just use $::$}}
 % %
 % \mbox{Event Signature} & \sig
 % & ::= & (x, l, n) | (x, l, n, \query) | (b, l, n)
@@ -127,7 +142,8 @@ We use following notations to represent the set of corresponding terms:
 {\mathcal{T}} & : & \mbox{Set of Traces}
 \\
 %
-\qdom = {[-1,1]} & : & \mbox{{Domain of Query Results}}\\
+% \qdom = {[-1,1]} & : & \mbox{{Domain of Query Results}}\\
+\qdom & : & \mbox{{Domain of Query Results}}\\
 &&\text{\mg{I don't think you need to hard code [-1,1] here}}\\
 \end{array}
 \]
@@ -136,18 +152,34 @@ We use following notations to represent the set of corresponding terms:
 %
 Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\bot\}$
 \mgside{The following definition is missing one case, also it is better to say that $y\neq x$.}
+% \[
+% \begin{array}{lll}
+% \env(\trace  \tracecat [(x, l, v, \cdot)]) x \triangleq v
+% &
+% \env(\trace \tracecat [(y, l, v, \cdot)]) x \triangleq \env(\trace) x, y \neq x
+% &
+% \env(\trace \tracecat [(b, l, v, \cdot)]) x \triangleq \env(\trace) x
+% \\
+% \env(\trace \tracecat [(x, l, v, \qval)]) x \triangleq v
+% &
+% \env(\trace \tracecat [(y, l, v, \qval)]) x \triangleq \env(\trace) x, y \neq x
+% &
+% \env({[]} ) x \triangleq \bot
+% \end{array}
+% \]
 \[
 \begin{array}{lll}
-\env(\trace  \tracecat [(x, l, v)]) x \triangleq v
+\env(\trace  \traceadd (x, l, v, \bullet)) x \triangleq v
 &
-\env(\trace \tracecat [(x, l, \qval, v)]) x \triangleq v
+\env(\trace \traceadd (y, l, v, \bullet)) x \triangleq \env(\trace) x, y \neq x
 &
-\env(\trace \tracecat [(y, l, v)]) x \triangleq \env(\trace) x
+\env(\trace \traceadd (b, l, v, \bullet)) x \triangleq \env(\trace) x
 \\
-\env(\trace \tracecat [(b, l, v)]) x \triangleq \env(\trace) x
+\env(\trace \traceadd (x, l, v, \qval)) x \triangleq v
+&
+\env(\trace \traceadd (y, l, v, \qval)) x \triangleq \env(\trace) x, y \neq x
 &
 \env({[]} ) x \triangleq \bot
-&
 \end{array}
 \]
 %
@@ -170,7 +202,8 @@ Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\
 %
 
 %
-\subsection{Trace-based Operational Semantics for Language \mg{What is ``Language''?}}
+% \subsection{Trace-based Operational Semantics for Language \mg{What is ``Language''?}}
+\subsection{Trace-based Operational Semantics for {\tt Labeled While} Language}
 %
 %
 %
@@ -180,9 +213,97 @@ Environment $ \env : {\mathcal{T}}  \to \mathcal{VAR} \to \mathcal{VAL} \cup \{\
 \\
 \text{\mg{Missing. Without these rules it is difficult to understand why we need a trace to evaluate expressions.}}
 \\
+\inferrule{ 
+  \empty
+}{
+ \config{\trace,  n} 
+ \aarrow n
+}
+\and
+\inferrule{ 
+  \env(\trace) x = v
+}{
+ \config{\trace,  x} 
+ \aarrow v
+}
+\and
+\inferrule{ 
+  \config{\trace, \aexpr_1} \aarrow v_1
+  \and 
+  \config{\trace, \aexpr_2} \aarrow v_2
+  \and 
+   v_1 \oplus_a v_2 = v
+}{
+ \config{\trace,  \aexpr_1 \oplus_a \aexpr_2} 
+ \aarrow v
+}
+\and
+\inferrule{ 
+  \config{\trace, \aexpr} \aarrow v'
+  \and 
+  \elog v' = v
+}{
+ \config{\trace,  \elog \aexpr} 
+ \aarrow v
+}
+\and
+\inferrule{ 
+  \config{\trace, \aexpr} \aarrow v'
+  \and 
+  \esign v' = v
+}{
+ \config{\trace,  \esign \aexpr} 
+ \aarrow v
+}
+\\
 \boxed{ \config{\trace, \bexpr} \barrow v \, : \, \mbox{Trace $\times$ Boolean Expr $\Rightarrow$ Boolean Value} }
 \\
 \text{\mg{Missing. Without these rules it is difficult to understand why we need a trace to evaluate expressions.}}
+\\
+\inferrule{ 
+  \empty
+}{
+ \config{\trace,  \efalse} 
+ \barrow \efalse
+}
+\and 
+\inferrule{ 
+  \empty
+}{
+ \config{\trace,  \etrue} 
+ \barrow \etrue
+}
+\and 
+\inferrule{ 
+  \config{\trace, \bexpr} \barrow v'
+  \and 
+  \neg v' = v
+}{
+ \config{\trace,  \neg \bexpr} 
+ \barrow v
+}
+\and 
+\inferrule{ 
+  \config{\trace, \bexpr_1} \barrow v_1
+  \and 
+  \config{\trace, \bexpr_2} \barrow v_2
+  \and 
+   v_1 \oplus_b v_2 = v
+}{
+ \config{\trace,  \bexpr_1 \oplus_b \bexpr_2} 
+ \barrow v
+}
+\and 
+\inferrule{ 
+  \config{\trace, \aexpr_1} \aarrow v_1
+  \and 
+  \config{\trace, \aexpr_2} \aarrow v_2
+  \and 
+   v_1 \sim v_2 = v
+}{
+ \config{\trace,  \aexpr_1 \sim \aexpr_2} 
+ \barrow v
+}
 \\
 \boxed{ \config{\trace, \expr} \earrow v \, : \, \mbox{Trace $\times$ Expression $\Rightarrow$ Value} }
 \\
@@ -253,9 +374,11 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 \begin{figure}
   \text{\mg{Several skip are missing labels. Do we need fresh labels or we reuse l?}}
   \\
-\text{\mg{Also, why we use ++, cannot we just define lists as adding elements on the right?}}  
-  \\
-\text{\mg{It is also unclear why we store the boolean expression in if and while, besides the boolean value.}}
+\text{\mg{Also, why we use ++, cannot we just define lists as adding elements on the right?}}  \\
+\text{\jl{I was too sticky to the convention, it is a good idea to append to the left and just use $::$ as construtor}}  \\
+\text{\mg{It is also unclear why we store the boolean expression in if and while, besides the boolean value.}}\\
+\text{\jl{When proving the soundness of dependency between trace-based and program-based,}}\\
+\text{\jl{The variable used in the boolean expression is useful in proving the inversion Lemmas.}}
 {
 \begin{mathpar}
 \boxed{
@@ -272,12 +395,12 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 %
 \inferrule
 {
-\event = ({x}, l, v)
+\event = ({x}, l, v, \bullet)
 }
 {
 \config{[\assign{{x}}{\aexpr}]^{l},  \trace } 
 \xrightarrow{} 
-\config{\eskip, \trace \tracecat [\event ]}
+\config{\eskip, \trace \traceadd \event}
 }
 ~\textbf{assn}
 %
@@ -290,12 +413,12 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
  \and 
 \query(\qval) = v
 \and 
-\event = ({x}, l, \qval, v)
+\event = ({x}, l, v, \qval)
 }
 {
 \config{{[\assign{x}{\query(\qexpr)}]^l, \trace}}
 \xrightarrow{} 
-\config{{\eskip,  \trace \tracecat[ \event]} }
+\config{{\eskip,  \trace \traceadd \event} }
 }
 ~\textbf{query}
 }
@@ -306,14 +429,14 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 {
  \trace, b \barrow \etrue
  \and 
- \event = (b, l, \etrue)
+ \event = (b, l, \etrue, \bullet)
 }
 {
 \config{{\ewhile [b]^{l} \edo c, \trace}}
 \xrightarrow{} 
 \config{{
 c; \ewhile [b]^{l} \edo c,  \eskip),
-\trace \tracecat [\event]}}
+\trace \traceadd \event}}
 }
 ~\textbf{while-t}
 %
@@ -324,14 +447,14 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
 {
  \trace, b \barrow \efalse
  \and 
- \event = (b, l, \efalse)
+ \event = (b, l, \efalse, \bullet)
 }
 {
 \config{{\ewhile [b]^{l}, \edo c, \trace}}
 \xrightarrow{} 
 \config{{
 [\eskip]^l ,
-\trace \tracecat [\event]}}
+\trace \traceadd \event}}
 }
 ~\textbf{while-f}
 %
@@ -372,14 +495,14 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
 {
    \trace, b \barrow \etrue
  \and 
- \event = (b, l, \etrue)
+ \event = (b, l, \etrue, \bullet)
 }
 {
  \config{{
 \eif([b]^{l}, c_1, c_2), 
 \trace}}
 \xrightarrow{} 
-\config{{c_1, \trace \tracecat [\event]}}
+\config{{c_1, \trace \traceadd \event}}
 }
 ~\textbf{if-t}
 %
@@ -389,12 +512,12 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
 {
  \trace, b \barrow \efalse
  \and 
- \event = (b, l, \efalse)
+ \event = (b, l, \efalse, \bullet)
 }
 {
 \config{{\eif([b]^{l}, c_1, c_2), \trace}}
 \xrightarrow{} 
-\config{{c_2, \trace \tracecat [\event]}}
+\config{{c_2, \trace \traceadd \event}}
 }
 ~\textbf{if-f}
 % %
