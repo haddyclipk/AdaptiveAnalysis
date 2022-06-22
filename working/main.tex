@@ -5,6 +5,7 @@
 
 \input{prelude}
 \input{ldefs}
+\newcommand{\highlight}[1]{\textcolor[rgb]{.0,0.0,1.0}{ #1}}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
@@ -100,6 +101,10 @@
 \section{Proof of the Soundness of Reachability Bounds Estimation}
 \label{apdx:reachability_soundness}
 \input{reachability_soundness}
+\clearpage
+\section{Proof of the Soundness of Data-Flow Refinement Analysis}
+\label{apdx:rd_soundness}
+\input{rd_soundness}
 \clearpage
 \section{Proof of the Soundness of Adaptivity Searching Algorithm}
 \label{apdx:adaptalg_soundness}

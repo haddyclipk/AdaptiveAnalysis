@@ -374,6 +374,8 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 \begin{figure}
   \text{\mg{Several skip are missing labels. Do we need fresh labels or we reuse l?}}
   \\
+  \text{\jl{Both are good for OS, but generate fresh label will need extra arguments in soundness proof, so rescuing l is better}}
+  \\
 \text{\mg{Also, why we use ++, cannot we just define lists as adding elements on the right?}}  \\
 \text{\jl{I was too sticky to the convention, it is a good idea to append to the left and just use $::$ as construtor}}  \\
 \text{\mg{It is also unclear why we store the boolean expression in if and while, besides the boolean value.}}\\
@@ -392,6 +394,18 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 \config{{c',  \trace'}}
 }
 \\
+\inferrule
+{
+\empty
+}
+{
+\config{\clabel{\eskip}^l,  \trace } 
+\xrightarrow{} 
+\config{\clabel{\eskip}^l, \trace}
+}
+~\textbf{skip}
+%
+\and
 %
 \inferrule
 {
@@ -400,7 +414,7 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 {
 \config{[\assign{{x}}{\aexpr}]^{l},  \trace } 
 \xrightarrow{} 
-\config{\eskip, \trace \traceadd \event}
+\config{\clabel{\eskip}^l, \trace \traceadd \event}
 }
 ~\textbf{assn}
 %
@@ -418,7 +432,7 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 {
 \config{{[\assign{x}{\query(\qexpr)}]^l, \trace}}
 \xrightarrow{} 
-\config{{\eskip,  \trace \traceadd \event} }
+\config{{\clabel{\eskip}^l,  \trace \traceadd \event} }
 }
 ~\textbf{query}
 }
@@ -435,7 +449,7 @@ The trace based operational semantics \mg{rules} are defined in Figure \ref{fig:
 \config{{\ewhile [b]^{l} \edo c, \trace}}
 \xrightarrow{} 
 \config{{
-c; \ewhile [b]^{l} \edo c,  \eskip),
+c; \ewhile [b]^{l} \edo c),
 \trace \traceadd \event}}
 }
 ~\textbf{while-t}
@@ -453,7 +467,7 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
 \config{{\ewhile [b]^{l}, \edo c, \trace}}
 \xrightarrow{} 
 \config{{
-[\eskip]^l ,
+  \clabel{\eskip}^l,
 \trace \traceadd \event}}
 }
 ~\textbf{while-f}
@@ -484,7 +498,7 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
   \config{{c_2',  \trace'}}
 }
 {
-\config{{\eskip ; c_2, \trace}} \xrightarrow{} \config{{ c_2', \trace'}}
+\config{{\clabel{\eskip}^l; c_2, \trace}} \xrightarrow{} \config{{ c_2', \trace'}}
 }
 ~\textbf{seq2}
 %
@@ -527,7 +541,7 @@ c; \ewhile [b]^{l} \edo c,  \eskip),
 }
 % \end{subfigure}
     \caption{Trace-based Operational Semantics for Language.}
-    \label{fig:os_ssa}
+    \label{fig:os}
 \end{figure}
 %
 %

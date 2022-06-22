@@ -509,17 +509,24 @@ Difference constraint: $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{
 \\
 The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
 $y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{Z}$.
-% $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
+It iss defined in the same way as
+\cite{sinn2017complexity},  represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$. 
 \\
-$\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
-The  constant $\constdom$ consists of 
+The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+It consists of 
 natural number $\mathbb{N}$,
 the symbolic constants $\inpvar$ (i.e., the set of the program's input variables), 
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
 assigned by queries.
 \\
-$DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
+For concise, we use $\dcdom^{\top}$ to represent $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ 
+% % $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
+% \\
+% $\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
+% The  constant 
 \\
+% % $DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
+% \\
 We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 \\
 1. First normalize all the boolean expressions in the guards of $\ewhile$ header into the form 
@@ -580,7 +587,7 @@ Abstract event is a tuple of a pair of Labels with a difference constraint.
 \\
 Abstract Event: 
 $\absevent \in $
-Label $\times$ Label $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ 
+Label  $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $\times$ Label
 \\
 Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
 \\
@@ -614,80 +621,72 @@ computes the Abstract Final State of the command.
  \]
  %
  \paragraph{Abstract Execution Trace}
-Then, based on the abstract final and initial state, in order to analysis the reachability bound for each vertex, 
-we  extract the abstract execution trace for a program, which is a set of the abstract events.
-\\
-Abstract Execution Trace Computation:
- $\absflow: \cdom -> \mathcal{P}($Label $\times$ Label $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $)$, 
- $\absflow(c)$ computes the Abstract Execution Trace for program $c$, as a set of the abstract events $\absevent$.
+ Then, we  extract the abstract execution trace  $\absflow(c)$ for a program, which computes the Abstract Execution Trace for program $c$, as a set of the abstract events $\absevent$.
+ %
+ \begin{defn}[Abstract Execution Trace]
+ \label{def:abs_trace}
+  $\absflow \in \cdom \to \mathcal{P}($Label $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}) \times $ Label )
+  \end{defn}
+ %
+ Abstract Execution Trace Computation:
+  \\
+  For simplicity, we use $\mathcal{P}(\absevent)$ represent the power set of all abstract events, and we have $\absflow(c) \in \mathcal{P}(\absevent)$.
  \\
- For simplicity, we use $\mathcal{P}(\absevent)$ represent the power set of all abstract events, and we have $\absflow(c) \in \mathcal{P}(\absevent)$.
-%  For every two abstract events $\absevent_1$, $\absevent_2$ next to each other in $\absflow$,
-%  the final label of  $\absevent_1$ equal to the 
-%  initial label of $\absevent_2$.
-%  \\
-% For every 2 control locations $l_1$ and $l_2$ with a control flow edge, 
-% The symbolic difference constraints for transitions between the control locations $l_1$ and $l_2$ is abstracted as follows:
-\\
-% this step insert the control location with the edge representing
-% the control flow into the graph.
-% Given a program $c$, the control location and control flow edge is inserted as follows
-% \[ 
-% \begin{array}{l} 
-%   locations(\assign{x}{\expr})
-% \end{array}
-%   \]
-% More specifically, given a program $c$, its control flow graph can be described as follows
-% \\
-% 1. inserting the enter location $l_b$ before the starting of the program.
-% \\
-% 2. For every sequence command $c_1;c_2$
-% if $c_2$ doesn't start with a $\eif$ and $\ewhile$ command, don't insert any contro location. 
-% \\
-% if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
-% inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
-% \\
-% if $c_2$ starts with a $\eif$ command, and the last control location inserted in $c_1$ is $l_i$,
-% inserting a control location $l_{i+1}$, then recursively inserting on bodys and on the commands after $\eif$.
-% \\
-% if $c_2$ starts with a $\ewhile$ command, and the last control location inserted in $c_1$ is $l_i$,
-% inserting a control location $l_{i+1}$, then recursively inserting on the while body and on the commands after $\ewhile$.
-% \\
-\\
-We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eskip}^{l_e}$ at the end of the program $c$, and compute the $\absflow(c) = \absflow'(c')$ where $c' = c;\clabel{\eskip}^{l_e}$  as follows:
-%
-\[
-  \begin{array}{ll}
-     \absflow'([x := \expr]^{l})  & = \emptyset  \\
-     \absflow'([x := \query(\qexpr)]^{l})  & = \emptyset  \\
-     \absflow'([\eskip]^{l})  & = \emptyset \\
-     \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
-      \\ & \quad 
-      \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
-     \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
-     \\ & \quad 
-     \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
-     \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
-     \\ & \quad 
-     \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
-  \end{array}
-  \]
+ We first append a skip command with a symbolic label $l_e$, i.e., $\clabel{\eskip}^{l_e}$ at the end of the program $c$, and compute the $\absflow(c) = \absflow'(c')$ for $c'$, where $c' = c;\clabel{\eskip}^{l_e}$ as follows,
+ %
+ {\footnotesize
+ \[
+   \begin{array}{ll}
+      \absflow'([x := \expr]^{l})  & = \emptyset  \\
+      \absflow'([x := \query(\qexpr)]^{l})  & = \emptyset  \\
+      \absflow'([\eskip]^{l})  & = \emptyset \\
+      \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
+     %   \\ & \quad 
+       \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
+      \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
+     %  \\ & \quad 
+      \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
+      \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
+     %  \\ & \quad 
+      \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
+   \end{array}
+   \]
+   }
 For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
 there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
 \\
-For every labeled variable in program $c$, $x^l \in \lvar_c$, there is a unique abstract event in program's abstract execution trace $\absevent \in \absflow(c)$ of form $(l, \_, \_)$. This lemma and proof is also formalized in Lemma~\ref{lem:absevent_unique} in Appendix~\ref{apdx:reachability_soundness}.
+For every labeled variable in program $c$, $x^l \in \lvar_c$, there is a unique abstract event in program's abstract execution trace $\absevent \in \absflow(c)$ of form $(l, \_, \_)$. 
+\begin{lem}[Soundness of the Abstract Execution Trace]
+  \label{lem:abscfg_sound}
+Given a program ${c}$, we have:
+%
+\[
+  \begin{array}{l}
+    \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_) \in \eventset \st
+\config{{c}, \trace_0} \to^{*} \config{\eskip, \trace_0 \tracecat \vtrace} 
+\land \event \in \trace 
+\\
+\qquad \implies \exists \absevent = (l, \_, \_) \in Label(c) \times Label(c) \times \absdom \st 
+\absevent \in \absflow(c)
+\end{array}
+\]
+\end{lem}
+This lemma and proof is also 
+formalized in Lemma~\ref{lem:absevent_unique} in Appendix~\ref{apdx:reachability_soundness}.
 
 % We have a pre-processing algorithm to go through the programs and returns the list of labels associating with a loop and whose visiting times need to be analyzed.
 %
 \paragraph{Abstract Control Flow Graph} 
 Given program $c$ with its abstract control flow $\absflow(c)$, the Abstract Control Flow Graph:
 \\
+\highlight{
 $\absG =(\absV, \absE)$:
 %
 \\
 $\absE = \{(l_1, dc, l_2) | (l_1, dc, l_2) \in \absflow(c)\}$,
 \\
 $\absV = labels(c)\cup\{l_e\}$
+}
 \\
 It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
@@ -752,7 +751,7 @@ as well as the symbolic transition closure for each transition is calculated as 
 \]
 %
 \begin{defn}
-  \label{def:transition_closure}
+  \label{def:transition_closure_base}
 \[ 
 \begin{array}{lll}
   \absclr(\absevent) 
@@ -793,6 +792,8 @@ as well as the symbolic transition closure for each transition is calculated as 
 \end{array}
 \]
 %
+\begin{defn}
+  \label{def:transition_closure}
 \[ 
 \begin{array}{lll}
   \absclr(\absevent) 
@@ -809,11 +810,12 @@ as well as the symbolic transition closure for each transition is calculated as 
   & \locbound(\absevent) = (x, v) \land x \notin \constdom & 
 \end{array}
   \]
+\end{defn}
   %
-\paragraph*{Adding the Reachability Bounds for Every Vertex in the Data-Control Flow Graph}
-Updating the weight of every vertex in the $\progG(c) = (\progV, \progE, \progW, \progF)$ for program $c$ generated from phase 1. 
-For every $x^l \in \progV$, find the abstract event $\absevent \in \absflow(c)$ of the form $(l, \_, \_)$, updating the $\progW(x^l) $ by the transition closure of this event.
-\\
+% \paragraph*{Adding the Reachability Bounds for Every Vertex in the Data-Control Flow Graph}
+% Updating the weight of every vertex in the $\progG(c) = (\progV, \progE, \progW, \progF)$ for program $c$ generated from phase 1. 
+% For every $x^l \in \progV$, find the abstract event $\absevent \in \absflow(c)$ of the form $(l, \_, \_)$, updating the $\progW(x^l) $ by the transition closure of this event.
+% \\
 $
 \progW(x^l) 
   \triangleq \absclr(\absevent)
@@ -890,10 +892,11 @@ $\absG(c) =(\absV, \absE, \absW)$:
  
  \paragraph{Reaching definition analysis}
  Set $?$ to be undefined, $label^{?}$ is label $\cup \{?\}$.\\
- Define $\mathsf{kill}$: blocks -> Powerset(Var $\times$ $label^l$, which produces the set of labelled variables of assignment destroyed by the block.\\
- Define $\mathsf{gen}$: blocks->Powerset(Var $\times$ $label^l$, which generates the set of labelled variables generated by the block.\\
- Define $defs(x)(C)$: Var -> Set of labels, gives all the labels where assigns value to variable x in the target program C.
- \[
+ Define $\mathsf{kill}$: $blocks \to \mathcal{P}(\mathcal{VAR} \times LABEL \cup \{?\})$, which produces the set of labelled variables of assignment destroyed by the block.
+ \\
+  Define $\mathsf{gen}$: $blocks \to \mathcal{P}(\mathcal{VAR} \times LABEL \cup \{?\})$, which generates the set of labelled variables generated by the block.
+  \\\
+  Define $defs(x)(c): \mathcal{VAR} \to LABEL$, gives all the labels where assigns value to variable x in the target program $c$. \[
  \begin{array}{ll}
     kill([x := e]^{l})  & = \{ (x, ?) \} \cup \{ (x, l') | l' \in defs(x) \} \\
      kill([x := q(e)]^{l})  & = \{ (x, ?) \} \cup \{ (x, l') | l' \in defs(x) \}  \\
@@ -908,16 +911,19 @@ $\absG(c) =(\absV, \absE, \absW)$:
      gen([ [b]^l ]^{l})  & =  \emptyset 
  \end{array}
  \]
- Define $in(l)$, $out(l)$: label -> (var $\times$ $label^l$) for the entry point and exit point of the node $l$ in the control flow graph.
+ Define $in(l)$, $out(l)$: LABEL$ \to \mathcal{VAR} \times LABEL \cup \{?\}$ for every block in program $c$ is computed as follows,
  \[
  \begin{array}{lll}
-    in(l)  & = \{ (x, ?) | x^l \in \lvar_c  \} & l = \absinit(c)\\
-    & \cup \{ out(l')|  | (l',\_, l) \in \absE \} & ow \\
+    in(l)  & = \{ (x, ?) | x^l \in \lvar_c \land  l = \absinit(c) \}  
+    \cup \{ out(l')|  | (l',\_, l) \in \absE \land  l \neq \absinit(c)\}  \\
      out(l)  & =  gen(B^{l}) \cup \{ in(l) \setminus kill(B^l)  \} & B^l \in blocks(c)   
  \end{array}
  \]
- 
-The Reaching definition is calculated by the Worklist algorithm as below.
+ computing $in(l)$ and $out(l)$ for every $B^l \in blocks(c) $, and repeating these two step
+until the $in(l)$ and $out(l)$ are stabilized for every $B^l \in blocks(c) $
+We use $\live_{in}(l,c)$ and $\live_{out}(l, c)$ denote the stabilized results for the command of label $l$ in program $c$. 
+\\
+The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard worklist algorithm with detail as below.
 \begin{enumerate}
     \item initial in[l]=out[l]=$\emptyset$
     \item initial in[entry label] = $\emptyset$

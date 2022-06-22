@@ -17,11 +17,12 @@
   Taking an arbitrary a program ${c}$ with its program-based dependency graph $\progG = (\vertxs, \edges, \weights, \qflag)$, 
   and an arbitrary labelled variable $x^l \in \lvar_c$.
   \\
-  By definition of $\progG$, we know $ x^l \in \vertxs$. 
+  By definition of $\progV$ in $\progG(c)$, we know $ x^l \in \vertxs$. 
+  \\
+  By Definition of $\progW$ in $\progG(c)$, we know $  \weights(x^l) = \absW(l) = \max \{ \absclr(\absevent) | \absevent = (l, \_, \_)\}$.
   \\
   By Lemma~\ref{lem:abscfg_sound}, there exists an abstract event in $\absflow(c)$ of form $(\absevent) = (l, \_, \_)$,
-  corresponding to the assignment command associated to labeled variable 
-  $x^l$. 
+  corresponding to the assignment command associated to labeled variable $x^l$. 
   \\
   Let $(\absevent) = (l, dc, l') \in \absflow(c)$ be this event for some $dc$ and $l'$ such that  $(\absevent) = (l, dc, l') \in \absflow(c)$,
   by the last step of phase 2, we know
