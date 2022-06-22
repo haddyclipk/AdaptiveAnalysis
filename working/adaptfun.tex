@@ -98,7 +98,7 @@ Program Entry Point: $\entry_c : \mbox{Command} \to \mathbb{N}$
     l    & c = [\assign{x}{\expr_1}]{}^l
     \\ 
     l      
-    & c = [\assign{x}{\query(\qexpr_1)}]{}^l
+    & c = \clabel{\assign{x}{\query(\qexpr_1)}}{}^l
     \\
    l
     & c_1 = \eif([b]{}^l, c_t, c_f)
@@ -589,14 +589,14 @@ Abstract Event:
 $\absevent \in $
 Label  $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $\times$ Label
 \\
-Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
-\\
+% Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
+% \\
 Abstract Initial State of Each Command is its Initial Label, computed as follows:
 \\
 \[
  \begin{array}{ll}
-    \absinit([x := e]^{l})  & = l  \\
-    \absinit([x := q(e)]^{l})  & = l \\
+    \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l  \\
+    \absinit(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = l \\
     \absinit([\eskip]^{l})  & = l \\
     \absinit([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = l \\
     \absinit([\ewhile [b]^l \edo c]^{l})  & = l \\
@@ -609,8 +609,8 @@ $\absfinal: \cdom \to \mathcal{Label}$,
 computes the Abstract Final State of the command. 
  \[
  \begin{array}{ll}
-    \absfinal([x := \expr]^{l})  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
-     \absfinal([x := \query(\qexpr))]^{l})  & = \{
+    \absfinal(\clabel{\assign{x}{\expr}}{}^l)  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
+     \absfinal(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = \{
       (l, x' \leq 0 + \max(\dbdom) )\}  \\
      \absfinal([\eskip]^{l})  
      & = \{(l, \top)\} \\
@@ -637,8 +637,8 @@ computes the Abstract Final State of the command.
  {\footnotesize
  \[
    \begin{array}{ll}
-      \absflow'([x := \expr]^{l})  & = \emptyset  \\
-      \absflow'([x := \query(\qexpr)]^{l})  & = \emptyset  \\
+      \absflow'(\clabel{\assign{x}{\expr}}{}^l)  & = \emptyset  \\
+      \absflow'(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \emptyset  \\
       \absflow'([\eskip]^{l})  & = \emptyset \\
       \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
      %   \\ & \quad 
