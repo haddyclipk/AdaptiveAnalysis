@@ -955,6 +955,34 @@ by using the results of Reaching definition analysis, to be specific, in(l) for 
      dcdg(c_1 ;c_2)  & = dcdg(c_1) \cup  dcdg(c_2) \\
  \end{array}
  \]
+ 
+ \begin{defn}[Feasible Data-Flow]
+  \label{def:feasible_flowsto}
+    {\footnotesize
+    \[
+   \begin{array}{ll}
+      dcdg(\clabel{\assign{x}{\expr}}{}^l)  & = \{ (y^i, x^l) | y \in FV(e) \land (y,i) \in \live_{in}(l, \clabel{\assign{x}{\expr}}^l) \}  \\
+       dcdg(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \{ (y^i, x^l) | y \in FV(e) \land (y,i) \in \live_{in}(l,\clabel{\assign{x}{\query(\qexpr)}}^l) \}  \\
+       dcdg([\eskip]^{l})  & = \emptyset \\
+       dcdg([\eif [b]^l \ethen c_1 \eelse c_2)  & =  dcdg(c_1) \cup dcdg(c_2)\\ & \cup 
+       \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_1) \} \\
+       &\cup \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_2) \} \\
+       dcdg([\ewhile [b]^l \edo c)  & =  dcdg(c) \cup \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(C) \} \\
+       dcdg(c_1 ;c_2)  & = dcdg(c_1) \cup  dcdg(c_2) \\
+   \end{array}
+   \]
+   }
+   \end{defn}
+   For any two labeled variables in a program $c$, it is easy to see that there is a one-on-one correspondence between 
+   $\flowsto$ relation of the two variables, and the $dcdg$ analysis result on $c$.
+   \begin{thm}[Soundness of the Data-Flow Refinement Analysis]
+   \label{thm:rd_soundness}
+   \[
+   \forall c \in \cdom, x^i, y^j \in \lvar_c \st 
+   \flowsto(x^i, y^j, c) \iff (x^i, y^j) \in dcdg(c)
+   \]
+   \end{thm}
+   This soundness is proved in Proof~\ref{pf:rd_soundness} in Appendix~\ref{apdx:rd_soundness}.
 \highlight{
 $\progG(c) = (\progV, \progE, \progW, \progF)$,
 \\
