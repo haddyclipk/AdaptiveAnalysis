@@ -316,8 +316,8 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
                     \clabel{ \assign{a}{\query(\chi[0])} }^{1} ; \\
                         \ewhile ~ \clabel{j > 0}^{2} ~ \edo ~ \\
                         \Big(
-                         \clabel{\assign{x}{\query(\chi[a]) }}^{3}  ; \\
-                         \clabel{\assign{a}{x + a}}^{4} ;\\
+        \clabel{\assign{x}{\query(\chi[a]) }}^{3}  ; \\
+        \clabel{\assign{a}{x + a}}^{4} ;\\
                         \clabel{\assign{j}{j-1}}^{5}       \Big)
                     \end{array}
                 \]
@@ -329,7 +329,7 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
         %
         \[
         %
-        \kw{whileMultiplePath}(k) \triangleq 
+        \kw{whileMultiplePath(k)} \triangleq 
         \begin{array}{l}
             \clabel{ \assign{j}{k}}^{0} ; \\
             \clabel{ \assign{x}{\query(\chi[0])} }^{1} ; \\
@@ -338,7 +338,7 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
                  \clabel{\assign{j}{j-1}}^{3} ;\\
                  \eif(\clabel{j \% 2 == 0}^{4}, 
                  \clabel{\assign{y}{\chi[x]}}^{5}, 
-                 \clabel{\assign{w}{\chi[x]}}^{6});\\                            
+                 \clabel{\assign{w}{\chi[x]}}^{6});\\           
                  \clabel{\assign{x}{\query(\chi(\ln(y)))} }^{7} \Big)
             \end{array}
         \]
@@ -391,19 +391,19 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
                     \kw{whileMultiplePathValueControlDependency}(k) \triangleq\\
                         \clabel{ \assign{x}{\query(k)}}^{0} ; \\
                         \clabel{\assign{y}{0} }^{1} ; \\
-                            \ewhile ~ \clabel{x > 0}^{2} ~ \edo ~ \\
-                            \Big(
-                             \eif(\clabel{y > 0}^{3}, 
-                             \clabel{\assign{y}{\query(\chi[12])}}^{4}, 
-                             \clabel{\assign{w}{\query(\chi[9])}}^{5});                            
-                             \\
-                             \clabel{\assign{x}{x-1}}^{6}\Big);\\
-                             \clabel{\assign{y}{\query(\chi(\ln(y)))} }^{7} 
+           \ewhile ~ \clabel{x > 0}^{2} ~ \edo ~ \\
+           \Big(
+            \eif(\clabel{y > 0}^{3}, 
+            \clabel{\assign{y}{\query(\chi[12])}}^{4}, 
+            \clabel{\assign{w}{\query(\chi[9])}}^{5});           
+            \\
+            \clabel{\assign{x}{x-1}}^{6}\Big);\\
+            \clabel{\assign{y}{\query(\chi(\ln(y)))} }^{7} 
                         \end{array}
                     \]
                     Analysis Results: $ \progA(\kw{whileMultiplePathValueControlDependency}(k)) = 2 + k $
                 \end{example}
-                                %
+               %
                 \begin{example}[Nested While with Recursive Data-Value Dependency]
                     %
                     %
@@ -413,16 +413,16 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
                     \begin{array}{l}
                         \clabel{ \assign{i}{k} }^{0} ; \\
                         \clabel{\assign{x}{\query(\chi[0])}}^{1} ; \\
-                            \ewhile ~ \clabel{i > 0}^{2} ~ \edo ~ \\
-                            \Big(
-                             \clabel{\assign{i}{i-1}}^{3} ;\\
-                             \clabel{\assign{j}{k}}^{4} ;\\
-                             \clabel{\assign{y}{\query(\chi(\ln(x)))} }^{5}  ; \\
-                             \ewhile ~ \clabel{j > 0}^{6} ~ \edo ~ \\
-                             \Big(
-                              \clabel{\assign{j}{j-1}}^{7};\\
-                              \clabel{\assign{x}{\query(\chi(\ln(x)))} }^{8}
-                              \Big) \Big)
+           \ewhile ~ \clabel{i > 0}^{2} ~ \edo ~ \\
+           \Big(
+            \clabel{\assign{i}{i-1}}^{3} ;\\
+            \clabel{\assign{j}{k}}^{4} ;\\
+            \clabel{\assign{y}{\query(\chi(\ln(x)))} }^{5}  ; \\
+            \ewhile ~ \clabel{j > 0}^{6} ~ \edo ~ \\
+            \Big(
+             \clabel{\assign{j}{j-1}}^{7};\\
+             \clabel{\assign{x}{\query(\chi(\ln(x)))} }^{8}
+             \Big) \Big)
                         \end{array}
                     \]
                     Analysis Results: $ \progA(\kw{nestWhileValueDependency}(k)) = 2 + k^2 $
@@ -433,256 +433,278 @@ The query-based dependency graph is a subgraph of the variable dependency graph 
                         %
                         \[
                         %
-                            \kw{nestedWhileRecAcross}(k) \triangleq 
+           \kw{nestedWhileRecAcross}(k) \triangleq 
                         \begin{array}{l}
-                            \clabel{ \assign{i}{k} }^{0} ; \\
-                            \clabel{\assign{x}{\query(\chi[0])}}^{1} ; \\
-                                \ewhile ~ \clabel{i > 0}^{2} ~ \edo ~ \\
-                                \Big(
-                                 \clabel{\assign{i}{i-1}}^{3} ;\\
-                                 \clabel{\assign{j}{k}}^{4} ;\\
-                                 \ewhile ~ \clabel{j > 0}^{5} ~ \edo ~ \\
-                                 \Big(
-                                  \clabel{\assign{j}{j-1}}^{6};\\
-                                  \clabel{\assign{y}{\query(\chi(x) + \chi(1))} }^{7}
-                                  \Big); \\
-                                 \clabel{\assign{x}{\query(\chi(\ln(y)))} }^{8}
-                                  \Big)
-                            \end{array}
+           \clabel{ \assign{i}{k} }^{0} ; \\
+           \clabel{\assign{x}{\query(\chi[0])}}^{1} ; \\
+               \ewhile ~ \clabel{i > 0}^{2} ~ \edo ~ \\
+               \Big(
+                \clabel{\assign{i}{i-1}}^{3} ;\\
+                \clabel{\assign{j}{k}}^{4} ;\\
+                \ewhile ~ \clabel{j > 0}^{5} ~ \edo ~ \\
+                \Big(
+                 \clabel{\assign{j}{j-1}}^{6};\\
+                 \clabel{\assign{y}{\query(\chi(x) + \chi(1))} }^{7}
+                 \Big); \\
+                \clabel{\assign{x}{\query(\chi(\ln(y)))} }^{8}
+                 \Big)
+           \end{array}
                         \]
                         Analysis Results: $ \progA(\kw{nestedWhileRecAcross}(k)) = 1 + 2 * k $
                     \end{example}
                 %
             
                         \begin{example}[Nested While with Nested Recursive Multiple Variable 
-                            Data-Value Dependency Across Outer and Inner Loop]
-                            %
-                            \[
-                            %
-                            \kw{nestedWhileMultiVarRecAcross}(k) \triangleq 
-                            \begin{array}{l}
-                                \clabel{\assign{i}{k} }^{0} ; \\
-                                \clabel{ \assign{x}{\query(\chi[0])}}^{1} ; \\
-                                \clabel{ \assign{y}{\query(\chi[1])}}^{2} ; \\
-                                    \ewhile ~ \clabel{i > 0}^{3} ~ \edo ~ \\
-                                    \Big(
-                                     \clabel{\assign{i}{i-1}}^{4} ;\\
-                                     \clabel{\assign{j}{k}}^{5} ;\\
-                                     \clabel{\assign{y}{\query(\chi(\ln(x) + y))} }^{6}  ; \\
-                                     \ewhile ~ \clabel{j > 0}^{7} ~ \edo ~ \\
-                                     \Big(
-                                      \clabel{\assign{j}{j-1}}^{8};\\
-                                      \clabel{\assign{x}{\query(\chi(\ln(y))+\chi[x])} }^{9}
-                                      \Big) \Big)
-                                \end{array}
-                            \]
-                            Analysis Results: $ \progA(\kw{nestedWhileMultiVarRecAcross}(k)) = 1 + k + k^2$
-                            \\
-                            weight for Variable: j of label 6 is: 0 + 0 + 1 * k * k\\
-                            weight for Variable: y of label 7 is: 0 + 0 + 1 * k * k\\
-                            weight for Variable: j of label 4 is: 0 + 1 * k\\
-                            weight for Variable: i of label 3 is: 0 + 1 * k\\
-                            weight for Variable: x of label 8 is: 0 + 1 * k\\
-                            weight for Variable: x of label 1 is: 1\\
-                            weight for Variable: i of label 0 is: 1\\
-                            \end{example}
+           Data-Value Dependency Across Outer and Inner Loop]
+           %
+           \[
+           %
+           \kw{nestedWhileMultiVarRecAcross}(k) \triangleq 
+           \begin{array}{l}
+               \clabel{\assign{i}{k} }^{0} ; \\
+               \clabel{ \assign{x}{\query(\chi[0])}}^{1} ; \\
+               \clabel{ \assign{y}{\query(\chi[1])}}^{2} ; \\
+          \ewhile ~ \clabel{i > 0}^{3} ~ \edo ~ \\
+          \Big(
+           \clabel{\assign{i}{i-1}}^{4} ;\\
+           \clabel{\assign{j}{k}}^{5} ;\\
+           \clabel{\assign{y}{\query(\chi(\ln(x) + y))} }^{6}  ; \\
+           \ewhile ~ \clabel{j > 0}^{7} ~ \edo ~ \\
+           \Big(
+            \clabel{\assign{j}{j-1}}^{8};\\
+            \clabel{\assign{x}{\query(\chi(\ln(y))+\chi[x])} }^{9}
+            \Big) \Big)
+               \end{array}
+           \]
+           Analysis Results: $ \progA(\kw{nestedWhileMultiVarRecAcross}(k)) = 1 + k + k^2$
+           \\
+           weight for Variable: j of label 6 is: 0 + 0 + 1 * k * k\\
+           weight for Variable: y of label 7 is: 0 + 0 + 1 * k * k\\
+           weight for Variable: j of label 4 is: 0 + 1 * k\\
+           weight for Variable: i of label 3 is: 0 + 1 * k\\
+           weight for Variable: x of label 8 is: 0 + 1 * k\\
+           weight for Variable: x of label 1 is: 1\\
+           weight for Variable: i of label 0 is: 1\\
+           \end{example}
                     
-                            \begin{example}[Nested While with MultiplePath and Nested Recursive Multiple Variable 
-                                Data-Value Dependency Across Outer and Inner Loop]
-                                %
-                                We then show a more complex example with nested while command and nested data-flow across the outer and inner while loop through multiple variables.
-                                This example also contains the if command with data dependency occurred through the if guard.
-                                %
-                                \[
-                                %
-                                \begin{array}{l}
-                                \kw{nestedWhileMultiPathMultiVarRecAcross}(k) \triangleq \\
-                                    \clabel{\assign{i}{k} }^{0} ; \\
-                                    \clabel{ \assign{x}{\query(\chi[0])}}^{1} ; \\
-                                    \clabel{ \assign{y}{\query(\chi[1])}}^{2} ; \\
-                                        \ewhile ~ \clabel{i > 0}^{3} ~ \edo ~ \\
-                                        \Big(
-                                         \clabel{\assign{i}{i-1}}^{4} ;\\
-                                         \clabel{\assign{j}{k}}^{5} ;\\
-                                         \eif(\clabel{x > 0}^6, \clabel{\assign{y}{\query(\chi(\ln(x) + y))} }^{7},
-                                         \clabel{\assign{y}{\query(\chi(x))} }^{8} )
-                                          ; \\
-                                         \ewhile ~ \clabel{j > 0}^{9} ~ \edo ~ \\
-                                         \Big(
-                                          \clabel{\assign{j}{j-1}}^{10};\\
-                                          \clabel{\assign{x}{\query(\chi(\ln(y))+\chi[x])} }^{11}
-                                          \Big) \Big)
-                                    \end{array}
-                                \]
-                                Analysis Results: $ \progA(\kw{nestedWhileMultiPathMultiVarRecAcross}(k)) = 1 + k + k^2$
-                                \\
-                                weight for Variable: j of label 10 is: 0 + 0 + 1 * k * k \\
-                                weight for Variable: x of label 11 is: 0 + 0 + 1 * k * k \\
-                                weight for Variable: y of label 7 is: 0 + 1 * k \\
-                                weight for Variable: y of label 8 is: 0 + 1 * k \\
-                                weight for Variable: j of label 5 is: 0 + 1 * k \\
-                                weight for Variable: i of label 4 is: 0 + 1 * k \\
-                                weight for Variable: y of label 2 is: 1 \\
-                                weight for Variable: x of label 1 is: 1 \\
-                                weight for Variable: i of label 0 is: 1 \\
-                                \end{example}
+           \begin{example}[Nested While with MultiplePath and Nested Recursive Multiple Variable 
+               Data-Value Dependency Across Outer and Inner Loop]
+               %
+               We then show a more complex example with nested while command and nested data-flow across the outer and inner while loop through multiple variables.
+               This example also contains the if command with data dependency occurred through the if guard.
+               %
+               \[
+               %
+               \begin{array}{l}
+               \kw{nestedWhileMultiPathMultiVarRecAcross}(k) \triangleq \\
+          \clabel{\assign{i}{k} }^{0} ; \\
+          \clabel{ \assign{x}{\query(\chi[0])}}^{1} ; \\
+          \clabel{ \assign{y}{\query(\chi[1])}}^{2} ; \\
+              \ewhile ~ \clabel{i > 0}^{3} ~ \edo ~ \\
+              \Big(
+               \clabel{\assign{i}{i-1}}^{4} ;\\
+               \clabel{\assign{j}{k}}^{5} ;\\
+               \eif(\clabel{x > 0}^6, \clabel{\assign{y}{\query(\chi(\ln(x) + y))} }^{7},
+               \clabel{\assign{y}{\query(\chi(x))} }^{8} )
+                ; \\
+               \ewhile ~ \clabel{j > 0}^{9} ~ \edo ~ \\
+               \Big(
+                \clabel{\assign{j}{j-1}}^{10};\\
+                \clabel{\assign{x}{\query(\chi(\ln(y))+\chi[x])} }^{11}
+                \Big) \Big)
+          \end{array}
+               \]
+               Analysis Results: $ \progA(\kw{nestedWhileMultiPathMultiVarRecAcross}(k)) = 1 + k + k^2$
+               \\
+               weight for Variable: j of label 10 is: 0 + 0 + 1 * k * k \\
+               weight for Variable: x of label 11 is: 0 + 0 + 1 * k * k \\
+               weight for Variable: y of label 7 is: 0 + 1 * k \\
+               weight for Variable: y of label 8 is: 0 + 1 * k \\
+               weight for Variable: j of label 5 is: 0 + 1 * k \\
+               weight for Variable: i of label 4 is: 0 + 1 * k \\
+               weight for Variable: y of label 2 is: 1 \\
+               weight for Variable: x of label 1 is: 1 \\
+               weight for Variable: i of label 0 is: 1 \\
+               \end{example}
 
-                                \begin{example}[Two Round Odd Elements ]
-                                    We present a variant of the previous two round example in Figure~\ref{fig:tworound_odd}. In this odd example, only the data at odd index of the database is used.
-                                    %
-                                    {\small
-                                    \begin{figure}
-                                    \begin{subfigure}{.4\textwidth}
-                                    \begin{centering}
-                                    $\begin{array}{l}
-                                        % \left[j \leftarrow 0 \right]^1 ; \\
-                                       \clabel{ \assign{a}{0}  }^{1} ; \\
-                                        \clabel{\assign{j}{0} }^{2} ; \\
-                                        \eloop ~ \clabel{3}^{3} ~ \edo ~ \\
-                                       \quad 
-                                         \eif ( \clabel{( j \% 2 == 0)}^{4}\\
-                                         \quad \quad ,\clabel{ \assign{x}{ q(\chi[j+1])} }^{5}  \\
-                                         \quad \quad ,\clabel{\assign{x}{ q(\chi[j]) }}^{6} ) ;\\
-                                         \quad \clabel{\assign{a}{ a+x} }^{7}  ;\\
-                                         \quad \clabel{ \assign{j}{j+1} }^{8}      ;\\
-                                     \clabel{l \leftarrow q(a*\chi[3]) }^{9}\\
-                                    \end{array} $
-                                    \caption{}
-                                    \end{centering}
-                                    \end{subfigure}
-                                    \begin{subfigure}{0.5\textwidth}
-                                    \begin{centering}
-                                    $
-                                    \begin{array}{l}
-                                        \clabel{ \assign{a_1}{0}  }^{1} ; \\
-                                        \clabel{\assign{j_1}{0} }^{2} ; \\
-                                        \eloop ~ \clabel{3}^{3} , 0,  ~ \edo ~ [(j_3, j_1,j_2), (a_3, a_1,a_2)], \\
-                                      \quad 
-                                         \eif ( \clabel{( j_3 \% 2 == 0)}^{4}, [x_3,x_1,x_2], [],[]\\
-                                         \quad \quad ,\clabel{ \assign{x_1}{ q(\chi[j_3+1])} }^{5}  \\
-                                         \quad \quad ,\clabel{\assign{x_2}{ q(\chi[j_3]) }}^{6} ) ;\\
-                                         \quad \clabel{\assign{a_2}{ a_3+x_3} }^{7}  ;\\
-                                         \quad \clabel{ \assign{j_2}{j_3+1} }^{8}      ;\\
-                                     \clabel{l_1 \leftarrow q(a_3*\chi[3]) }^{9}\\
-                                    \end{array}$
-                                    \caption{}
-                                    \end{centering}
-                                    \end{subfigure}
-                                        \vspace{-0.2cm}
-                                        \caption{(a) The two round odd algorithm in labeled {\tt Loop} language, (b) The SSA program for the same example. }
-                                        \label{fig:tworound_odd}
-                                        \vspace{-0.5cm}
-                                    \end{figure}
-                                    }
-                                    \end{example}
-                                    %
-                                    This algorithm only touches the odd part of the database, by adding an extra if statement to checking the index $j$ in Figure~\ref{fig:tworound_odd}(a). The extra complexity is added to handle the newly generated variables in the loop and if statement in the SSA version in Figure~\ref{fig:tworound_odd}(b). 
-                                    The query-based dependency graph does not change a lot compared to the previous two rounds example in Figure~\ref{fig:simpl-two-round-graph}(c), but the node does change according to the trace. We assume $a = n$ in the final memory is the result of the sum of previous query results in the loop.
-                                    We give the trace $t = [q(\chi[1])^{5,[3:1]}, q(\chi[1])^{6,[3:2]}, q(\chi[3])^{5,[3:3]}, q(n* \chi[3])^{9,\emptyset} ]$ and use $q_1$ for $q(\chi[1])$, $q_3$ representing for $q(\chi[3])$, $q_4$ for $q(n* \chi[3])$. The query-based dependency graph based on this trace is shown in Figure~\ref{fig:odd_graphs}(a). We show the red path, which is a sequence of adaptively chosen queries of length $2$. So among the total $4$ queries, we have 2-round adaptive queries. According to the Theorem\ref{thm:gaussiannoise} and \ref{thm:gaussiannoise2}, we will have a tighter upper bound on the generalization error if we know the adaptivity $2$, obtained from the red path in Figure~\ref{fig:odd_graphs}(a). 
-                                    
-                                    Our algorithm {\THESYSTEM} gives us the upper bound on the aforementioned adaptivity $2$. We construct the variable-based weighted dependency graph in Figure~\ref{fig:odd_graphs}(b). The weighted nodes are in the red dashed circle and the red dashed paths show the most weighted path in the graph, with the weight $2$. So, for this two rounds odd algorithm, our system gives a tight upper bound $2$, which can be used to get a better generalization error bound.
-                                    
-                                    
-                                    
-                                    
-                                    \begin{figure}
-                                        \begin{subfigure}{0.4\textwidth}
-                                        \begin{centering}
-                                        \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-                                    %%% The nodes represents the k query in the first round
-                                    % \draw[very thick] (-1,6)  -- (13,6) -- (13,3) -- (-1,3) -- (-1,6);
-                                    % \draw[black] (-2.5, 4) circle (0pt) node [anchor=south]{\textbf{line 4:}};
-                                    \draw[thick] (1, 4.1) circle (30pt) node
-                                    % node[label={above: \small{iteration 1:}}] 
-                                    {\tiny{$q_1^{(5,1)}$}} ;
-                                    \draw[thick] (6, 4.1) circle (30pt) node
-                                    {\tiny{ $q_1^{(6,2)}$}};
-                                     \draw[thick] (11, 4.1) circle (30pt) node 
-                                    {\tiny{$q_3^{(5,3)}$}};
-                                    % \filldraw[black] (-2.5, 0) circle (0pt) node [anchor=south]{\textbf{line 7:}};
-                                    \draw[thick] (6, 0) circle (30pt) node {\tiny{$q_4^7$}};
-                                    \draw[ thick,->, blue] (6, 0.5)  -- (6, 3.2) ;
-                                    \draw[very thick,->, red, dashed] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
-                                    \draw[ thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
-                                    \end{tikzpicture}
-                                    \caption{}
-                                        \end{centering}
-                                        \end{subfigure}
-                                        \begin{subfigure}{0.5\textwidth}
-                                        \begin{centering}
-                                        \begin{tikzpicture}[scale=\textwidth/16cm,samples=200]
-                                    %%% The nodes represents the k query in the first round
-                                    % \draw[very thick] (-1,6)  -- (13,6) -- (13,3) -- (-1,3) -- (-1,6);
-                                    % \draw[black] (-2.5, 4) circle (0pt) node [anchor=south]{\textbf{line 4:}};
-                                    % \draw[thick] (1, 1.1) circle (25pt) node
-                                    % % node[label={above: \small{iteration 1:}}] 
-                                    % {\tiny{$q_1^{(5,1)}$}} ;
-                                    \draw[] (2, 5.1) circle (15pt) node
-                                    {\tiny{ $a_1$}};
-                                    \draw[] (6, 8.1) circle (15pt) node
-                                    {\tiny{ $a_3^{1}$}};
-                                    \draw[very thick, red, dotted] (14, 8.1) circle (15pt) node
-                                    {\tiny{ $x_{1}^{1}$}};
-                                    \draw[very thick, red, dotted] (12, 7.1) circle (15pt) node
-                                    {\tiny{ $x_{2}^{1}$}};
-                                    \draw[] (10, 8.1) circle (15pt) node
-                                    {\tiny{ $x_{3}^{1}$}};
-                                    \draw[] (8, 7.1) circle (15pt) node
-                                    {\tiny{ $a_{2}^{1}$}};
-                                    \draw[] (6, 6.1) circle (15pt) node
-                                    {\tiny{ $a_3^{2}$}};
-                                    \draw[very thick, red, dotted] (14, 6.1) circle (15pt) node
-                                    {\tiny{ $x_{1}^{2}$}};
-                                    \draw[very thick, red, dotted] (12, 5.1) circle (15pt) node
-                                    {\tiny{ $x_{2}^{2}$}};
-                                    \draw[] (10, 6.1) circle (15pt) node
-                                    {\tiny{ $x_{3}^{2}$}};
-                                    \draw[] (8, 5.1) circle (15pt) node
-                                    {\tiny{ $a_{2}^{2}$}};
-                                    \draw[very thick, red, dotted] (14, 4.1) circle (15pt) node
-                                    {\tiny{ $x_1^{3}$}};
-                                    \draw[] (6, 4.1) circle (15pt) node
-                                    {\tiny{ $a_3^{3}$}};
-                                    \draw[] (10, 4.1) circle (15pt) node
-                                    {\tiny{ $x_3^{3}$}};
-                                    \draw[very thick, red, dotted] (12, 3.1) circle (15pt) node
-                                    {\tiny{ $x_2^{3}$}};
-                                    \draw[] (8, 3.1) circle (15pt) node
-                                    {\tiny{ $a_{2}^{3}$}};
-                                     \draw[] (6, 2.1) circle (15pt) node 
-                                    {\tiny{$a_3$}};
-                                    % \filldraw[black] (-2.5, 0) circle (0pt) node [anchor=south]{\textbf{line 7:}};
-                                    \draw[very thick, red, dotted] (3, 2.2) circle (15pt) node {\tiny{$l_1$}};
-                                     \draw[very thick,->, red, dashed] (3.5, 2)  -- (5.5, 2) ;
-                                     \draw[very thick,->, red, dashed] (6.5, 2.1)  -- (7.5, 2.8) ;
-                                     \draw[very thick,->, red, dashed] (8.5, 3.1)  -- (9.5, 3.8) ;
-                                     \draw[thick,->, blue] (10.5, 4.1)  -- (13.5, 4.1) ;
-                                      \draw[very thick,->, red, dashed] (10.5, 4.1)  -- (11.5, 3.3) ;
-                                       \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
-                                       \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
-                                        \draw[thick,->, blue] (8.5, 5.1)  -- (9.5, 5.8) ;
-                                         \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 5.3) ;
-                                    \draw[thick,->, blue] (10.5, 6.1)  -- (13.5, 6.1) ;
-                                    \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
-                                    \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
-                                    \draw[thick,->, blue] (8.5, 7.1)  -- (9.5, 7.8) ;
-                                    \draw[thick,->, blue] (10.5, 8.1)  -- (11.5 , 7.3) ;
-                                    \draw[thick,->, blue] (10.5, 8.1)  -- (13.5 , 8.1) ;
-                                    % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
-                                    % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
-                                    \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
-                                    \draw[thick,->, blue] (5.5, 8.0)  -- (2.6, 5.3) ;
-                                    \draw[thick,->, blue] (5.5, 6.0)  -- (2.6, 5.1) ;
-                                    \draw[thick,->, blue] (5.5, 4.0)  -- (2.6, 4.9) ;
-                                    \draw[thick,->, blue] (5.5, 2.0)  -- (2.6, 4.7) ;
-                                    % \draw[very thick,->, red] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
-                                    % \draw[very thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
-                                    \end{tikzpicture}
-                                        \caption{}
-                                        \end{centering}
-                                        \end{subfigure}
-                                        \vspace{-0.3cm}
-                                        \caption{(a) The query-based dependency graph for odd example (b) The SSA variable-based weighted dependency graph for the same example, the node in red dashed circle is weighted.}
-                                        \label{fig:odd_graphs}
-                                        \vspace{-0.3cm}
-                                    \end{figure}
+               \begin{example}[Gradient Decent Algorithm]
+          \[
+          %
+          \kw{gradientDecent(step, rate, t, n)} \triangleq
+          \begin{array}{l}
+                 \clabel{ a \leftarrow []}^{0} ; \\
+                  \clabel{\assign{j}{step} }^{1} ; \\
+                %   \clabel{\assign{d}{10000000} }^{2} ; \\
+                  \ewhile ~ \clabel{j > 0 \land d < t}^{3} ~ \edo ~ \\
+                  \Big(
+                      \clabel{\assign{d}{\query(2 * (\chi[1] - (\chi[0]\times x )) * (-\chi[0]))} }^{4}  ; \\
+                      \clabel{\assign{x}{x - rate * d} }^{4}  ; \\
+                   \clabel{\assign{j}{j-1}}^{5} ;\\
+                  \clabel{a \leftarrow x :: a}^{6} 
+                  \Big);
+              \end{array}
+          \]
+          %
+          %
+               %
+          \end{example}
+
+               \begin{example}[Two Round Odd Elements ]
+          We present a variant of the previous two round example in Figure~\ref{fig:tworound_odd}. In this odd example, only the data at odd index of the database is used.
+          %
+          {\small
+          \begin{figure}
+          \begin{subfigure}{.4\textwidth}
+          \begin{centering}
+          $\begin{array}{l}
+              % \left[j \leftarrow 0 \right]^1 ; \\
+             \clabel{ \assign{a}{0}  }^{1} ; \\
+              \clabel{\assign{j}{0} }^{2} ; \\
+              \eloop ~ \clabel{3}^{3} ~ \edo ~ \\
+             \quad 
+               \eif ( \clabel{( j \% 2 == 0)}^{4}\\
+               \quad \quad ,\clabel{ \assign{x}{ q(\chi[j+1])} }^{5}  \\
+               \quad \quad ,\clabel{\assign{x}{ q(\chi[j]) }}^{6} ) ;\\
+               \quad \clabel{\assign{a}{ a+x} }^{7}  ;\\
+               \quad \clabel{ \assign{j}{j+1} }^{8}      ;\\
+           \clabel{l \leftarrow q(a*\chi[3]) }^{9}\\
+          \end{array} $
+          \caption{}
+          \end{centering}
+          \end{subfigure}
+          \begin{subfigure}{0.5\textwidth}
+          \begin{centering}
+          $
+          \begin{array}{l}
+              \clabel{ \assign{a_1}{0}  }^{1} ; \\
+              \clabel{\assign{j_1}{0} }^{2} ; \\
+              \eloop ~ \clabel{3}^{3} , 0,  ~ \edo ~ [(j_3, j_1,j_2), (a_3, a_1,a_2)], \\
+            \quad 
+               \eif ( \clabel{( j_3 \% 2 == 0)}^{4}, [x_3,x_1,x_2], [],[]\\
+               \quad \quad ,\clabel{ \assign{x_1}{ q(\chi[j_3+1])} }^{5}  \\
+               \quad \quad ,\clabel{\assign{x_2}{ q(\chi[j_3]) }}^{6} ) ;\\
+               \quad \clabel{\assign{a_2}{ a_3+x_3} }^{7}  ;\\
+               \quad \clabel{ \assign{j_2}{j_3+1} }^{8}      ;\\
+           \clabel{l_1 \leftarrow q(a_3*\chi[3]) }^{9}\\
+          \end{array}$
+          \caption{}
+          \end{centering}
+          \end{subfigure}
+              \vspace{-0.2cm}
+              \caption{(a) The two round odd algorithm in labeled {\tt Loop} language, (b) The SSA program for the same example. }
+              \label{fig:tworound_odd}
+              \vspace{-0.5cm}
+          \end{figure}
+          }
+          \end{example}
+          %
+          This algorithm only touches the odd part of the database, by adding an extra if statement to checking the index $j$ in Figure~\ref{fig:tworound_odd}(a). The extra complexity is added to handle the newly generated variables in the loop and if statement in the SSA version in Figure~\ref{fig:tworound_odd}(b). 
+          The query-based dependency graph does not change a lot compared to the previous two rounds example in Figure~\ref{fig:simpl-two-round-graph}(c), but the node does change according to the trace. We assume $a = n$ in the final memory is the result of the sum of previous query results in the loop.
+          We give the trace $t = [q(\chi[1])^{5,[3:1]}, q(\chi[1])^{6,[3:2]}, q(\chi[3])^{5,[3:3]}, q(n* \chi[3])^{9,\emptyset} ]$ and use $q_1$ for $q(\chi[1])$, $q_3$ representing for $q(\chi[3])$, $q_4$ for $q(n* \chi[3])$. The query-based dependency graph based on this trace is shown in Figure~\ref{fig:odd_graphs}(a). We show the red path, which is a sequence of adaptively chosen queries of length $2$. So among the total $4$ queries, we have 2-round adaptive queries. According to the Theorem\ref{thm:gaussiannoise} and \ref{thm:gaussiannoise2}, we will have a tighter upper bound on the generalization error if we know the adaptivity $2$, obtained from the red path in Figure~\ref{fig:odd_graphs}(a). 
+          
+          Our algorithm {\THESYSTEM} gives us the upper bound on the aforementioned adaptivity $2$. We construct the variable-based weighted dependency graph in Figure~\ref{fig:odd_graphs}(b). The weighted nodes are in the red dashed circle and the red dashed paths show the most weighted path in the graph, with the weight $2$. So, for this two rounds odd algorithm, our system gives a tight upper bound $2$, which can be used to get a better generalization error bound.
+          
+          
+          
+          
+          \begin{figure}
+              \begin{subfigure}{0.4\textwidth}
+              \begin{centering}
+              \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+          %%% The nodes represents the k query in the first round
+          % \draw[very thick] (-1,6)  -- (13,6) -- (13,3) -- (-1,3) -- (-1,6);
+          % \draw[black] (-2.5, 4) circle (0pt) node [anchor=south]{\textbf{line 4:}};
+          \draw[thick] (1, 4.1) circle (30pt) node
+          % node[label={above: \small{iteration 1:}}] 
+          {\tiny{$q_1^{(5,1)}$}} ;
+          \draw[thick] (6, 4.1) circle (30pt) node
+          {\tiny{ $q_1^{(6,2)}$}};
+           \draw[thick] (11, 4.1) circle (30pt) node 
+          {\tiny{$q_3^{(5,3)}$}};
+          % \filldraw[black] (-2.5, 0) circle (0pt) node [anchor=south]{\textbf{line 7:}};
+          \draw[thick] (6, 0) circle (30pt) node {\tiny{$q_4^7$}};
+          \draw[ thick,->, blue] (6, 0.5)  -- (6, 3.2) ;
+          \draw[very thick,->, red, dashed] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
+          \draw[ thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
+          \end{tikzpicture}
+          \caption{}
+              \end{centering}
+              \end{subfigure}
+              \begin{subfigure}{0.5\textwidth}
+              \begin{centering}
+              \begin{tikzpicture}[scale=\textwidth/16cm,samples=200]
+          %%% The nodes represents the k query in the first round
+          % \draw[very thick] (-1,6)  -- (13,6) -- (13,3) -- (-1,3) -- (-1,6);
+          % \draw[black] (-2.5, 4) circle (0pt) node [anchor=south]{\textbf{line 4:}};
+          % \draw[thick] (1, 1.1) circle (25pt) node
+          % % node[label={above: \small{iteration 1:}}] 
+          % {\tiny{$q_1^{(5,1)}$}} ;
+          \draw[] (2, 5.1) circle (15pt) node
+          {\tiny{ $a_1$}};
+          \draw[] (6, 8.1) circle (15pt) node
+          {\tiny{ $a_3^{1}$}};
+          \draw[very thick, red, dotted] (14, 8.1) circle (15pt) node
+          {\tiny{ $x_{1}^{1}$}};
+          \draw[very thick, red, dotted] (12, 7.1) circle (15pt) node
+          {\tiny{ $x_{2}^{1}$}};
+          \draw[] (10, 8.1) circle (15pt) node
+          {\tiny{ $x_{3}^{1}$}};
+          \draw[] (8, 7.1) circle (15pt) node
+          {\tiny{ $a_{2}^{1}$}};
+          \draw[] (6, 6.1) circle (15pt) node
+          {\tiny{ $a_3^{2}$}};
+          \draw[very thick, red, dotted] (14, 6.1) circle (15pt) node
+          {\tiny{ $x_{1}^{2}$}};
+          \draw[very thick, red, dotted] (12, 5.1) circle (15pt) node
+          {\tiny{ $x_{2}^{2}$}};
+          \draw[] (10, 6.1) circle (15pt) node
+          {\tiny{ $x_{3}^{2}$}};
+          \draw[] (8, 5.1) circle (15pt) node
+          {\tiny{ $a_{2}^{2}$}};
+          \draw[very thick, red, dotted] (14, 4.1) circle (15pt) node
+          {\tiny{ $x_1^{3}$}};
+          \draw[] (6, 4.1) circle (15pt) node
+          {\tiny{ $a_3^{3}$}};
+          \draw[] (10, 4.1) circle (15pt) node
+          {\tiny{ $x_3^{3}$}};
+          \draw[very thick, red, dotted] (12, 3.1) circle (15pt) node
+          {\tiny{ $x_2^{3}$}};
+          \draw[] (8, 3.1) circle (15pt) node
+          {\tiny{ $a_{2}^{3}$}};
+           \draw[] (6, 2.1) circle (15pt) node 
+          {\tiny{$a_3$}};
+          % \filldraw[black] (-2.5, 0) circle (0pt) node [anchor=south]{\textbf{line 7:}};
+          \draw[very thick, red, dotted] (3, 2.2) circle (15pt) node {\tiny{$l_1$}};
+           \draw[very thick,->, red, dashed] (3.5, 2)  -- (5.5, 2) ;
+           \draw[very thick,->, red, dashed] (6.5, 2.1)  -- (7.5, 2.8) ;
+           \draw[very thick,->, red, dashed] (8.5, 3.1)  -- (9.5, 3.8) ;
+           \draw[thick,->, blue] (10.5, 4.1)  -- (13.5, 4.1) ;
+            \draw[very thick,->, red, dashed] (10.5, 4.1)  -- (11.5, 3.3) ;
+             \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
+             \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
+              \draw[thick,->, blue] (8.5, 5.1)  -- (9.5, 5.8) ;
+               \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 5.3) ;
+          \draw[thick,->, blue] (10.5, 6.1)  -- (13.5, 6.1) ;
+          \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
+          \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
+          \draw[thick,->, blue] (8.5, 7.1)  -- (9.5, 7.8) ;
+          \draw[thick,->, blue] (10.5, 8.1)  -- (11.5 , 7.3) ;
+          \draw[thick,->, blue] (10.5, 8.1)  -- (13.5 , 8.1) ;
+          % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
+          % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
+          \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
+          \draw[thick,->, blue] (5.5, 8.0)  -- (2.6, 5.3) ;
+          \draw[thick,->, blue] (5.5, 6.0)  -- (2.6, 5.1) ;
+          \draw[thick,->, blue] (5.5, 4.0)  -- (2.6, 4.9) ;
+          \draw[thick,->, blue] (5.5, 2.0)  -- (2.6, 4.7) ;
+          % \draw[very thick,->, red] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
+          % \draw[very thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
+          \end{tikzpicture}
+              \caption{}
+              \end{centering}
+              \end{subfigure}
+              \vspace{-0.3cm}
+              \caption{(a) The query-based dependency graph for odd example (b) The SSA variable-based weighted dependency graph for the same example, the node in red dashed circle is weighted.}
+              \label{fig:odd_graphs}
+              \vspace{-0.3cm}
+          \end{figure}

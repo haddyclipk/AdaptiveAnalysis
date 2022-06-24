@@ -214,7 +214,7 @@ x^l \in \lvar({{c}})
 \weights & := &
 % \bigcup
 % \begin{array}{l}
-	\left\{ (x^l, w) \in  \mathcal{LVAR} \times (\mathbb{N} \cup \aexpr)
+	\left\{ (x^l, w) \in  \mathcal{LVAR} \times EXPR(\constdom)
 	\mid
 	x^l \in \lvar_{{c}} \land w = \absW(l)
 	\right\}
@@ -230,9 +230,11 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 \end{array}
 \] 
 }
-, where the $\absW(l)$ is the symbolic reachability bound for 
-the assignment command of label $l$ to which the labeled variable $x^l$ is  associated, 
+, where the $\absW(l)$ is the symbolic reachability bound in domain of $EXPR(\constdom)$,
+for the assignment command of label $l$ to which the labeled variable $x^l$ is associated, 
 computed from the $\THESYSTEM$ algorithm in Definition~\ref{def:transition_closure}.
+The $EXPR(\constdom)$ is an expression over symbolic constants containing the
+input variables and natural number.
 \end{defn} 
 %
 \paragraph{Program-Based Adaptivity ($\progA(c)$)}
@@ -537,7 +539,10 @@ the symbolic constants $\inpvar$ (i.e., the set of the program's input variables
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
 assigned by queries.
 \\
-For concise, we use $\dcdom^{\top}$ to represent $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ 
+The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+\\
+For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ .
+\\
 % % $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
 % \\
 % $\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
@@ -600,17 +605,29 @@ into more complex forms as in \cite{sinn2017complexity}, as well as the
 counter variable manipulation with more advanced expressions as in \cite{}.
 % \\ 
 % The boolean expression in the guard of $\ewhile$ command is normalized into form of $ x > 0$ where $x^l \in \lvar_c$ for some $l$.
-\paragraph{Program Event Abstraction} 
-Abstract event is a tuple of a pair of Labels with a difference constraint.
+\paragraph{Program Event Abstraction}
+We first compute the abstract initial and final state for program and then generate the abstract event for program in 
+computing the abstract execution trace.
 \\
-Abstract Event: 
-$\absevent \in $
-Label  $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $\times$ Label
+The abstract initial state is a label from $\ldom$.
 \\
-% Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
-% \\
-Abstract Initial State of Each Command is its Initial Label, computed as follows:
+The abstract final state is a pair from $\ldom \times \dcdom^{\top}$,  
+where first component is a label from $\ldom$ and the second component is a constraint from $\dcdom^{\top}$.
+%
+\begin{defn}[Abstract Event]
+  \label{def:abs_event}
+  Abstract Event: 
+  $\absevent \in $
+  $\ldom \times \dcdom^{\top} \times \ldom$
+  is a pair of abstract initial state and final state.
+  % computed from program's abstract final and initial state, $\absfinal(c)$ and $\absinit(c)$ with formal definition, and algorithm detail in Appendix.
+  \end{defn}
+  The abstract event for program is generated when computing its abstract execution trace.
 \\
+%
+Given a program $c$, its abstract initial state,
+and the set of its abstract final state is computed as follows,
+%
 \[
   \begin{array}{ll}
     \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l  \\
@@ -621,10 +638,10 @@ Abstract Initial State of Each Command is its Initial Label, computed as follows
     \absinit(c_1 ; c_2)  & = \absinit(c_1) \\
  \end{array}
  \]
-\\
+%
 Final State Abstraction: 
-$\absfinal: \cdom \to \mathcal{Label}$,
-computes the Abstract Final State of the command. 
+$\absfinal: \cdom \to \mathcal{P}(\ldom \times \dcdom^{\top})$,
+computes the set of Abstract Final State for the command. 
  \[
   \begin{array}{ll}
     \absfinal(\clabel{\assign{x}{\expr}}{}^l)  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
@@ -659,32 +676,53 @@ computes the Abstract Final State of the command.
       \absflow'(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \emptyset  \\
       \absflow'([\eskip]^{l})  & = \emptyset \\
       \absflow'(\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
-     %   \\ & \quad 
-       \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
-      \absflow'(\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
-     %  \\ & \quad 
-      \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
-      \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
-     %  \\ & \quad 
-      \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
+      %   \\ & \quad 
+        \cup \{(l, \top,  \absinit(c_t) ) ,  (l, \top, \absinit(c_f)) \} \\
+       \absflow'(\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \absinit(c_w)) \} 
+      %  \\ & \quad 
+       \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
+       \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
+      %  \\ & \quad 
+       \cup \{ (l, dc, \absinit(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
    \end{array}
    \]
    }
-For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
-there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
+
+   The $\absflow'([x := \expr]^{l})$, $\absflow'([x := \query(\qexpr)]^{l})$ and $\absflow'([\eskip]^{l})$ are all empty set. 
+   For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
+   there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. 
+   \begin{lem}[Soundness of the Abstract Execution Trace]
+     \label{lem:abscfg_sound}
+   Given a program ${c}$, we have:
+   %
+   \[
+     \begin{array}{l}
+       \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_) \in \eventset \st
+   \config{{c}, \trace_0} \to^{*} \config{\eskip, \trace_0 \tracecat \vtrace} 
+   \land \event \in \trace 
+   \\
+   \qquad \implies \exists \absevent = (l, \_, \_) \in (\ldom\times \dcdom^{\top} \times \ldom) \st 
+   \absevent \in \absflow(c)
+   \end{array}
+   \]
+   \end{lem}
+%    This lemma is proved formally in Appendix~\ref{apdx:reachability_soundness}.
+% For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
+% there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. 
+This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
 \\
 For every labeled variable in program $c$, $x^l \in \lvar_c$, there is a unique abstract event in program's abstract execution trace $\absevent \in \absflow(c)$ of form $(l, \_, \_)$. 
-\begin{lem}[Soundness of the Abstract Execution Trace]
-  \label{lem:abscfg_sound}
+\begin{lem}[Uniqueness of the Abstract Execution Trace]
+  \label{lem:abscfg_unique}
 Given a program ${c}$, we have:
 %
 \[
   \begin{array}{l}
-    \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_) \in \eventset \st
+    \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_, \_) \in \eventset^{\asn} \st
 \config{{c}, \trace_0} \to^{*} \config{\eskip, \trace_0 \tracecat \vtrace} 
 \land \event \in \trace 
 \\
-\qquad \implies \exists \absevent = (l, \_, \_) \in Label(c) \times Label(c) \times \absdom \st 
+\qquad \implies \exists! \absevent = (l, \_, \_) \in (\ldom\times \dcdom^{\top} \times \ldom) \st 
 \absevent \in \absflow(c)
 \end{array}
 \]
@@ -697,15 +735,25 @@ formalized in Lemma~\ref{lem:absevent_unique} in Appendix~\ref{apdx:reachability
 \paragraph{Abstract Control Flow Graph} 
 Given program $c$ with its abstract control flow $\absflow(c)$, the Abstract Control Flow Graph:
 \\
+\begin{defn}
+\label{def:abs_cfg}
+Given a program $c$, its abstract control flow graph is defined as follows,
+\\
 \highlight{
-$\absG =(\absV, \absE)$:
+$\absG(c) =(\absV, \absE, \absW)$:
 %
 \\
 $\absE = \{(l_1, dc, l_2) | (l_1, dc, l_2) \in \absflow(c)\}$,
 \\
 $\absV = labels(c)\cup\{l_e\}$
+\\
+ $\absW 
+\triangleq \left\{ (l, w) \in \mathbb{L} \times EXPR(\constdom) \right\}$
 }
 \\
+, where the weight of every label to be computed in the next step.
+\end{defn}
+%
 It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
 \subsubsection{Reachability Bound Estimation}
@@ -966,13 +1014,15 @@ The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard workli
           if (old != out(l)) W= W $\cup$ \{l'| (l,l') in flow(C)\}\\
           end while
 \end{enumerate}
-
-repeating $in(l)$ and $out(l)$ for every $l \in blocks(c)$ until 
-the the results stablized, we use $\live_{in}(l,c)$ and $\live_{out}(l, c)$ denote the stablized results for the command of label $l$ in program $c$. 
-The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard worklist algorithm.
 %
+computing $in(l)$ and $out(l)$ for every $B^l \in blocks(c) $, and repeating these two step
+until the $in(l)$ and $out(l)$ are stabilized for every $B^l \in blocks(c) $
+We use $\live_{in}(l,c)$ and $\live_{out}(l, c)$ denote the stabilized results for the command of label $l$ in program $c$. 
+The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard worklist algorithm. (For simplicity, we use $\live(l,c)$ to represent $\live_{in}(l,c)$ in the other part of the paper.
+%%
 \paragraph{Refining the Vertices and Edge of the Graph}
-by using the results of Reaching definition analysis, to be specific, in(l) for every label, we refine the vertices and edges in the $\absG$ graph and get the refined weighted-labeled data-flow graph as follows:
+by using the results of Reaching definition analysis results, specifically $\live(l, c)$ for every label in a program $c$, we refine the vertices and edges in the $\absG$ graph 
+by generating the set of feasible data-flow between labeled variables as follows,
 %
   \[
  \begin{array}{ll}
