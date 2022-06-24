@@ -612,12 +612,12 @@ Label  $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $\times$ Label
 Abstract Initial State of Each Command is its Initial Label, computed as follows:
 \\
 \[
- \begin{array}{ll}
+  \begin{array}{ll}
     \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l  \\
-    \absinit(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = l \\
-    \absinit([\eskip]^{l})  & = l \\
-    \absinit([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = l \\
-    \absinit([\ewhile [b]^l \edo c]^{l})  & = l \\
+    \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l \\
+    \absinit(\clabel{\eskip}^{l})  & = l \\
+    \absinit(\eif [b]^l \ethen c_1 \eelse c_2)  & = l \\
+    \absinit(\ewhile [b]^l \edo c)  & = l \\
     \absinit(c_1 ; c_2)  & = \absinit(c_1) \\
  \end{array}
  \]
@@ -626,14 +626,14 @@ Final State Abstraction:
 $\absfinal: \cdom \to \mathcal{Label}$,
 computes the Abstract Final State of the command. 
  \[
- \begin{array}{ll}
+  \begin{array}{ll}
     \absfinal(\clabel{\assign{x}{\expr}}{}^l)  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
-     \absfinal(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = \{
+     \absfinal(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \{
       (l, x' \leq 0 + \max(\dbdom) )\}  \\
-     \absfinal([\eskip]^{l})  
+     \absfinal(\clabel{\eskip}^{l})  
      & = \{(l, \top)\} \\
-     \absfinal([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = \absfinal(c_1) \cup \absfinal(c_2) \\
-     \absfinal([\ewhile [b]^l do c_w]^{l})  & = \{(l, \top)\} \\
+     \absfinal(\eif [b]^l \ethen c_1 \eelse c_2)  & = \absfinal(c_1) \cup \absfinal(c_2) \\
+     \absfinal(\ewhile [b]^l \edo c)  & = \{(l, \top)\} \\
      \absfinal(c_1 ; c_2)  & =  \absfinal(c_2) \\
  \end{array}
  \]
@@ -658,10 +658,10 @@ computes the Abstract Final State of the command.
       \absflow'(\clabel{\assign{x}{\expr}}{}^l)  & = \emptyset  \\
       \absflow'(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \emptyset  \\
       \absflow'([\eskip]^{l})  & = \emptyset \\
-      \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
+      \absflow'(\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
      %   \\ & \quad 
        \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
-      \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
+      \absflow'(\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
      %  \\ & \quad 
       \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
       \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
