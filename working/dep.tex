@@ -338,38 +338,20 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 \end{defn}
 %
-
 %
-\begin{defn}[labelled Variables ($\lvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
-$\lvar : c \to \mathcal{P}(\mathcal{VAR} \times \mathbb{N})$]
-\label{def:lvar}
-$$
-  \lvar_{c} \triangleq
-  \left\{
-  \begin{array}{ll}
-      \{{x}^l\}                   
-      & {c} = [{\assign x e}]^{l} 
-      \\
-      \{{x}^l\}                   
-      & {c} = [{\assign x \query(\qexpr)}]^{l} 
-      \\
-      \lvar_{{c_1}} \cup \lvar_{{c_2}}  
-      & {c} = {c_1};{c_2}
-      \\
-      \lvar_{{c}} \cup \lvar_{{c_2}} 
-      & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
-      \\
-      \lvar_{{c}'}
-      & {c}   = \ewhile ([\bexpr]^{l}, {c}')
-\end{array}
-\right.
-$$
-\end{defn}
+%
+%
+\subsection{Trace-based May-Dependency Graph}
+%
+%
+%
+\paragraph{Query Variables} is a subset of the program's assigned variables, where every variable in this set is assigned by a query in the program.
 %
 \begin{defn}[Query Variables ($\qvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$)].
 \\
 Given a program $c$, its query variables $\qvar$ is a vector containing all variables newly assigned by a query in the programm, $\qvar \subset \mathcal{VAR}$.
 It is defined as follows:
+{\footnotesize
 $$
   \qvar_{{c}} \triangleq
   \left\{
@@ -391,6 +373,7 @@ $$
 \end{array}
 \right.
 $$
+}
 \end{defn}
 %
 %
@@ -399,18 +382,19 @@ $$
 Given a program ${c}$,
 its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$ is defined as follows,
 %
+{\footnotesize
 \[
 \begin{array}{rlcl}
   \text{Vertices} &
   \vertxs & := & \left\{ 
-  x^l \in \mathcal{VAR} \times \mathbb{N} 
+  x^l \in \mathcal{VAR} \times \mathcal{L}
   ~ \middle\vert ~ x^l \in \lvar_{c}
   \right\}
   \\
   \text{Directed Edges} &
   \edges & := & 
   \left\{ 
-  (x^i, y^j) \in (\mathcal{VAR} \times \mathbb{N}) \times (\mathcal{VAR} \times \mathbb{N})
+  (x^i, y^j) \in \mathcal{VAR} \times \mathcal{L} \times \mathcal{VAR} \times \mathcal{L}
   ~ \middle\vert ~
   x^i, y^j \in \lvar_{{c}}, \vardep(x^i, y^j, c)
   
@@ -419,7 +403,7 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \text{Weights} &
   \weights & := & 
   \left\{ 
-  (x^l, n) \in (\mathcal{VAR} \times \mathbb{N}) \times \mathbb{N}
+  (x^l, n) \in \mathcal{VAR} \times \mathcal{L} \times \mathbb{N}
   ~ \middle\vert ~ 
   x^l \in \lvar_{c},
   n = \max \left\{ \vcounter(\vtrace') l ~ \middle\vert~
@@ -427,23 +411,24 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
    \right\}
   \right\}
   \\
-  \text{Query Flags} &
-  \qflag & := & 
-  \left\{(x^l, n)  \in( \mathcal{VAR} \times \mathbb{N} ) \times \{0, 1\} 
-  ~ \middle\vert ~
-   x^l \in \lvar_{c},
-   \left\{
-  \begin{array}{ll}
-  n = 1 & x^l \in \qvar_{c} \\ 
-  n = 0 & o.w.
-  \end{array}
-  \right\}
-  \right\}
+  \text{Query Label} &
+\qflag & := & 
+\left\{(x^l, n)  \in  \mathcal{VAR} \times \mathcal{L} \times \{0, 1\} 
+~ \middle\vert ~
+ x^l \in \lvar_{c},
+n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
+\right\}
 \end{array}
 \]
+}
 , where $\lvar_c$ is its assigned variables.
 \end{defn}
 %
+The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
+edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
+
+The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
+\\
 For any program $c$, by the injectivity of $\weights$ in its dependency graph, $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, 
 $\weights$ forms a function. We use $\weights(v)$ to indicate the image of $v$ in $\weights$.
 %
@@ -483,21 +468,22 @@ and $k_{v_1 \to v_2} \in \walks(G)$ with $v_1, v_2 \in \vertxs$ denotes the walk
 Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$ and a \emph{finite walk} $k$ in $G$ with its vertex sequence $(v_1, \ldots, v_{n})$, the length of $k$ w.r.t query is defined as:
 \[
   \qlen(k) = \len\big(
-  v \mid v \in (v_1, \ldots, v_{n}) \land \flag(v) = 1 \big)
+  v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)
 \]
-, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \flag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.
+, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.
 \end{defn}
 %
 %
 % \subsection{SSA Transformation and Soundness of Transformation}
 % in File {\tt ``ssa\_transform\_sound.tex''}
 % \input{ssa_transform_sound}
-%
-The following lemma describes a property of the trace-based dependency graph.
-For any program $c$ with a database $D$ and a initial trace $\trace$,
-the directed edges in its trace-based dependency graph can only be constructed from variable with  
-smaller labels variables of greater ones.
-There doesn't exist backward edges with direction from greater labelled variables to smaller ones.
+% %
+% %
+% The following lemma describes a property of the trace-based dependency graph.
+% For any program $c$ with a database $D$ and a initial trace $\trace$,
+% the directed edges in its trace-based dependency graph can only be constructed from variable with  
+% smaller labels variables of greater ones.
+% There doesn't exist backward edges with direction from greater labelled variables to smaller ones.
 % \begin{lem}
 % \label{lem:edgeforwarding}
 % [Edges are Forwarding Only].
