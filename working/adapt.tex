@@ -1,5 +1,6 @@
 %
 \subsection{Trace-based Adaptivity}
+\mg{This description is confusing. It is repeting something that was said before, e.g. ``the visiting times of each vertex $v$ on this walk is bound by its weight $\weights(v)$.'' buit it also say something new. Also it talks about program analysis which has not been defined, yet. I think it needs more work.}
 Given a program $c$, we generate its program-based graph 
 $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.
 %
@@ -12,6 +13,7 @@ Then the adaptivity bound based on program analysis for ${c}$ is the number of q
 %
 It is formally defined in \ref{def:trace_adapt}.
 %
+\mg{This definition doesn't make sense, it refers to an old version probably.}
 \begin{defn}
 [Adaptivity of A Program].
 \label{def:trace_adapt}
@@ -24,6 +26,22 @@ A(c) = \max \big
 \{ \qlen(k) \mid k \in \walks(\traceG(c) \big \} 
 $$
 \end{defn}
+\mg{We need to make more explicit that $\traceG(c)$ considers all the possible traces.}
+
+\mg{
+\begin{defn}
+[Adaptivity of a Program].
+\label{def:trace_adapt}
+\\
+Given a program ${c}$, 
+its adaptivity is defined as follows:
+%
+$$
+A(c) = \max \big 
+\{ \qlen(k) \mid k \in \walks(\traceG(c) \big \} 
+$$
+\end{defn}
+}
 %
 %
 %

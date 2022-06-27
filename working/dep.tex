@@ -285,7 +285,7 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 
 \mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
-\mg{Also, is $\event_2$ or $\event+2'$ in the last line of the first block?}
+\mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
 \begin{defn}[Event May Dependency].
 \label{def:event_dep}
 \\ 
@@ -391,6 +391,7 @@ $$
 }
 \end{defn}
 %
+\mg{In this definition as well as in others, I have the impression that you assume that the labelled variables are unique in the program. For example, it would not make sense to assign a query to the same labelled variable over and over. If this is the case, we need to make this very explicit in the paper.}
 %
 \begin{defn}[Execution Based Dependency Graph]
 \label{def:trace_graph}
@@ -411,7 +412,7 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \left\{ 
   (x^i, y^j) \in \mathcal{VAR} \times \mathcal{L} \times \mathcal{VAR} \times \mathcal{L}
   ~ \middle\vert ~
-  x^i, y^j \in \lvar_{{c}}, \vardep(x^i, y^j, c)
+  x^i, y^j \in \lvar_{{c}} \land \vardep(x^i, y^j, c) \text{\mg{$\land$ instead of ,}}
   
   \right\}
   \\
@@ -436,17 +437,23 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 \end{array}
 \]
 }
+\mg{I don't understand what is the set of query labels above. Specifically, the formula with three iff is confusing.}\\
+\mg{there is a dangling , below}\\
+\mg{what is ``its'' referring to in the sentence below?}\\
 , where $\lvar_c$ is its assigned variables.
 \end{defn}
 %
+\mg{I don't understand the next sentence. First, by the definition edges are between nodes which are labelled variables, why do you have annotated queries now? I suspect that this and the next sentence are old.}
 The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
 edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
 
-The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
+The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary\mg{To summarize}, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
 \\
+\mg{I also don't understand the next sentence. What is the injectivity of $\weights$ in a program dependency graph?And what is the image of $v$ in $\weights$. I find this very confusing.}
 For any program $c$, by the injectivity of $\weights$ in its dependency graph, $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, 
 $\weights$ forms a function. We use $\weights(v)$ to indicate the image of $v$ in $\weights$.
 %
+\mg{Is this definition given a ``labelled weighted graph'' or an ``execution-based dependency graph''? you did not define the former but only the latter. Also, you say ``there exists'', can there be more sequences of vertices satisfying this definition given a sequence of edges?}
 \begin{defn}[Finite Walk ($k$)].
 \label{def:finitewalk}
 \\
@@ -471,12 +478,32 @@ $v$ in sequence $(v_1, \ldots, v_{n})$.
 %
 Length of this finite walk $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
 \end{defn}
+
+\mg{
+\begin{defn}[Finite Walk in a Labelled Weighted Graph (k)].
+\label{def:finitewalk}
+\\
+Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, a \emph{finite walk} $k$ in $G$ is a sequence of edges $(e_1 \ldots e_{n - 1})$ 
+for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
+\begin{itemize}
+    \item $e_i = (v_{i},v_{i + 1})$ for every $1 \leq i < n$.
+    \item every vertex $v \in \vertxs$ appears in $(v_1, \ldots, v_{n})$ at most 
+    $\weights(v)$ times.  
+\end{itemize}
 %
+The length of $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
+\end{defn}
+}
+
+%
+\mg{Again, you did not define a ``labelled weighted graph''.}
 Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, 
-we use $\walks(G)$ to denote a set containing all finite walks $k$ in $G$;
+we use $\walks(G)$ to denote \mg{``the set'', not ``a set''}a set containing all finite walks $k$ in $G$;
 and $k_{v_1 \to v_2} \in \walks(G)$ with $v_1, v_2 \in \vertxs$ denotes the walk from vertex $v_1$ to $v_2$ .
 %
 %
+
+\mg{I don't understand this definition. Is wrt a single query?if yes, who is chosing the query? Or is it any query?}
 \begin{defn}[Length of Finite Walk w.r.t. Query ($\qlen$)].
 \label{def:qlen}
 \\
@@ -485,7 +512,7 @@ Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$ and a 
   \qlen(k) = \len\big(
   v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)
 \]
-, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.
+, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.\mg{If I understand where you want to go, why don't you just use the cardinality of the set above, rather than taking the length of a subsequence?}
 \end{defn}
 %
 %
