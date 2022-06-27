@@ -3,10 +3,15 @@
 %
 \subsection{Events Dependency}
 %
+\mg{I don't think labeled variables were defined before. Also the set of labeled variables was not defined.}\\
+\mg{Also, I already pointed out that here there is an inconsistency between labeled variables and pairs of variable and label. We need to resolve this inconsistency. Either we use everywhere labeled variables, or we use pairs variable and label.}\\
+\mg{Another issue, it is not a good norm to define something using a definition that will follow. So, first we define the dependency over events and then the one over variables.}
+
+
 \begin{defn}[Variable May Dependency].
   \label{def:var_dep}
   \\
-  An variable ${x}_2^{l_2} \in \lvar_{{c}}$ is in the \emph{variable may-dependency} relation with another
+  A variable ${x}_2^{l_2} \in \lvar_{{c}}$ is in the \emph{variable may-dependency} relation with another
   variable ${x}_1^{l_1} \in \lvar_{{c}}$ in a program ${c}$, denoted as 
   %
   $\vardep({x}_1^{l_1}, {x}_2^{l_2}, {c})$, if an only if.
@@ -43,7 +48,8 @@
   % %
   %
   \end{defn}
-  %
+%
+\mg{I don't understand this explanation. What are the ``assignment commands associated to the two labelled variables''}
 Explanation: 
 Among all events corresponding to the evaluations of the assignment commands associated to the two labelled variables respectively, 
 as long as there is one pair of events satisfying the \emph{Event May-Dependency} relation in Definition~\ref{def:event_dep}, 
@@ -277,6 +283,8 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %  %
 % \end{defn}
 %
+
+\mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
 \begin{defn}[Event May Dependency].
 \label{def:event_dep}
 \\ 
@@ -339,6 +347,7 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 \end{defn}
 %
 
+\mg{Ok, I see the definition of Labelled Variables here. Clearly, it is in the wrong order. Besides, I still think it is better to use just one notation.}
 %
 \begin{defn}[labelled Variables ($\lvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
 $\lvar : c \to \mathcal{P}(\mathcal{VAR} \times \mathbb{N})$]
