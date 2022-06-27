@@ -357,10 +357,14 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 %
 \paragraph{Query Variables} is a subset of the program's assigned variables, where every variable in this set is assigned by a query in the program.
+\mg{The set of query variables of a program is the set of variables set to the result of a query in the program.}\\
+\mg{In the next definition, why do you call it a vector? It seems that you define it as a set.}\\
+\mg{Also, there is still confusion between labelled variables and pairs (variable, label).}
 %
 \begin{defn}[Query Variables ($\qvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$)].
-\\
-Given a program $c$, its query variables $\qvar$ is a vector containing all variables newly assigned by a query in the programm, $\qvar \subset \mathcal{VAR}$.
+  \\
+ 
+Given a program $c$, its query variables \mg{it seems you are missing the $_c$ subscript. Also, this is a minor point but I don't think it is a good idea to use a subscript, cannot you just use $\qvar(c)$.}$\qvar$ is a vector containing all variables newly assigned by a query in the programm, $\qvar \subset \mathcal{VAR}$.
 It is defined as follows:
 {\footnotesize
 $$
