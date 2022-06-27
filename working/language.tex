@@ -53,7 +53,7 @@ n ~|~ {x} ~|~ \aexpr \oplus_a \aexpr
 \\
 %
 \mbox{Query Value} & \qval & ::= 
-& {n ~|~ \chi[n] ~|~ \chi[n] \oplus_a  \chi[n] ~|~ n \oplus_a  \chi[n]
+& {n ~|~ \chi[n] ~|~ \qval \oplus_a  \qval ~|~ n \oplus_a  \chi[n]
     ~|~ \chi[n] \oplus_a  n}\\
 &&& \text{\mg{I don’t think this is what we want. Isn’t $\chi[n+1]$ a query value?}}\\
 &&& \text{\mg{What about $\chi[i] + \chi[i] + \chi[i]$? They are not in the grammar}}
@@ -544,6 +544,78 @@ c; \ewhile [b]^{l} \edo c),
     \label{fig:os}
 \end{figure}
 %
+% Each command is now labeled with a label $l$, either a natural number standing for the line of code where the command appears, or a symbol of $in$ or $ex$ used for annotating the input variables, and the exist point of the program. Notice that we associate the label $l$ to the conditional predicate $\bexpr$ in the if statement, and to the while guard counter $\bexpr$ in the $\ewhile$ statement.
+% We abuse the same notation $c$ for labeled command in the rest of the paper.
+
+The labeled variables and assigned variables are set of variables annotated by a label. 
+We use  
+%$\mathcal{LVAR} = \mathcal{VAR} \times \mathcal{L} $ represent the universe of all the labeled variables and 
+$\avar_c \in \mathcal{P}(\mathcal{VAR} \times \mathbb{N}) \subset \mathcal{VAR} \times \mathcal{L}$ and 
+$\lvar_c \in \mathcal{P}(\mathcal{VAR} \times \mathcal{L}) \subseteq \mathcal{VAR} \times \mathcal{L}$ 
+represents the the set of assigned variables and labeled variables for a labeled command $lc$, defined in Definition~\ref{def:lvar} and \ref{def:avar}.
+%
+\begin{defn}[Assigned Variables (
+% $\avar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
+$\avar : \cdom \to \mathcal{P}(\mathcal{VAR} \times \mathbb{N})$,
+labelled Variables 
+(
+% $\lvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
+$\lvar : \cdom \to \mathcal{P}(\mathcal{VAR} \times \mathcal{L})$]
+\label{def:avar}
+{\footnotesize
+$$ \avar_{c} \triangleq
+  \left\{
+  \begin{array}{ll}
+      \{{x}^l\}                   
+      & {c} = [{\assign x e}]^{l} 
+      \\
+      \{{x}^l\}                   
+      & {c} = [{\assign x \query(\qexpr)}]^{l} 
+      \\
+      \avar_{{c_1}} \cup \avar_{{c_2}}  
+      & {c} = {c_1};{c_2}
+      \\
+      \avar_{{c}} \cup \avar_{{c_2}} 
+      & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
+      \\
+      \avar_{{c}'}
+      & {c}   = \ewhile ([\bexpr]^{l}, {c}')
+\end{array}
+\right.
+$$
+}
+\end{defn}
+%
+
+\begin{defn}[labelled Variables 
+(
+% $\lvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
+$\lvar : \cdom \to \mathcal{P}(\mathcal{VAR} \times \mathcal{L})$]
+\label{def:lvar}
+{\footnotesize
+$$
+  \lvar_{c} \triangleq
+  \left\{
+  \begin{array}{ll}
+      \{{x}^l\} \cup FV(\expr)^{in}                  
+      & {c} = [{\assign x e}]^{l} 
+      \\
+      \{{x}^l\}   \cup FV(\qexpr)^{in}                
+      & {c} = [{\assign x \query(\qexpr)}]^{l} 
+      \\
+      \lvar_{{c_1}} \cup \lvar_{{c_2}}  
+      & {c} = {c_1};{c_2}
+      \\
+      \lvar_{{c}} \cup \lvar_{{c_2}} \cup FV(\bexpr)^{in}
+      & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
+      \\
+      \lvar_{{c}'} \cup FV(\bexpr)^{in}
+      & {c}   = \ewhile ([\bexpr]^{l}, {c}')
+\end{array}
+\right.
+$$
+}
+\end{defn}
 %
 %
 %

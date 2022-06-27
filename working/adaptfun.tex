@@ -1,20 +1,86 @@
-The adaptivity from the static program analysis result is defined firstly. 
-Then the algorithms for {\THESYSTEM}.
-{\THESYSTEM} consists of three phases: 
-\begin{enumerate}
-    \item Generating an abstract control flow graph with each edge representing an abstract event transiting between two command labels. 
-    \item Computing the value bound invariant for each variable in the event and 
-    the event transition closure over the abstract control flow graph,
-    we get the reachability bound for each labeled command.
-    \item Refining the abstract control flow graph with data-flow, by performing the reaching definition analysis, we generate a weighted data control flow graph.
-    \item An algorithm to find the appropriate path in the weighted data control flow graph
-\end{enumerate}
+In this section, we present our algorithm for computing the upper bound for a program $c$'s adaptivity
+$A(c)$ defined~\ref{def:trace_adapt} through static program analysis.
+This section presents the key definitions
+for the static analysis algorithm in Section~\ref{sec:algorithm-keys} before going into the detail of the algorithm,
+then shows the complete static analysis algorithm.
 %
 \subsection{Adaptivity Based on Program Analysis in \THESYSTEM}
+In order to give bound on the program's adaptivity, 
+we first build a program-based data-dependency graph to {over-}approximate the 
+trace-based dependency graph. 
+Then, we define the program-based adaptivity over this approximated graph, as the upper bound for $A(c)$.
+
+This program-based graph has the similar topology structure as the trace-based (semantic) dependency graph, with the same vertices and query labels, 
+and approximated edges and weights. 
+The approximated edges corresponds to a program-based data dependency relation ($\flowsto$ in Definition~\ref{def:flowsto}) and approximated weight corresponds to a reachability bound analysis results from Definition~\ref{def:transition_closure}.
+
 %
-\subsubsection{$\flowsto$}
-Given a program  ${c}$ with its labelled variables $\lvar_c$,
-and two variables ${x^i}, y^j  \in \lvar_c $ 
+\subsubsection{Program-Based Variable Dependency}
+The program-based dependency relation over two labeled variables ($x^i, y^j)$ are defined as a $\flowsto$ relation with respect to the program $c$, as $\flowsto(x^i, y^j, c)$.
+\\
+$\flowsto \in \mathcal{LVAR} \times \mathcal{LVAR} \times \cdom \to \{\etrue, \efalse\}$
+%
+\begin{defn}[Data Flows between Assigned Variables ($\flowsto$)].
+\label{def:flowsto}
+\\
+In a program  ${c}$,
+an variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$
+in ${c}$, denoted as $\flowsto({x^i, y^j, c})$, is defined as follows:
+%
+{\footnotesize 
+\[
+\begin{array}{l}
+\flowsto({x^i, y^j, c}) \triangleq 
+\\
+\left( \bigvee
+\begin{array}{l}
+(\exists \expr \st \clabel{\assign{y}{\expr}}^j \in_{c} {c} 
+\land {x} \in FV(\expr) \land (x^i \in \live(j, c)))
+\\
+(\exists {\qexpr} \st [\assign{y}{\query({\qexpr})}]^j \in_{c} {c} 
+\land x \in FV({\qexpr}) \land (x^i \in \live(j,c))))
+\\
+\Big(\exists {c_w} \in \cdom, l \in \mathcal{L}, \bexpr \st
+	\ewhile [\bexpr]^l \edo {c_w} \in_{c} {c}
+	\land \flowsto(x^i, y^j, c_w)
+	\\ \qquad	
+     \lor 
+	\big( \exists {(\expr \lor \qexpr)} \st
+	[{\assign{y}{\expr \lor \query(\qexpr)}}]^{j} \in_{c}  {c_w}  \land {x} \in FV(\bexpr) \land x^i \in \live(l, c)
+	\big)
+	\Big)
+\\
+\Big(
+\exists {c_1}, {c_2} \in \cdom, l \in \mathcal{L}, \bexpr 
+\st 
+	\eif([\bexpr]^l, {c_1}, {c_2}) \in_{c} {c} \land
+	\flowsto(x^i, y^j, c_1) \lor \flowsto(x^i, y^j, c_2)
+	\\ \qquad 
+	\lor 
+	\big( \exists {(\expr \lor \qexpr)} \st
+	\land {x} \in FV(\bexpr) \land x^i \in \live(l, c) \land
+	([{\assign{y}{\expr \lor \query(\qexpr)}}]^{j} \in_{c}  {c_1}  
+	\lor [{\assign{y}{\expr \lor \query(\qexpr)}}]^{j} \in_{c}  {c_2})
+	\big)
+\Big)
+% \\
+\end{array}
+\right).
+\end{array}
+\]
+}
+%
+\end{defn}
+%
+$\live^l(c) \subseteq \lvar_c$,
+which is the set of all the reachable variables at location of label $l$ in the program $c$.
+For every labelled variable $x^l$ in this set, 
+the value assigned to that variable
+in the assignment command associated to that label is reachable at the entry point of  executing the command of label $l$.
+This is formally defined , formally computed in Definition~\ref{def:feasible_flowsto}
+\\
+To understand the $\flowsto$ intuition, 
+given a program  ${c}$ with its labelled variables $\lvar_c$, and two variables ${x^i}, y^j  \in \lvar_c $ 
 % showing up as $i$-th, $j$-th elements in $\lvar$ 
 % (i.e., ${x} = \lvar(i)$ and ${y} = \lvar(j)$),
 we say $y^j$ flows to ${x^i}$ in ${c}$ if and only if 
@@ -39,53 +105,6 @@ We use $FV(\expr)$, $FV(\sbexpr)$ and $FV(\qexpr)$ denote the set of free variab
 expression $\expr$, boolean expression $\sbexpr$ and query expression $\qexpr$ respectively.
 %
 \\
-$\live^l(c) \subseteq \lvar_c$ 
-is a subset of program $c$'s labelled variables.
-For every labelled variable $x^l$ in this set, 
-the value assigned to that variable
-in the assignment command associated to that label is reachable at the entry point of  executing the command of label $l$.
-This is formally defined and computed in the first step of the analysis algorithm.
-%
-\begin{defn}[Data Flows between Assigned Variables ($\flowsto$)].
-\label{def:flowsto}
-\\
-In a program  ${c}$,
-an variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$
-in ${c}$, denoted as $\flowsto({x^i, y^j, c})$, is defined as follows:
-%
-\[
-\begin{array}{l}
-\flowsto({x^i, y^j, c}) \triangleq 
-\\
-\left( \bigvee
-\begin{array}{l}
-(\exists \sexpr . ~ [\assign{y}{\sexpr}]^j \in_{c} {c} 
-\land {x} \in VAR(\sexpr) \land (x^i \in \live^j(c)))
-\\
-(\exists {\qexpr}. ~ [\assign{y}{\query({\qexpr})}]^j \in_{c} {c} 
-\land x \in VAR({\qexpr}) \land (x^i \in \live^j(c))))
-\\
-\big(\exists  ~ {c_w}, {(\expr \lor \qexpr)}, \sbexpr, l \in \mathbb{N}. ~
-	\ewhile [\sbexpr]^l \edo {c_w} \in_{c} {c}
-	\land 
-	[{\assign{y}{\expr \lor \query(\qexpr)}}]^{j} \in_{c}  {c_w}
-\big) \land {x} \in VAR(\sbexpr) \land (x^i \in \live^l(c)))
-\\
-\big(
-\exists ~ \sbexpr, l \in \mathbb{N}, {c_1}, {c_2}, {\expr}_1, {\expr}_2. ~
-	\eif([\sbexpr]^l, {c_1}, {c_2}) \in_{c} {c} \land
-	([{\assign{y}{\expr_1}}]^j \in_{c} {c_1} \lor 
-	[{\assign{y}{\expr_2}}]^j \in_{c} {c_2})
-\land {x} \in VAR(\sbexpr) \land (x^i \in \live^l(c)))
-\big)
-% \\
-% (\exists z^r \in \lvar_c \st \flowsto(x^i, z^r, c) \land \flowsto(z^r, y^j, c))
-\end{array}
-\right).
-\end{array}
-\]
-%
-\end{defn}
 %
 Program Entry Point: $\entry_c : \mbox{Command} \to \mathbb{N}$ 
 \[
@@ -155,19 +174,21 @@ c =_{c} c_1; c''; c_2 \land c' =_{c} c''
 %
 
 \subsubsection{Program Analysis Based Dependency Graph}
+We give the formal definition for the program-based dependency graph for a program $c$, 
+$\progG({c}) = (\vertxs, \edges, \weights, \flag)$ as follows.
 \begin{defn}
     [Program-Based Dependency Graph].
     \label{def:prog_graph}
     \\
 Given a program ${c}$
 its program-based graph 
-$\progG({c}) = (\vertxs, \edges, \weights, \flag)$ is. defined as:
-\\
+$\progG({c}) = (\vertxs, \edges, \weights, \qflag)$ is defined as:
+{\footnotesize
 \[
 \begin{array}{rlcl}
 \text{Vertices} &
 \vertxs & := & \left\{ 
-x^l \in \mathcal{VAR} \times \mathbb{N}
+x^l \in \mathcal{LVAR} 
 ~ \middle\vert ~
 x^l \in \lvar({{c}})
 \right\}
@@ -175,12 +196,12 @@ x^l \in \lvar({{c}})
 \text{Directed Edges} &
 \edges & := & 
 \left\{ 
-  ({x}_1^{i}, {x}_2^{j}) \in \mathcal{VAR} \times \mathbb{N} \times (\mathcal{VAR} \times \mathbb{N})
+  ({x}_1^{i}, {x}_2^{j}) \in \mathcal{LVAR} \times \mathcal{LVAR}
   ~ \middle\vert ~
   \begin{array}{l}
     {x}_1^{i}, {x}_2^{j} \in \vertxs
 	\land
-    \\
+    % \\
     \exists n \in \mathbb{N}, z_1^{r_1}, \cdots, z_n^{r_n} \in \lvar_{{c}} \st 
     n \geq 0 \land
     \\
@@ -193,90 +214,30 @@ x^l \in \lvar({{c}})
 \weights & := &
 % \bigcup
 % \begin{array}{l}
-	\big\{ (x^l, w) \in \mathcal{VAR} \times \mathbb{N} \times (\mathbb{N} \cup \aexpr)
+	\left\{ (x^l, w) \in  \mathcal{LVAR} \times EXPR(\constdom)
 	\mid
-	x^l \in \lvar_{{c}} \land w = \absclr(\absevent), \absevent = (l, \_, \_)
-	\big\} 
-	% \\
-	% \big\{(x^l, 1)  \in \mathcal{VAR} \times \mathbb{N} \times \{1\} 
-	% \mid
-	% x^l \in \lvar_{{c}} \land \flag(x^l) = 0
-	\big\}
+	x^l \in \lvar_{{c}} \land w = \absW(l)
+	\right\}
 % \end{array} 
 \\
-\text{Query Flags} &
+\text{Query Label} &
 \qflag & := & 
-\left\{(x^l, n)  \in \mathcal{VAR} \times \mathbb{N}  \times \{0, 1\} 
+\left\{(x^l, n)  \in  \mathcal{LVAR} \times \{0, 1\} 
 ~ \middle\vert ~
  x^l \in \lvar_{c},
- \left\{
-\begin{array}{ll}
-n = 1 & x^l \in \qvar_{c} \\ 
-n = 0 & o.w.
-\end{array}
-\right\}
+n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 \right\}
 \end{array}
-\]
-%
-\[
-\begin{array}{rlcl}
-\text{Vertices} &
-\vertxs & := & \left\{ 
-x^l 
-~ \middle\vert ~
-x^l \in \lvar_{{c}}
-\right\}
-\\
-\text{Directed Edges} &
-\edges & := & 
-\left\{ 
-  ({x}_1^{i}, {x}_2^{j}) 
-  ~ \middle\vert ~
-  \begin{array}{l}
-    {x}_1^{i}, {x}_2^{j} \in \lvar_{{c}},
-    \\
-    \exists n \in \mathbb{N}, z_1^{r_1}, \cdots, z_n^{r_n} \in \lvar_{{c}} \st 
-    n \geq 0 \land
-    \\
-    \flowsto(x^i,  z_1^{r_1}, c) 
-    \land \cdots \land \flowsto(z_n^{r_n}, y^j, c) 
-  \end{array}
-\right\}
-\\
-\text{Weights} &
-\weights & := &
-% \bigcup
-% \begin{array}{l}
-	\big\{ (x^l, w)
-	\mid
-	x^l \in \lvar_{{c}}, w = \absclr(\absevent), \absevent = (l, \_, \_)
-	\big\} 
-	% \\
-	% \big\{(x^l, 1)  \in \mathcal{VAR} \times \mathbb{N} \times \{1\} 
-	% \mid
-	% x^l \in \lvar_{{c}} \land \flag(x^l) = 0
-	\big\}
-% \end{array} 
-\\
-\text{Query Flags} &
-\qflag & := & 
-\left\{(x^l, n)   
-~ \middle\vert ~
- x^l \in \lvar_{c},
- x^l \in \qvar_{c} \implies n = 1,
- x^l \notin \qvar_{c} \implies n = 0
-%  \left\{
-% \begin{array}{ll}
-% n = 1 & x^l \in \qvar_{c} \\ 
-% n = 0 & o.w.
-% \end{array}
-% \right\}
-\right\}
-\end{array}
-\]
-, where the $\absclr(\absevent)$ is computed from the $\THESYSTEM$ algorithm second step in ~\ref{def:transition_closure}.
+\] 
+}
+, where the $\absW(l)$ is the symbolic reachability bound in domain of $EXPR(\constdom)$,
+for the assignment command of label $l$ to which the labeled variable $x^l$ is associated, 
+computed from the $\THESYSTEM$ algorithm in Definition~\ref{def:transition_closure}.
+The $EXPR(\constdom)$ is an expression over symbolic constants containing the
+input variables and natural number.
 \end{defn} 
+%
+\paragraph{Program-Based Adaptivity ($\progA(c)$)}
 %
 Given a program ${c}$, we generate its program-based graph 
 $\progG({c}) = (\vertxs, \edges, \weights, \qflag)$.
@@ -488,19 +449,78 @@ the program-based adaptivity for $c$ is defined as%
 % %
 \subsection{ $\THESYSTEM$ Analysis Algorithm}
 % \wq{To do: Add $\THESYSTEM$, a data flow analysis algorithm to scan the program and give a graph.}
-{\THESYSTEM} consists of three phases: 
+% {\THESYSTEM} consists of three phases: 
+% \begin{enumerate}
+%     \item Generating an abstract control flow graph with each edge representing an abstract event transiting between two command labels. 
+%     \item Computing the value bound invariant for each variable in the event and 
+%     the event transition closure over the abstract control flow graph,
+%     we get the reachability bound for each labeled command.
+%     \item Refining the abstract control flow graph with data-flow, by performing the reaching definition analysis, we generate a weighted data control flow graph.
+%     \item An algorithm to find the appropriate path in the weighted data control flow graph
+% \end{enumerate}
+This algorithm first 
+ generate an abstract control flow graph, 
+ for analyzing the data flow relations through variables assigned in every command,
+ as well as the reaching times of each variable.
+ Then, it refine this control flow graph into a weighted data-dependency graph, through the data flow and reaching bound analysis results.
+In the last step, it find the longest walk in this weighted data control flow graph w.r.t. the query variables,
+and return the number of query vertices it traversed alongside.
+% \wq{To do: Add $\THESYSTEM$, a data flow analysis algorithm to scan the program and give a graph.}
+To be more specific, {\THESYSTEM} consists of four phases: 
 \begin{enumerate}
-    \item Generating an abstract control flow graph with each edge representing an abstract event transiting between two command labels. 
+    \item Generating an abstract control flow graph over all labels (used as control locations).
+    \\
+    Each directed edge represents an abstract transition 
+     between two control locations, i.e., the labels of two commands (we call the labels also control location and they refer to the same thing), 
+     where the second labeled command will be executed after execution of the command with first label.
+     The abstract transition contains a set of difference constraints for variables, generated by abstracting the command of the first labeled.
     \item Computing the value bound invariant for each variable in the event and 
     the event transition closure over the abstract control flow graph,
-    we get the reachability bound for each labeled command.
-    \item Refining the abstract control flow graph with data-flow, by performing the reaching definition analysis, we generate a weighted data control flow graph.
-    \item An algorithm to find the appropriate path in the weighted data control flow graph
+    we get the reachability bound for each command. 
+    \\
+    Through this graph and constraint for every transition, we infer the  invariant for every variable,
+    and compute the transition closure for every abstract transition.
+    By solving the closure with the invariants of variables involved in this closure for every transition, 
+    we compute the symbolic reachability bound of every commands corresponding to 
+    this transition.
+    \item Performing a feasible data-flow analysis through the reachable definition algorithm. 
+ By generating set of all the reachable variables at location of label $l$ in the program $c$.
+For every labelled variable $x^l$ in this set, 
+the value assigned to that variable
+in the assignment command associated to that label is reachable at the entry point of  executing the command of label $l$.
+\item Refining this graph into a weighted-data dependency graph, by adding edges between
+    variables having data-flow relations, and
+removing the edges between locations where the variables associated to that labeled command isn't reachable from the second location.
+\\
+We first annotated each vertex of label $l$ with the variable 
+assigned in that labeled command, and remove the rest doesn't correspond to an assignment command.
+Then 
+add direct edge between two labeled variables,
+where the first variable 
+is directly used in the assignment expression to the second variable, by restricting 
+the first labeled variable is reachable at the the second label.
+    \item Computing the adaptivity through this weighted data dependency graph,
+    by finding a finite walk on this weighted graph, 
+traversing the maximum times of query variables, by restricting the visiting time of every vertex on this walk to its weight.
+The maximum number of vertices corresponding to a query variables visited on this walk is the estimated upper bound, for program's adaptivity.
 \end{enumerate}
+% \begin{enumerate}
+%     \item An algorithm to generate a precise data control flow graph
+%     \item An algorithm to perform a Reachability number analysis to calculate the weight of each node in the graph generated in phase 1.
+%     \item An algorithm to find the appropriate path in the weighted data control flow graph
+% \end{enumerate}
 
-To be precise, we show the details. 
+We show the details as follows.
 \subsubsection{Abstract Execution Control Flow graph}
-
+In this abstract control flow graph, every vertex is a label,
+ corresponding to a label command in the program.
+Each directed 
+ edge represents an abstract transition 
+ between two control locations, i.e., the labels of two commands (we call the labels also control location and they refer to the same thing), 
+ where the second labeled command will be executed after execution of the command with first label.
+ The abstract transition contains a set of difference constraints for variables, generated by abstracting the command of the first labeled.
+ We present the detail of program abstraction and the graph generation in following steps.
+%
 \paragraph*{Expression Abstraction}
 We define
 an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
@@ -519,7 +539,10 @@ the symbolic constants $\inpvar$ (i.e., the set of the program's input variables
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
 assigned by queries.
 \\
-For concise, we use $\dcdom^{\top}$ to represent $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ 
+The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+\\
+For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ .
+\\
 % % $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
 % \\
 % $\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
@@ -582,40 +605,52 @@ into more complex forms as in \cite{sinn2017complexity}, as well as the
 counter variable manipulation with more advanced expressions as in \cite{}.
 % \\ 
 % The boolean expression in the guard of $\ewhile$ command is normalized into form of $ x > 0$ where $x^l \in \lvar_c$ for some $l$.
-\paragraph{Program Event Abstraction} 
-Abstract event is a tuple of a pair of Labels with a difference constraint.
+\paragraph{Program Event Abstraction}
+We first compute the abstract initial and final state for program and then generate the abstract event for program in 
+computing the abstract execution trace.
 \\
-Abstract Event: 
-$\absevent \in $
-Label  $\times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ $\times$ Label
+The abstract initial state is a label from $\ldom$.
 \\
-% Given a program $c$, with its control flow graph, we first extract its abstract final and initial states:
-% \\
-Abstract Initial State of Each Command is its Initial Label, computed as follows:
+The abstract final state is a pair from $\ldom \times \dcdom^{\top}$,  
+where first component is a label from $\ldom$ and the second component is a constraint from $\dcdom^{\top}$.
+%
+\begin{defn}[Abstract Event]
+  \label{def:abs_event}
+  Abstract Event: 
+  $\absevent \in $
+  $\ldom \times \dcdom^{\top} \times \ldom$
+  is a pair of abstract initial state and final state.
+  % computed from program's abstract final and initial state, $\absfinal(c)$ and $\absinit(c)$ with formal definition, and algorithm detail in Appendix.
+  \end{defn}
+  The abstract event for program is generated when computing its abstract execution trace.
 \\
+%
+Given a program $c$, its abstract initial state,
+and the set of its abstract final state is computed as follows,
+%
 \[
- \begin{array}{ll}
+  \begin{array}{ll}
     \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l  \\
-    \absinit(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = l \\
-    \absinit([\eskip]^{l})  & = l \\
-    \absinit([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = l \\
-    \absinit([\ewhile [b]^l \edo c]^{l})  & = l \\
+    \absinit(\clabel{\assign{x}{\expr}}{}^l)  & = l \\
+    \absinit(\clabel{\eskip}^{l})  & = l \\
+    \absinit(\eif [b]^l \ethen c_1 \eelse c_2)  & = l \\
+    \absinit(\ewhile [b]^l \edo c)  & = l \\
     \absinit(c_1 ; c_2)  & = \absinit(c_1) \\
  \end{array}
  \]
-\\
+%
 Final State Abstraction: 
-$\absfinal: \cdom \to \mathcal{Label}$,
-computes the Abstract Final State of the command. 
+$\absfinal: \cdom \to \mathcal{P}(\ldom \times \dcdom^{\top})$,
+computes the set of Abstract Final State for the command. 
  \[
- \begin{array}{ll}
+  \begin{array}{ll}
     \absfinal(\clabel{\assign{x}{\expr}}{}^l)  & = \{(l, \absexpr\eapp (\expr, x))\}  \\
-     \absfinal(\clabel{\assign{x}{ \query(\qexpr)}}{}^l)  & = \{
+     \absfinal(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \{
       (l, x' \leq 0 + \max(\dbdom) )\}  \\
-     \absfinal([\eskip]^{l})  
+     \absfinal(\clabel{\eskip}^{l})  
      & = \{(l, \top)\} \\
-     \absfinal([\eif [b]^l \ethen c_1 \eelse c_2]^{l})  & = \absfinal(c_1) \cup \absfinal(c_2) \\
-     \absfinal([\ewhile [b]^l do c_w]^{l})  & = \{(l, \top)\} \\
+     \absfinal(\eif [b]^l \ethen c_1 \eelse c_2)  & = \absfinal(c_1) \cup \absfinal(c_2) \\
+     \absfinal(\ewhile [b]^l \edo c)  & = \{(l, \top)\} \\
      \absfinal(c_1 ; c_2)  & =  \absfinal(c_2) \\
  \end{array}
  \]
@@ -640,33 +675,54 @@ computes the Abstract Final State of the command.
       \absflow'(\clabel{\assign{x}{\expr}}{}^l)  & = \emptyset  \\
       \absflow'(\clabel{\assign{x}{\query(\qexpr)}}{}^l)  & = \emptyset  \\
       \absflow'([\eskip]^{l})  & = \emptyset \\
-      \absflow'([\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
-     %   \\ & \quad 
-       \cup \{(l, \top,  \init(c_t) ) ,  (l, \top, \init(c_f)) \} \\
-      \absflow'([\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \init(c_w)) \} 
-     %  \\ & \quad 
-      \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
-      \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
-     %  \\ & \quad 
-      \cup \{ (l, dc, \init(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
+      \absflow'(\eif [b]^l \ethen c_t \eelse c_f)  & =  \absflow'(c_t) \cup \absflow'(c_f)
+      %   \\ & \quad 
+        \cup \{(l, \top,  \absinit(c_t) ) ,  (l, \top, \absinit(c_f)) \} \\
+       \absflow'(\ewhile [b]^l \edo c_w)  & =  \absflow'(c_w) \cup \{(l, \top, \absinit(c_w)) \} 
+      %  \\ & \quad 
+       \cup \{(l', dc, l)| (l', dc) \in \absfinal(c_w) \} \\
+       \absflow'(c_1 ; c_2)  & = \absflow'(c_1) \cup  \absflow'(c_2) 
+      %  \\ & \quad 
+       \cup \{ (l, dc, \absinit(c_2)) | (l, dc) \in \absfinal(c_1) \} \\
    \end{array}
    \]
    }
-For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
-there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
+
+   The $\absflow'([x := \expr]^{l})$, $\absflow'([x := \query(\qexpr)]^{l})$ and $\absflow'([\eskip]^{l})$ are all empty set. 
+   For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
+   there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. 
+   \begin{lem}[Soundness of the Abstract Execution Trace]
+     \label{lem:abscfg_sound}
+   Given a program ${c}$, we have:
+   %
+   \[
+     \begin{array}{l}
+       \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_) \in \eventset \st
+   \config{{c}, \trace_0} \to^{*} \config{\eskip, \trace_0 \tracecat \vtrace} 
+   \land \event \in \trace 
+   \\
+   \qquad \implies \exists \absevent = (l, \_, \_) \in (\ldom\times \dcdom^{\top} \times \ldom) \st 
+   \absevent \in \absflow(c)
+   \end{array}
+   \]
+   \end{lem}
+%    This lemma is proved formally in Appendix~\ref{apdx:reachability_soundness}.
+% For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
+% there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. 
+This lemma is proved formally in Lemma~\ref{lem:abscfg_sound} in Appendix~\ref{apdx:reachability_soundness}.
 \\
 For every labeled variable in program $c$, $x^l \in \lvar_c$, there is a unique abstract event in program's abstract execution trace $\absevent \in \absflow(c)$ of form $(l, \_, \_)$. 
-\begin{lem}[Soundness of the Abstract Execution Trace]
-  \label{lem:abscfg_sound}
+\begin{lem}[Uniqueness of the Abstract Execution Trace]
+  \label{lem:abscfg_unique}
 Given a program ${c}$, we have:
 %
 \[
   \begin{array}{l}
-    \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_) \in \eventset \st
+    \forall \vtrace_0, \trace \in \mathcal{T} ,  \event = (\_, l, \_, \_) \in \eventset^{\asn} \st
 \config{{c}, \trace_0} \to^{*} \config{\eskip, \trace_0 \tracecat \vtrace} 
 \land \event \in \trace 
 \\
-\qquad \implies \exists \absevent = (l, \_, \_) \in Label(c) \times Label(c) \times \absdom \st 
+\qquad \implies \exists! \absevent = (l, \_, \_) \in (\ldom\times \dcdom^{\top} \times \ldom) \st 
 \absevent \in \absflow(c)
 \end{array}
 \]
@@ -679,18 +735,34 @@ formalized in Lemma~\ref{lem:absevent_unique} in Appendix~\ref{apdx:reachability
 \paragraph{Abstract Control Flow Graph} 
 Given program $c$ with its abstract control flow $\absflow(c)$, the Abstract Control Flow Graph:
 \\
+\begin{defn}
+\label{def:abs_cfg}
+Given a program $c$, its abstract control flow graph is defined as follows,
+\\
 \highlight{
-$\absG =(\absV, \absE)$:
+$\absG(c) =(\absV, \absE, \absW)$:
 %
 \\
 $\absE = \{(l_1, dc, l_2) | (l_1, dc, l_2) \in \absflow(c)\}$,
 \\
 $\absV = labels(c)\cup\{l_e\}$
+\\
+ $\absW 
+\triangleq \left\{ (l, w) \in \mathbb{L} \times EXPR(\constdom) \right\}$
 }
 \\
+, where the weight of every label to be computed in the next step.
+\end{defn}
+%
 It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
 \subsubsection{Reachability Bound Estimation}
+%
+Through this graph and constraint for every transition, we infer the invariant for every variable, and compute the transition closure for every abstract transition. By solving the closure
+with the invariants of variables involved in this closure for every transition, we compute
+the symbolic reachability bound of every commands corresponding to this transition.
+\\
+We present the details of invariant, closure generation, and reachability bound computation as follows.
 %
 \paragraph*{Variable Modification Tracking}
 Identify the abstract events where each variable is increased, decreased and reset:
@@ -833,7 +905,12 @@ $\absG(c) =(\absV, \absE, \absW)$:
 \triangleq \left\{ (l, w) \in \mathbb{N} \times EXPR(\constdom) | w = \max\limits_{\absevent = (l, \_, \_)} \{ \absclr(\absevent)\} \right\}$.
 }
 %
- \subsubsection{Data-Flow Refinement}
+\subsubsection{Feasible Data-Flow Analysis}
+Performing a feasible data-flow analysis through the reachable definition algorithm. 
+ By generating set of all the reachable variables at location of label $l$ in the program $c$.
+For every labelled variable $x^l$ in this set, 
+the value assigned to that variable
+in the assignment command associated to that label is reachable at the entry point of  executing the command of label $l$.
 % \paragraph{Generate CFG}
 %  \begin{def}
 %   \label{def:init_label}
@@ -860,6 +937,7 @@ $\absG(c) =(\absV, \absE, \absW)$:
 %      final(C_1 ; C_2)  & =  final(C_2) \\
 %  \end{array}
 %  \]
+\paragraph*{Blocks and Defs}
  Define block B to be either the command of the form of assignment, skip, or test of the form of $[b]^{l}$.\\
  Define $\mathsf{blocks}$ : command -> Powerset(Block)
  \[
@@ -936,13 +1014,15 @@ The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard workli
           if (old != out(l)) W= W $\cup$ \{l'| (l,l') in flow(C)\}\\
           end while
 \end{enumerate}
-
-repeating $in(l)$ and $out(l)$ for every $l \in blocks(c)$ until 
-the the results stablized, we use $\live_{in}(l,c)$ and $\live_{out}(l, c)$ denote the stablized results for the command of label $l$ in program $c$. 
-The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard worklist algorithm.
 %
+computing $in(l)$ and $out(l)$ for every $B^l \in blocks(c) $, and repeating these two step
+until the $in(l)$ and $out(l)$ are stabilized for every $B^l \in blocks(c) $
+We use $\live_{in}(l,c)$ and $\live_{out}(l, c)$ denote the stabilized results for the command of label $l$ in program $c$. 
+The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard worklist algorithm. (For simplicity, we use $\live(l,c)$ to represent $\live_{in}(l,c)$ in the other part of the paper.
+%%
 \paragraph{Refining the Vertices and Edge of the Graph}
-by using the results of Reaching definition analysis, to be specific, in(l) for every label, we refine the vertices and edges in the $\absG$ graph and get the refined weighted-labeled data-flow graph as follows:
+by using the results of Reaching definition analysis results, specifically $\live(l, c)$ for every label in a program $c$, we refine the vertices and edges in the $\absG$ graph 
+by generating the set of feasible data-flow between labeled variables as follows,
 %
   \[
  \begin{array}{ll}
@@ -983,17 +1063,35 @@ by using the results of Reaching definition analysis, to be specific, in(l) for 
    \]
    \end{thm}
    This soundness is proved in Proof~\ref{pf:rd_soundness} in Appendix~\ref{apdx:rd_soundness}.
-\highlight{
-$\progG(c) = (\progV, \progE, \progW, \progF)$,
-\\
-$\progV =\{x^l | x^l \in \lvar_c\} $
-\\
-$\progE = \{(y^i, x^l) | (y^i, x^l)  \in dcdg(c) \}$
-\\
-$\progW = \{(x^l, w ) | (l, w ) \in \absW \land x^l \in \lvar_c\}$
-\\
-$\progF = \{(l, q) \in \mathcal{L} \times \{0, 1\}| q = 1 \iff l \in \qvar_c, q = 0 \iff l \notin \qvar_c \}$.
-}
+   \subsubsection{Weighted Data Flow Graph}
+   %
+   This part refine the abstract control flow graph into a weighted-data dependency graph.
+   We first annotated each vertex of label $l$ with the variable 
+   assigned in that labeled command, and remove the rest doesn't correspond to an assignment command.
+   Then 
+   add direct edge between two labeled variables,
+   where the first variable 
+   is directly used in the assignment expression to the second variable, by restricting 
+   the first labeled variable is reachable at the the second label.
+   \\
+   The formal definition is as follows.
+   % Through the reachable definition set on every label,
+   % we remove the edges between labels where the variables associated to that labeled command isn't reachable from the second location.
+   %
+   \begin{defn}
+   \label{def:analyz_dcfg}
+   \highlight{
+   $\progG(c) = (\progV, \progE, \progW, \progF)$,
+   \\
+   $\progV =\{x^l | x^l \in \lvar_c\} $
+   \\
+   $\progE = \{(y^i, x^l) | (y^i, x^l)  \in dcdg(c) \}$
+   \\
+   $\progW = \{(x^l, w ) | (l, w ) \in \absW \land x^l \in \lvar_c\}$
+   \\
+   $\progF = \{(l, q) \in \mathcal{L} \times \{0, 1\}| q = 1 \iff l \in \qvar_c, q = 0 \iff l \notin \qvar_c \}$.
+   }
+   \end{defn}
 
 % In last phase, we get a dependency graph whose node is computation blocks uniquely decided by its label. In this phase, we want to add more information to every node in the graph, which is the approximated visiting times (how many times this block is exeucted). The algorithm is defined in Algorithm~\ref{alg:add_weights}, with 3 main functions, the Control Location Insertion, 
 % Program Transition Abstraction, 
