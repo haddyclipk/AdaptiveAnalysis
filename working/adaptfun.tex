@@ -1,11 +1,12 @@
-In this section, we present our algorithm for computing the upper bound for a program $c$'s adaptivity
-$A(c)$ defined~\ref{def:trace_adapt} through static program analysis.
-This section presents the key definitions
-for the static analysis algorithm in Section~\ref{sec:algorithm-keys} before going into the detail of the algorithm,
-then shows the complete static analysis algorithm.
-\mg{
+% In this section, we present our algorithm for computing the upper bound for a program $c$'s adaptivity
+% $A(c)$ defined~\ref{def:trace_adapt} through static program analysis.
+% This section presents the key definitions
+% for the static analysis algorithm in Section~\ref{sec:algorithm-keys} before going into the detail of the algorithm,
+% then shows the complete static analysis algorithm.
+% \mg{
+% In this section, we present our static program analysis for computing an upper bound on the adaptivity a program $c$
+% }
 In this section, we present our static program analysis for computing an upper bound on the adaptivity a program $c$
-}
 %
 \subsection{Adaptivity Based on Program Analysis in \THESYSTEM}
 In order to give bound on the program's adaptivity, 
@@ -1100,18 +1101,18 @@ The $\live_{in}(l,c)$ and $\live_{out}(l, c)$ is computed by the Standard workli
 by using the results of Reaching definition analysis results, specifically $\live(l, c)$ for every label in a program $c$, we refine the vertices and edges in the $\absG$ graph 
 by generating the set of feasible data-flow between labeled variables as follows,
 %
-  \[
- \begin{array}{ll}
-    dcdg([x := e]^{l})  & = \{ (y^i, x^l) | y \in VAR(e) \land (y,i) \in \live_{in}(l) \}  \\
-     dcdg([x := q(e)]^{l})  & = \{ (y^i, x^l) | y \in VAR(e) \land (y,i) \in \live_{in}(l) \}  \\
-     dcdg([skip]^{l})  & = \emptyset \\
-     dcdg([if [b]^l then C_1 else C_2)  & =  dcdg(c_1) \cup dcdg(c_2)\\ & \cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_1) \} \\
-     &\cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_2) \} \\
-     dcdg([while [b]^l do c)  & =  dcdg(c) \cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(C) \} \\
-     dcdg(c_1 ;c_2)  & = dcdg(c_1) \cup  dcdg(c_2) \\
- \end{array}
- \]
- 
+%   \[
+%  \begin{array}{ll}
+%     dcdg([x := e]^{l})  & = \{ (y^i, x^l) | y \in VAR(e) \land (y,i) \in \live_{in}(l) \}  \\
+%      dcdg([x := q(e)]^{l})  & = \{ (y^i, x^l) | y \in VAR(e) \land (y,i) \in \live_{in}(l) \}  \\
+%      dcdg([skip]^{l})  & = \emptyset \\
+%      dcdg([if [b]^l then C_1 else C_2)  & =  dcdg(c_1) \cup dcdg(c_2)\\ & \cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_1) \} \\
+%      &\cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_2) \} \\
+%      dcdg([while [b]^l do c)  & =  dcdg(c) \cup \{(x^i,y^j) | x \in VAR(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(C) \} \\
+%      dcdg(c_1 ;c_2)  & = dcdg(c_1) \cup  dcdg(c_2) \\
+%  \end{array}
+%  \]
+%
  \begin{defn}[Feasible Data-Flow]
   \label{def:feasible_flowsto}
     {\footnotesize
