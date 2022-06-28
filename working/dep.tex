@@ -8,12 +8,13 @@
 % \mg{Also, I already pointed out that here there is an inconsistency between labeled variables and pairs of variable and label. We need to resolve this inconsistency. Either we use everywhere labeled variables, or we use pairs variable and label.}\\
 % \jl{I agree, yes, I need to think. I will use the labeled variable, but I need to think how to fix it in the event}
 % \\
-\jl{TODO: unify labeled variables and pairs of variable and label into labeled variables}
-\\
+% \jl{TODO: unify labeled variables and pairs of variable and label into labeled variables}
+% \\
 % \mg{Another issue, it is not a good norm to define something using a definition that will follow. So, first we define the dependency over events and then the one over variables.}
 % \jl{fixed}
-\mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
-\jl{TODO: Simplify notations and add description}\\
+% \mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
+\jl{TODO: Simplify notations and add description}
+% \\
 % \mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
 % \jl{$\event_2'$, fixed}
 \begin{defn}[Event May Dependency].
@@ -115,16 +116,20 @@
 \eventdep(\event_1, \event_2, \trace, c, D) 
   \end{array}
 \]  %
-, where $\eventdep$ is defined below in Definition~\ref{def:event_dep}.
+% , where $\eventdep$ is defined in Definition~\ref{def:event_dep}.
   % , where $\eventdep^{val}$ and $\eventdep^{\test}$ is defined in \ref{def:event_valdep} and \ref{def:event_ctldep}.
   % %
   %
   \end{defn}
 %
-\mg{I don't understand this explanation. What are the ``assignment commands associated to the two labelled variables''}
-\todo{revise}
-Explanation: 
-Among all events corresponding to the evaluations of the assignment commands associated to the two labelled variables respectively, 
+% \mg{I don't understand this explanation. What are the ``assignment commands associated to the two labelled variables''}
+\jl{revised but need more think}
+% Explanation: 
+Considering a program's all possible executions,
+among all events generated during these executions
+and the variables and labels of these events are 
+corresponding to the two labeled variables 
+% evaluations of the assignment commands associated to the two labelled variables respectively, 
 as long as there is one pair of events satisfying the \emph{Event May-Dependency} relation in Definition~\ref{def:event_dep}, 
 then we say the two variables have \emph{Variable May-Dependency} relation.
 % \begin{defn}
@@ -422,7 +427,8 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \left\{ 
   (x^i, y^j) \in \mathcal{LV} \times \mathcal{LV}
   ~ \middle\vert ~
-  x^i, y^j \in \lvar_{{c}} \land \vardep(x^i, y^j, c) \text{\mg{$\land$ instead of ,}}
+  x^i, y^j \in \lvar_{{c}} \land \vardep(x^i, y^j, c) 
+  % \text{\mg{$\land$ instead of ,}}
   \right\}
   \\
   \text{Weights} &
@@ -430,28 +436,33 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \left\{ 
   (x^l, n) \in \mathcal{LV} \times \mathbb{N}
   ~ \middle\vert ~ 
-  x^l \in \lvar_{c},
+  x^l \in \lvar_{c} \land
   n = \max \left\{ \vcounter(\vtrace', l)~ \middle\vert~
   \forall \vtrace \in \mathcal{T} \st \config{{c}, \trace} \to^{*} \config{\eskip, \trace\cdot\vtrace'} 
    \right\}
   \right\}
   \\
-  \text{Query Label} &
-\qflag & := & 
+  % \text{Query Label} &
+  \text{Query Annotation} &
+  \qflag & := & 
 \left\{(x^l, n)  \in  \mathcal{LV}\times \{0, 1\} 
 ~ \middle\vert ~
- x^l \in \lvar_{c},
-n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
+ x^l \in \lvar_{c} \land
+n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \notin \qvar_{c} .
 \right\}
 \end{array}
 \]
 }
-\mg{I don't understand what is the set of query labels above. Specifically, the formula with three iff is confusing.}\\
-\todo{query label better revision}
+% \mg{I don't understand what is the set of query labels above. Specifically, the formula with three iff is confusing.}\\
+\jl{TODO: I actually don't need this query annotation in the graph, I can just use $\qvar(c)$ in defining the 
+query length and computing the adaptivity?
+But it need to change many notations later. So I think to think if it is necessary to remove or leave it.}
 % \mg{there is a dangling , below}\\
-% \mg{what is ``its'' referring to in the sentence below?}\\
-, where $\lvar_c$ is program $c$'s set of labeled variables.
+% \mg{what is ``i.ts'' referring to in the sentence below?}\\
+% , where $\lvar_c$ is program $c$'s set of labeled variables.
 \end{defn}
+%
+% \jl{TODO: add description}
 %
 % The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
 % edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
@@ -541,20 +552,34 @@ we use $\walks(G(c))$ to denote
 the set containing all finite walks $k$ in $G(c)$;
 and $k_{v_1 \to v_2} \in \walks(G)$ with $v_1, v_2 \in \vertxs$ denotes the walk from vertex $v_1$ to $v_2$ .
 %
+% The query length of a walk $k$ is the number of vertices which correspond to query variables in the vertices sequence of this walk. 
+% Instead of counting all 
+% the vertices in $k$'s vertices sequence, i
+\\
+\jl{Revised but need more revise}
+In order to define the adaptivity which is the dependency depth of the query, we need to recover the 
+variables correspond to query from the walk. So we define the query length of a walk, 
+instead of counting all 
+the vertices in $k$'s vertices sequence, we just count the number of vertices which correspond to query variables in this sequence.
 %
-\mg{I don't understand this definition. Is wrt a single query?if yes, who is chosing the query? Or is it any query?}
-\jl{I'm trying to define the length by just counting the number of query variables in the walk, instead of counting all 
-the vertices.}
-\todo{Make the definition clear}
-\begin{defn}[Length of Finite Walk w.r.t. Query ($\qlen$)].
+% \mg{I don't understand this definition. Is wrt a single query?if yes, who is chosing the query? Or is it any query?}
+% \jl{It is for any query, as long as the vertex is a query variable, in another worlds, this length just counting the number of query variables in the walk, instead of counting all 
+% the vertices.}
+% \todo{Make the definition clear}
+\begin{defn}[Query Length of the Finite Walk($\qlen$)].
 \label{def:qlen}
 \\
-Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$ and a \emph{finite walk} $k$ in $G$ with its vertex sequence $(v_1, \ldots, v_{n})$, the length of $k$ w.r.t query is defined as:
+Given 
+% labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, 
+a program $c$'s execution-based dependency graph $G(c) = (\vertxs, \edges, \weights, \qflag)$
+ and a \emph{finite walk} $k$ in $G(c)$ with its vertex sequence $(v_1, \ldots, v_{n})$, 
+%  the length of $k$ w.r.t query is defined as:
+The query length of $k$ is the number of vertices which correspond to query variables in $(v_1, \ldots, v_{n})$ as follows, 
 \[
-  \qlen(k) = \len\big(
-  v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)
+  \qlen(k) = \len\big( v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)
 \]
-, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.
+, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $(v_1, \ldots, v_{n})$.
+%  $k$'s vertex sequence.
 % \mg{If I understand where you want to go, why don't you just use the cardinality of the set above, rather than taking the length of a subsequence?}
 % \jl{because the same vertex could have multiple occurrence in the sequence, and we will count all the occurrence instead of just once.
 % So the cardinality of set doesn't work.}

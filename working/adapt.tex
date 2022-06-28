@@ -26,20 +26,21 @@
 % \{ \qlen(k) \mid k \in \walks(\traceG(c) \big \} 
 % $$
 % \end{defn}
-\mg{We need to make more explicit that $\traceG(c)$ considers all the possible traces.}
-\todo{More explicit}
+% \mg{We need to make more explicit that $\traceG(c)$ considers all the possible traces.}
+\jl{Revised but need to be More explicit}
 % \mg{This description is confusing. It is repeting something that was said before, e.g. ``the visiting times of each vertex $v$ on this walk is bound by its weight $\weights(v)$.'' buit it also say something new. Also it talks about program analysis which has not been defined, yet. I think it needs more work.}
 Given a program $c$, we generate its execution-based graph 
 $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, by considering all possible traces.
 %
 % Then the adaptivity bound based on program analysis for ${c}$ is the number of query vertices on a finite walk in $\traceG({c})$. This finite walk satisfies:
-Then the program's adaptivity is the number of query vertices being visited on a finite walk in $\traceG({c})$. 
-This finite walk satisfies:
-%
-\begin{itemize}
-\item the number of query vertices being visited on this walk is maximum
-\item the visiting times of each vertex $v$ on this walk is bound by its weight $\weights(v)$.
-\end{itemize}
+Then the program's adaptivity is the maximum query length over all finite walks in $\walks(\traceG({c}))$.
+% number of query vertices being visited on a finite walk in $\traceG({c})$. 
+% This finite walk satisfies:
+% %
+% \begin{itemize}
+% \item the number of query vertices being visited on this walk is maximum
+% \item the visiting times of each vertex $v$ on this walk is bound by its weight $\weights(v)$.
+% \end{itemize}
 %
 It is formally defined in \ref{def:trace_adapt}.
 %
