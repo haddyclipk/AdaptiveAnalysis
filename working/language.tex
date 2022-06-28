@@ -563,6 +563,15 @@ $\lvar_c \in \mathcal{P}(\mathcal{VAR} \times \mathcal{L}) \subseteq \mathcal{LV
 represents the the set of assigned variables and labeled variables for a labeled command $c$,
 defined in Definition~\ref{def:lvar} and \ref{def:avar}.
 %
+\\
+$FV: \expr \to \mathcal{P}(\mathcal{VAR})$, computes the set of free variables in an expression. To be precise,
+$FV(\aexpr)$, $FV(\bexpr)$ and $FV(\qexpr)$ represent the set of free variables in arithmetic
+expression $\aexpr$, boolean expression $\bexpr$ and query expression $\qexpr$ respectively.
+Labeled variables in $c$ is the set of assigned variables and all the free variables
+showing up in $c$ with a default label $in$. 
+The free variables
+showing up in $c$, which aren't defined before be used, are actually the input variables of this program.
+%
 \begin{defn}[Assigned Variables (
 % $\avar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$ or 
 $\avar : \cdom \to \mathcal{P}(\mathcal{VAR} \times \mathbb{N})$)]
@@ -690,7 +699,9 @@ its labeled variables, $\qvar(c) \subseteq \lvar(c)$.
 % \mg{In this definition as well as in others, I have the impression that you assume that the labelled variables are unique in the program. For example, it would not make sense to assign a query to the same labelled variable over and over. If this is the case, we need to make this very explicit in the paper.}
 % \jl{TODO}
 %
+Every labeled variable in a program is unique, formally as follows with proof in Appendix~\ref{apdx:lemma_sec123}.
 \begin{lem}[Uniqueness of the Labeled Variables]
+  \label{lem:lvar_unique}
   For every program $c \in \cdom$ and every two labeled variables such that
   $x^i, y^j \in \lvar(c)$, then $x^i \neq y^j$.
   \[

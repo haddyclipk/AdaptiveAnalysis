@@ -17,7 +17,7 @@
 % \\
 % \mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
 % \jl{$\event_2'$, fixed}
-\begin{defn}[Event May Dependency].
+\begin{defn}[Event May-Dependency].
 \label{def:event_dep}
 \\ 
   An event $\event_2$ is in the \emph{event may-dependency} relation with an assignment
@@ -67,8 +67,10 @@
     \\
     \bigwedge &  \tlabel_{\trace_3} \cap \tlabel_{\trace_3'} = \emptyset
      \land \vcounter(\trace', \pi_2(\event_b)) = \vcounter(\trace, \pi_2(\event_b)) 
-      \land \event_2 \eventin \trace_3
-    \land \event_2 \not\eventin \trace_3'
+    %   \land \event_2 \eventin \trace_3
+    % \land \event_2 \not\eventin \trace_3'
+    \land \event_2 \in \trace_3
+    \land \event_2 \not\in \trace_3'
   \end{array}
   \right)
   )
@@ -78,8 +80,45 @@
   %  
 %
 \end{defn}
-\todo{add explnanation}
-\begin{defn}[Variable May Dependency].
+% \todo{add explnanation}
+\jl{The event \emph{May-Dependency} relation considers two situations (the value dependency and 
+value control dependency) as discussed above.
+In both of the two situations, we modify the value assigned to the first variable by changing the value 
+of $\event_1$ in trace $\trace_1 \tracecat [\event_1]$ into $\event_1'$.
+Then we continuously execute the same program from the same location with the trace $\trace_1 :: \event_1'$, which only differ in 
+the $\event_1$ and $\event_1'$, specifically the value of the two events.
+\\
+Then, we observe two different possible changes of execution in the value dependency and 
+value control dependency situations respectively.
+\\
+In the first situation, we are witnessing that the value assigned to the variable in $\event_2$
+changes in $\event_2'$, have the same variable and label and only differ in their assigned value. 
+In particularly for query, if $\event_2$ and $\event_2'$ are query assignment events, then 
+they differ in their query value rather than the assigned value. 
+In order to handle the muliple occurence of the same event through iterations of the while loop,
+ where  $\event_2$ and $\event_2'$ could be 
+in different while loop,
+we restrict the occurrence times of $\event_2$'s label in the first trace equals to the occurrence times of $\event_2'$'s label in the second trace,
+through $\vcounter(\vtrace, \pi_2(\event_2))
+= 
+\vcounter(\vtrace', \pi_2(\event_2'))$.
+\\
+In the second situation, we are witnessing the disappearance of $\event_2$ through observing the change of a testing event $\event_b$.
+In order to change the appearance of and event, the command that generating $\event_2$ must not be executed in 
+the second execution. 
+The only way to control whether or not a command will be executed, is through the change of guard in the if or while command.
+So we first observe the testing event changes into $\neg \event_b$ in the second execution, then the disappearance of $\event_2$
+in the second trace.
+\\
+In the same way, we restrict the occurrence times of $\event_b$'s label in the two traces be equal
+% s to the occurrence times of $\event_2'$'s label in the second trace,
+through $\vcounter(\trace', \pi_2(\event_b)) = \vcounter(\trace, \pi_2(\event_b)) $ to handle the while loop.
+% changes in $\event_2'$, have the same variable and label and only differ in their assigned value. 
+Again, in particularly for query, we observe the disappearance based on the query value equivalence.
+% if $\event_2$ and $\event_2'$ are query assignment events, then 
+% they differ in their query value rather than the assigned value. 
+}
+\begin{defn}[Variable May-Dependency].
   \label{def:var_dep}
   \\
   A variable ${x}_2^{l_2} \in \lvar_{{c}}$ is in the \emph{variable may-dependency} relation with another
@@ -125,13 +164,14 @@
 % \mg{I don't understand this explanation. What are the ``assignment commands associated to the two labelled variables''}
 \jl{revised but need more think}
 % Explanation: 
-Considering a program's all possible executions,
+\jl{Considering a program's all possible executions,
 among all events generated during these executions
 and the variables and labels of these events are 
 corresponding to the two labeled variables 
 % evaluations of the assignment commands associated to the two labelled variables respectively, 
 as long as there is one pair of events satisfying the \emph{Event May-Dependency} relation in Definition~\ref{def:event_dep}, 
 then we say the two variables have \emph{Variable May-Dependency} relation.
+}
 % \begin{defn}
 % [Value Dependency of Events \todo{Explicit Dependency}]
 % \label{def:event_valdep}.

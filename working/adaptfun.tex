@@ -104,36 +104,10 @@ and $y$ shows up in the left hand of an assignment command, and this assignment 
  in the body associated to that condition command.
 \end{itemize}
 %
-This is formally defined in \ref{def:flowsto}.
-We use $FV(\expr)$, $FV(\sbexpr)$ and $FV(\qexpr)$ denote the set of free variables in 
-expression $\expr$, boolean expression $\sbexpr$ and query expression $\qexpr$ respectively.
+% This is formally defined in \ref{def:flowsto}.
+% We use $FV(\expr)$, $FV(\sbexpr)$ and $FV(\qexpr)$ denote the set of free variables in 
+% expression $\expr$, boolean expression $\sbexpr$ and query expression $\qexpr$ respectively.
 %
-\\
-%
-Program Entry Point: $\entry_c : \mbox{Command} \to \mathbb{N}$ 
-\[
-  \entry_c \triangleq 
-\left\{
-  \begin{array}{ll} 
-     l       
-    & c = [\eskip]{}^l
-    \\ 
-    l    & c = [\assign{x}{\expr_1}]{}^l
-    \\ 
-    l      
-    & c = \clabel{\assign{x}{\query(\qexpr_1)}}{}^l
-    \\
-   l
-    & c_1 = \eif([b]{}^l, c_t, c_f)
-    \\ 
-    l         
-    & c = \ewhile [b]^l \edo c'
-    \\ 
-    \entry_{c1}
-    & c = c1;c2
-  \end{array}
-  \right.
-\]
 %
 \begin{defn}[Equivalence of Program]
 %
