@@ -5,13 +5,15 @@
 %
 % \mg{I don't think labeled variables were defined before. Also the set of labeled variables was not defined.}\\
 % \jl{it is defined above in Definition~\ref{def:avar} and Definition~\ref{def:lvar}}\\
-\mg{Also, I already pointed out that here there is an inconsistency between labeled variables and pairs of variable and label. We need to resolve this inconsistency. Either we use everywhere labeled variables, or we use pairs variable and label.}\\
-\jl{I agree, yes, I need to think. I will use the labeled variable, but I need to think how to fix it in the event}
+% \mg{Also, I already pointed out that here there is an inconsistency between labeled variables and pairs of variable and label. We need to resolve this inconsistency. Either we use everywhere labeled variables, or we use pairs variable and label.}\\
+% \jl{I agree, yes, I need to think. I will use the labeled variable, but I need to think how to fix it in the event}
+% \\
+\jl{TODO: unify labeled variables and pairs of variable and label into labeled variables}
 \\
 % \mg{Another issue, it is not a good norm to define something using a definition that will follow. So, first we define the dependency over events and then the one over variables.}
 % \jl{fixed}
 \mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
-\jl{TODO for others}\\
+\jl{TODO: Simplify notations and add description}\\
 % \mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
 % \jl{$\event_2'$, fixed}
 \begin{defn}[Event May Dependency].
@@ -366,68 +368,6 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 %
 %
-\paragraph{Query Variables} 
-% is a subset of the program's assigned variables, where every variable in this set is assigned by a query in the program.
-% \mg{The set of query variables of a program is the set of variables set to the result of a query in the program.}\\
-The set of query variables of a program is the set of variables set to the result of a query in the program.
-% \mg{In the next definition, why do you call it a vector? It seems that you define it as a set.}\\
-% \jl{fixed}\\
-\mg{Also, there is still confusion between labelled variables and pairs (variable, label).}\\
-\jl{TODO: fix for event}
-%
-% \begin{defn}[Query Variables ($\qvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$)].
-  % \\
-\begin{defn}[Query Variables ($\qvar: \cdom \to \mathcal{LVAR}$)] 
-Given a program $c$, its query variables 
-% \mg{it seems you are missing the $_c$ subscript. Also, this is a minor point but I don't think it is a good idea to use a subscript, cannot you just use $\qvar(c)$.}
-$\qvar$ is a set containing all variables newly assigned by the result of a query in the programm, $\qvar \subset \mathcal{VAR}$.
-% \jl{fixed}
-It is defined as follows:
-{\footnotesize
-$$
-  % \qvar_{{c}} \triangleq
-  \qvar(c) \triangleq
-  \left\{
-  \begin{array}{ll}
-      % \{\}                  
-      % & {c} = [{\assign x e}]^{(l, w)} 
-      % \\
-      % \{{x}^l\}                  
-      % & {c} = [{\assign x \query(\qexpr)}]^{(l, w)} 
-      % \\
-      % \qvar_{{c_1}} \cup \qvar_{{c_2}}  
-      % & {c} = {c_1};{c_2}
-      % \\
-      % \qvar_{{c_1}} \cup \qvar_{{c_2}} 
-      % & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
-      % \\
-      % \qvar_{{c}'}
-      % & {c}   = \ewhile ([\bexpr]^{l}, {c}')
-      \{\}                  
-      & {c} = [{\assign x \expr}]^{l} 
-      \\
-      \{{x}^l\}                  
-      & {c} = [{\assign x \query(\qexpr)}]^{l} 
-      \\
-      \qvar(c_1) \cup \qvar(c_2)  
-      & {c} = {c_1};{c_2}
-      \\
-      \qvar(c_1) \cup \qvar(c_2) 
-      & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
-      \\
-      \qvar(c')
-      & {c}   = \ewhile ([\bexpr]^{l}, {c}')
-\end{array}
-\right.
-$$
-}
-\end{defn}
-%
-\mg{In this definition as well as in others, I have the impression that you assume that the labelled variables are unique in the program. For example, it would not make sense to assign a query to the same labelled variable over and over. If this is the case, we need to make this very explicit in the paper.}
-\jl{TODO}
-%
-\begin{lem}[Uniquness of the Labeled Variables]
-\end{lem}
 %
 \begin{defn}[Execution Based Dependency Graph]
 \label{def:trace_graph}

@@ -48,10 +48,9 @@
 % \]
 %
 \mg{I suggest to use more definition environments throughout this section.}
-
-\mg{Is ++ a constructor or a defined operation? It is in the grammar
-  but it seems that you are actually defining it here.}
-  \jl{It is a defined operator, I mixed them wrongly.}
+% \mg{Is ++ a constructor or a defined operation? It is in the grammar
+%   but it seems that you are actually defining it here.}
+%   \jl{It is a defined operator, I mixed them wrongly.}
   \begin{defn}[Trace Concatenation, $\tracecat: \mathcal{T} \to \mathcal{T} \to \mathcal{T}$]
 Given two traces $\trace_1, \trace_2 \in \mathcal{T}$, the trace concatenation operator 
 $\tracecat$ is defined as:
@@ -86,8 +85,8 @@ $\tracecat$ is defined as:
 %
 % \todo{ need to consider the occurrence times }
 % \\
-\mg{This definition is not well given. You use a different operator to define it t[:e] which you say it is a shorthand. It cannot be a shorthand because it is used in the definition. I think you need to define two operations, either in sequence or mutually recursive.}
-\jl{I moved this definition from the main paper into the appendix \ref{apdx:flowsto_event_soundness}. Because this operator is only being used in the soundness proof. And I also feel it doesn't worth to spend many lines in the main paper for defining this complex notation.}
+% \mg{This definition is not well given. You use a different operator to define it t[:e] which you say it is a shorthand. It cannot be a shorthand because it is used in the definition. I think you need to define two operations, either in sequence or mutually recursive.}
+% \jl{I moved this definition from the main paper into the appendix \ref{apdx:flowsto_event_soundness}. Because this operator is only being used in the soundness proof. And I also feel it doesn't worth to spend many lines in the main paper for defining this complex notation.}
 % Subtrace: $[ : ] : \mathcal{{T} \to \eventset \to \eventset \to \mathcal{T}}$ 
 % \wqside{Confusing, I can not understand the subtraction, it takes a trace, and two events, and this operator is used to subtract these two events?}
 % \[
@@ -126,7 +125,7 @@ $\tracecat$ is defined as:
 %   \right.
 % \]
 % %
-\mg{why in the next definition you use ( ) while in the previous ones you didn't? They seem like the same cases. And why you use o.w. instead of []?}
+% \mg{why in the next definition you use ( ) while in the previous ones you didn't? They seem like the same cases. And why you use o.w. instead of []?}
 % An event $\event \in \eventset$ belongs to a trace $\trace$, i.e., $\event \eventin \trace$ are defined as follows:
 % %
 % \begin{equation}
@@ -180,9 +179,9 @@ As usual, we denote by $\event \notin \trace$ that the event $\event$ doesn't be
 %   \right.
 % \end{equation}
 %
-\mg{Why the previous definition used :: and now you switch to ++? Cannot this just be defined using ::? I am trying to anticipate places where a reader might be confused. Also, this definition would be much simpler if we defined event in a more uniform way. Ideally, we want to distinguish three cases, we don't need to distinguish 7 cases.}\\
-\jl{My bad, I was really too sticky to the convention.
-I though the list appending  $::$ can only append element on the left side.}
+% % \mg{Why the previous definition used :: and now you switch to ++? Cannot this just be defined using ::? I am trying to anticipate places where a reader might be confused. Also, this definition would be much simpler if we defined event in a more uniform way. Ideally, we want to distinguish three cases, we don't need to distinguish 7 cases.}\\
+% % \jl{My bad, I was really too sticky to the convention.
+% I though the list appending  $::$ can only append element on the left side.}
 % \mg{We introduce a counting operator $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$ whose behavior is defined as follows, \sout{Counter $\vcounter : \mathcal{T} \to \mathbb{N} \to \mathbb{N}$ }}.
 % \wq{The operator counter actually provides the number of times a specific label appears in a trace. Only a number, the position of label is ignored.}
 % \[
@@ -278,7 +277,8 @@ We introduce a counting operator $\vcounter : \mathcal{T} \to \mathbb{N} \to \ma
 % \end{array}
 % \]
 %
-\mg{This wording needs to be fixed. Also notice that the type is wrong, a label is not always returned.}
+\todo{wording}
+% \mg{This wording needs to be fixed. Also notice that the type is wrong, a label is not always returned.}
 %  The Latest Label $\llabel : \mathcal{T} \to \mathcal{VAR} \to \mathbb{N}$ 
 % The label of the latest assignment event which assigns value to variable $x$.
 % \[
@@ -321,7 +321,7 @@ Its behavior is defined as follows,
   \]
 % \end{defn}
 %
-\mg{This wording needs to be fixed but also the description does not make sense. This operator seems to just collect all the labels in a trace. Again, this definition would be shorter with a more uniform definition of events.}
+% \mg{This wording needs to be fixed but also the description does not make sense. This operator seems to just collect all the labels in a trace. Again, this definition would be shorter with a more uniform definition of events.}
 % The Trace Label Set $\tlabel : \mathcal{T} \to \mathcal{P}{(\mathbb{N})}$ 
 % The label of the latest assignment event which assigns value to variable $x$.
 % \[
@@ -336,7 +336,7 @@ Its behavior is defined as follows,
 % \end{array}
 % \]
 % \begin{defn}
-  The operator $\tlabel : \mathcal{T} \to \mathcal{P}{(\mathbb{N})}$ gives the set of labels in every event belonging to 
+  The operator $\tlabel : \mathcal{T} \to \mathcal{P}{(\ldom)}$ gives the set of labels in every event belonging to 
   a trace, whoes behavior is defined as follows,
 \[
   % \begin{array}{llll}
@@ -367,7 +367,7 @@ Its behavior is defined as follows,
 %
 
 %
-\mg{The next lemma is trivial but it still needs a proof sketch.}
+% \mg{The next lemma is trivial but it still needs a proof sketch.}
 \begin{lem}
 [Trace Non-Decreasing]
 \label{lem:tracenondec}
@@ -494,6 +494,7 @@ This case is proved.
  we have this case proved.
 \end{proof}
 %
+\todo{more explanation}
 \mg{This corollary needs some explanation. In particular, we should stress that $\event$ and $\event'$ may differ in the query value.}
 \begin{coro}
 \label{coro:aqintrace}
