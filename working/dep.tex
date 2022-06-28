@@ -4,10 +4,78 @@
 \subsection{Events Dependency}
 %
 \mg{I don't think labeled variables were defined before. Also the set of labeled variables was not defined.}\\
+\jl{it is defined above in Definition~\ref{def:avar} and Definition~\ref{def:lvar}}\\
 \mg{Also, I already pointed out that here there is an inconsistency between labeled variables and pairs of variable and label. We need to resolve this inconsistency. Either we use everywhere labeled variables, or we use pairs variable and label.}\\
+\jl{I agree, yes, I need to think. I will use the labeled variable, but I need to think how to fix it in the event}
+\\
 \mg{Another issue, it is not a good norm to define something using a definition that will follow. So, first we define the dependency over events and then the one over variables.}
+\jl{fixed}
 
-
+\mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
+\jl{TODO for others}\\
+\mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
+\jl{$\event_2'$, fixed}
+\begin{defn}[Event May Dependency].
+\label{def:event_dep}
+\\ 
+  An event $\event_2$ is in the \emph{event may-dependency} relation with an assignment
+  event $\event_1 \in \eventset^{\asn}$ in a program ${c}$
+  with a hidden database $D$ and a trace $\trace \in \mathcal{T}$ denoted as 
+  %
+  $\eventdep(\event_1, \event_2, [\event_1 ] \tracecat \trace \tracecat [\event_2], c, D)$, if and only if
+  %
+  \[
+    \begin{array}{l}
+  \exists \vtrace_0,
+  \vtrace_1, \vtrace' \in \mathcal{T},\event_1' \in \eventset^{\asn}, {c}_1, {c}_2  \in \cdom  \st
+  \diff(\event_1, \event_1') \land 
+      \\ \quad
+      (
+        \exists  \event_2' \in \eventset \st 
+    \left(
+    \begin{array}{ll}   
+   & \config{{c}, \vtrace_0} \rightarrow^{*} 
+  \config{{c}_1, \vtrace_1 \tracecat [\event_1]}  \rightarrow^{*} 
+    \config{{c}_2,  \vtrace_1 \tracecat [\event_1] \tracecat \vtrace \tracecat [\event_2] } 
+    % 
+   \\ 
+   \bigwedge &
+    \config{{c}_1, \vtrace_1 \tracecat [\event_1']}  \rightarrow^{*} 
+    \config{{c}_2,  \vtrace_1 \tracecat[ \event_1'] \tracecat \vtrace' \tracecat [\event_2'] } 
+  \\
+  \bigwedge & 
+  \diff(\event_2,\event_2' ) \land 
+  \vcounter(\vtrace) ~ \pi_2(\event_2)
+  = 
+  \vcounter(\vtrace') ~ \pi_2(\event_2')\\
+  \end{array}
+  \right)
+  \\ \quad
+  \lor 
+  \exists \vtrace_3, \vtrace_3'  \in \mathcal{T}, \event_b \in \eventset^{\test} \st 
+  \left(
+  \begin{array}{ll}   
+    & \config{{c}, \vtrace_0} \rightarrow^{*} 
+      \config{{c}_1, \vtrace_1 \tracecat [\event_1]}  \rightarrow^{*} 
+      \config{c_2,  \vtrace_1 \tracecat [\event_1] \tracecat \trace \tracecat [\event_b] \tracecat  \trace_3} 
+    \\ 
+    \bigwedge &
+    \config{{c}_1, \vtrace_1 \tracecat [\event_1']}  \rightarrow^{*} 
+    \config{c_2,  \vtrace_1 \tracecat [\event_1'] \tracecat \trace' \tracecat [(\neg \event_b)] \tracecat \trace_3'} 
+    \\
+    \bigwedge &  \tlabel_{\trace_3} \cap \tlabel_{\trace_3'} = \emptyset
+     \land \vcounter(\trace') ~  \pi_2(\event_b) = \vcounter(\trace) ~ {\tt label}(\event_b)
+      \land \event_2 \eventin \trace_3
+    \land \event_2 \not\eventin \trace_3'
+  \end{array}
+  \right)
+  )
+\end{array}
+   \]
+, where ${\tt label}(\event_2) = \pi_2(\event_2)$.
+  %  
+%
+\end{defn}
 \begin{defn}[Variable May Dependency].
   \label{def:var_dep}
   \\
@@ -284,71 +352,10 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 % \end{defn}
 %
 
-\mg{I think this definition is too cryptic. We should try to massage it a bit to make it more understandable. Here few suggestion. First, let's use names that are easier to memorize. For example, instead of  $\vcounter(\vtrace) ~ \pi_2(\event_2)$ we could write ${\tt count}({\tt label}(\event_2), \vtrace)$.}
-\mg{Also, is $\event_2$ or $\event_2'$ in the last line of the first block?}
-\begin{defn}[Event May Dependency].
-\label{def:event_dep}
-\\ 
-  An event $\event_2$ is in the \emph{event may-dependency} relation with an assignment
-  event $\event_1 \in \eventset^{\asn}$ in a program ${c}$
-  with a hidden database $D$ and a trace $\trace \in \mathcal{T}$ denoted as 
-  %
-  $\eventdep(\event_1, \event_2, [\event_1 ] \tracecat \trace \tracecat [\event_2], c, D)$, if and only if
-  %
-  \[
-    \begin{array}{l}
-  \exists \vtrace_0,
-  \vtrace_1, \vtrace' \in \mathcal{T},\event_1' \in \eventset^{\asn}, {c}_1, {c}_2  \in \cdom  \st
-  \diff(\event_1, \event_1') \land 
-      \\ \quad
-      (
-        \exists  \event_2' \in \eventset \st 
-    \left(
-    \begin{array}{ll}   
-   & \config{{c}, \vtrace_0} \rightarrow^{*} 
-  \config{{c}_1, \vtrace_1 \tracecat [\event_1]}  \rightarrow^{*} 
-    \config{{c}_2,  \vtrace_1 \tracecat [\event_1] \tracecat \vtrace \tracecat [\event_2] } 
-    % 
-   \\ 
-   \bigwedge &
-    \config{{c}_1, \vtrace_1 \tracecat [\event_1']}  \rightarrow^{*} 
-    \config{{c}_2,  \vtrace_1 \tracecat[ \event_1'] \tracecat \vtrace' \tracecat [\event_2'] } 
-  \\
-  \bigwedge & 
-  \diff(\event_2,\event_2' ) \land 
-  \vcounter(\vtrace) ~ \pi_2(\event_2)
-  = 
-  \vcounter(\vtrace') ~ \pi_2(\event_2)\\
-  \end{array}
-  \right)
-  \\ \quad
-  \lor 
-  \exists \vtrace_3, \vtrace_3'  \in \mathcal{T}, \event_b \in \eventset^{\test} \st 
-  \left(
-  \begin{array}{ll}   
-    & \config{{c}, \vtrace_0} \rightarrow^{*} 
-      \config{{c}_1, \vtrace_1 \tracecat [\event_1]}  \rightarrow^{*} 
-      \config{c_2,  \vtrace_1 \tracecat [\event_1] \tracecat \trace \tracecat [\event_b] \tracecat  \trace_3} 
-    \\ 
-    \bigwedge &
-    \config{{c}_1, \vtrace_1 \tracecat [\event_1']}  \rightarrow^{*} 
-    \config{c_2,  \vtrace_1 \tracecat [\event_1'] \tracecat \trace' \tracecat [(\neg \event_b)] \tracecat \trace_3'} 
-    \\
-    \bigwedge &  \tlabel_{\trace_3} \cap \tlabel_{\trace_3'} = \emptyset
-     \land \vcounter(\trace') ~  \pi_2(\event_b) = \vcounter(\trace) ~  \pi_2(\event_b)
-      \land \event_2 \eventin \trace_3
-    \land \event_2 \not\eventin \trace_3'
-  \end{array}
-  \right)
-  )
-\end{array}
-   \]
-  %  
-%
-\end{defn}
 %
 
 \mg{Ok, I see the definition of Labelled Variables here. Clearly, it is in the wrong order. Besides, I still think it is better to use just one notation.}
+\jl{defined above in Definition~\ref{def:avar} and \ref{def:lvar}}
 %
 %
 %
@@ -356,21 +363,43 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 %
 %
-\paragraph{Query Variables} is a subset of the program's assigned variables, where every variable in this set is assigned by a query in the program.
-\mg{The set of query variables of a program is the set of variables set to the result of a query in the program.}\\
+\paragraph{Query Variables} 
+% is a subset of the program's assigned variables, where every variable in this set is assigned by a query in the program.
+% \mg{The set of query variables of a program is the set of variables set to the result of a query in the program.}\\
+The set of query variables of a program is the set of variables set to the result of a query in the program.
 \mg{In the next definition, why do you call it a vector? It seems that you define it as a set.}\\
-\mg{Also, there is still confusion between labelled variables and pairs (variable, label).}
+\jl{fixed}\\
+\mg{Also, there is still confusion between labelled variables and pairs (variable, label).}\\
+\jl{TODO: fix for event}
 %
-\begin{defn}[Query Variables ($\qvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$)].
-  \\
- 
-Given a program $c$, its query variables \mg{it seems you are missing the $_c$ subscript. Also, this is a minor point but I don't think it is a good idea to use a subscript, cannot you just use $\qvar(c)$.}$\qvar$ is a vector containing all variables newly assigned by a query in the programm, $\qvar \subset \mathcal{VAR}$.
+% \begin{defn}[Query Variables ($\qvar_{c} \subseteq \mathcal{VAR} \times \mathbb{N}$)].
+  % \\
+\begin{defn}[Query Variables ($\qvar: \cdom \to \mathcal{LVAR}$)] 
+Given a program $c$, its query variables 
+% \mg{it seems you are missing the $_c$ subscript. Also, this is a minor point but I don't think it is a good idea to use a subscript, cannot you just use $\qvar(c)$.}
+$\qvar$ is a set containing all variables newly assigned by the result of a query in the programm, $\qvar \subset \mathcal{VAR}$.
+% \jl{fixed}
 It is defined as follows:
 {\footnotesize
 $$
-  \qvar_{{c}} \triangleq
+  % \qvar_{{c}} \triangleq
+  \qvar(c) \triangleq
   \left\{
   \begin{array}{ll}
+      % \{\}                  
+      % & {c} = [{\assign x e}]^{(l, w)} 
+      % \\
+      % \{{x}^l\}                  
+      % & {c} = [{\assign x \query(\qexpr)}]^{(l, w)} 
+      % \\
+      % \qvar_{{c_1}} \cup \qvar_{{c_2}}  
+      % & {c} = {c_1};{c_2}
+      % \\
+      % \qvar_{{c_1}} \cup \qvar_{{c_2}} 
+      % & {c} =\eif([\bexpr]^{l}, c_1, c_2) 
+      % \\
+      % \qvar_{{c}'}
+      % & {c}   = \ewhile ([\bexpr]^{l}, {c}')
       \{\}                  
       & {c} = [{\assign x e}]^{(l, w)} 
       \\
@@ -392,6 +421,10 @@ $$
 \end{defn}
 %
 \mg{In this definition as well as in others, I have the impression that you assume that the labelled variables are unique in the program. For example, it would not make sense to assign a query to the same labelled variable over and over. If this is the case, we need to make this very explicit in the paper.}
+\jl{TODO}
+%
+\begin{lem}[Uniquness of the Labeled Variables]
+\end{lem}
 %
 \begin{defn}[Execution Based Dependency Graph]
 \label{def:trace_graph}
@@ -449,40 +482,45 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 % The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
 % \\
 \mg{I don't understand the next sentence. First, by the definition edges are between nodes which are labelled variables, why do you have annotated queries now? I suspect that this and the next sentence are old.}
-The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
-edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
-
-The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary\mg{To summarize}, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
+\jl{I deleted but forgot to push before}
 \\
+% The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
+% edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
+% 
+% The query-based dependency graph only considers the newly generated annotated queries during the execution of the program $c$, so we see the nodes coming from the trace $t'-t$. The previous trace before the execution of $c$ is excluded when constructing the graph. To summary\mg{To summarize}, for every execution of a program $c$ staring with different configurations, we can construct a corresponding dependency graph. 
+% \\
 \mg{I also don't understand the next sentence. What is the injectivity of $\weights$ in a program dependency graph?And what is the image of $v$ in $\weights$. I find this very confusing.}
-For any program $c$, by the injectivity of $\weights$ in its dependency graph, $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, 
-$\weights$ forms a function. We use $\weights(v)$ to indicate the image of $v$ in $\weights$.
+\jl{I removed this, it is mainly used for simplify the soundness proof.}
+% For any program $c$, by the injectivity of $\weights$ in its dependency graph, $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, 
+% $\weights$ forms a function. 
+We use $\weights(v)$ to indicate the weight of $v$ in a program $c$'s execution-based dependency graph $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.
 %
 \mg{Is this definition given a ``labelled weighted graph'' or an ``execution-based dependency graph''? you did not define the former but only the latter. Also, you say ``there exists'', can there be more sequences of vertices satisfying this definition given a sequence of edges?}
-\begin{defn}[Finite Walk ($k$)].
-\label{def:finitewalk}
-\\
-Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, a \emph{finite walk} $k$ in $G$ is a sequence of edges $(e_1 \ldots e_{n - 1})$ 
-for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
-\begin{itemize}
-    \item $e_i = (v_{i},v_{i + 1})$ for every $1 \leq i < n$.
-    \item every vertex $v \in \vertxs$ appears in this vertices sequence $(v_1, \ldots, v_{n})$ of $k$ at most 
-    $\weights(v)$ times.  
-    % \[
-    %   \forall v \in (v_1, \ldots, v_{n}), (v, n) \in \weights \st 
-    %   \visit((v_1, \ldots, v_{n}), v) \leq n
-    %   \]
-      \[
-        \forall v \in (v_1, \ldots, v_{n})\st 
-        \visit((v_1, \ldots, v_{n}), v) \leq \weights(v)
-      \]
-\end{itemize}
-$(v_1, \ldots, v_{n})$ is the vertex sequence of this walk, and $\visit((v_1, \ldots, v_{n}), v) $ counts the occurrence times of
-$v$ in sequence $(v_1, \ldots, v_{n})$.
-\\
-%
-Length of this finite walk $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
-\end{defn}
+\jl{execution-based dependency graph}
+% \begin{defn}[Finite Walk ($k$)].
+% \label{def:finitewalk}
+% \\
+% Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, a \emph{finite walk} $k$ in $G$ is a sequence of edges $(e_1 \ldots e_{n - 1})$ 
+% for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
+% \begin{itemize}
+%     \item $e_i = (v_{i},v_{i + 1})$ for every $1 \leq i < n$.
+%     \item every vertex $v \in \vertxs$ appears in this vertices sequence $(v_1, \ldots, v_{n})$ of $k$ at most 
+%     $\weights(v)$ times.  
+%     % \[
+%     %   \forall v \in (v_1, \ldots, v_{n}), (v, n) \in \weights \st 
+%     %   \visit((v_1, \ldots, v_{n}), v) \leq n
+%     %   \]
+%       \[
+%         \forall v \in (v_1, \ldots, v_{n})\st 
+%         \visit((v_1, \ldots, v_{n}), v) \leq \weights(v)
+%       \]
+% \end{itemize}
+% $(v_1, \ldots, v_{n})$ is the vertex sequence of this walk, and $\visit((v_1, \ldots, v_{n}), v) $ counts the occurrence times of
+% $v$ in sequence $(v_1, \ldots, v_{n})$.
+% \\
+% %
+% Length of this finite walk $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
+% \end{defn}
 
 \mg{
 \begin{defn}[Finite Walk in a Labelled Weighted Graph (k)].
@@ -499,16 +537,37 @@ for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
 The length of $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
 \end{defn}
 }
-
+\begin{defn}[Finite Walk (k)].
+  \label{def:finitewalk}
+  \\
+  Given a program $c$'s execution-based dependency graph $G(c) = (\vertxs, \edges, \weights, \qflag)$, 
+  a \emph{finite walk} $k$ in $G$ is a sequence of edges $(e_1 \ldots e_{n - 1})$ 
+  for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
+  \begin{itemize}
+      \item $e_i = (v_{i},v_{i + 1})$ for every $1 \leq i < n$.
+      \item every vertex $v \in \vertxs$ appears in $(v_1, \ldots, v_{n})$ at most 
+      $\weights(v)$ times.  
+  \end{itemize}
+  %
+  The length of $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
+  \end{defn}
 %
 \mg{Again, you did not define a ``labelled weighted graph''.}
-Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, 
-we use $\walks(G)$ to denote \mg{``the set'', not ``a set''}a set containing all finite walks $k$ in $G$;
+\jl{Yes, it should be the ``execution-based dependency graph'', I use ``labelled weighted graph'' because I want to 
+define the walk on a more general graph, i.e., ``labelled weighted graph''. But I didn't realized I need to define 
+this ``labelled weighted graph'' first.}
+Given a 
+% labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$, 
+a program $c$'s execution-based dependency graph $G(c) = (\vertxs, \edges, \weights, \qflag)$
+we use $\walks(G(c))$ to denote 
+% \mg{``the set'', not ``a set''}a set containing all finite walks $k$ in $G$;
+the set containing all finite walks $k$ in $G(c)$;
 and $k_{v_1 \to v_2} \in \walks(G)$ with $v_1, v_2 \in \vertxs$ denotes the walk from vertex $v_1$ to $v_2$ .
 %
 %
-
 \mg{I don't understand this definition. Is wrt a single query?if yes, who is chosing the query? Or is it any query?}
+\jl{I'm trying to define the length by just counting the number of query variables in the walk, instead of counting all 
+the vertices.}
 \begin{defn}[Length of Finite Walk w.r.t. Query ($\qlen$)].
 \label{def:qlen}
 \\
@@ -517,7 +576,10 @@ Given a labelled weighted graph $G = (\vertxs, \edges, \weights, \qflag)$ and a 
   \qlen(k) = \len\big(
   v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)
 \]
-, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.\mg{If I understand where you want to go, why don't you just use the cardinality of the set above, rather than taking the length of a subsequence?}
+, where $\big(v \mid v \in (v_1, \ldots, v_{n}) \land \qflag(v) = 1 \big)$ is a subsequence of $k$'s vertex sequence.
+\mg{If I understand where you want to go, why don't you just use the cardinality of the set above, rather than taking the length of a subsequence?}
+\jl{because the same vertex could have multiple occurrence in the sequence, and we will count all the occurrence instead of just once.
+So the cardinality of set doesn't work.}
 \end{defn}
 %
 %
