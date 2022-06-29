@@ -448,14 +448,18 @@ This algorithm first
  over all program labels, 
 in order to analyzing the data flow relations through variables assigned in every labeled command,
 and the reaching time of each variable.
-Then, it refines this control flow graph into a weighted data-dependency graph, through the data flow and reaching bound analysis results.
+Then, it refines this control flow graph 
+% into a weighted data-dependency graph, 
+and generate the Program-Based Dependency Graph,
+through the data flow and reaching bound analysis results.
 In the last step, it finds the longest finite walk in this weighted data control flow graph w.r.t. the query variables,
 and return the number of query vertices traversed alongside.
 % \wq{To do: Add $\THESYSTEM$, a data flow analysis algorithm to scan the program and give a graph.}
-To be more specific, {\THESYSTEM} consists of four phases: 
+To be more specific, {\THESYSTEM} consists of five phases as follows,
 \\
 % \jl{Better to have a graph or picture of overview of the algorithm}
 \todo{graph}
+\todo{pass again}
 \begin{enumerate}
     \item Generating an abstract control flow graph over all labels, which are used as program's control locations.
     % \\
@@ -520,25 +524,41 @@ Each directed
  We present the detail of program abstraction and the graph generation in following steps.
 %
 \paragraph*{Expression Abstraction}
-We define
-an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
+We introduce the following notations and operations first
+% an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
 \\
-Difference constraint: $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$
-\\
-The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ is inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
-$y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{Z}$.
-It iss defined in the same way as
-\cite{sinn2017complexity},  represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$. 
-\\
-The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+% is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+The Symbolic Constant:  $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+%  is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
 It consists of 
-natural number $\mathbb{N}$,
-the symbolic constants $\inpvar$ (i.e., the set of the program's input variables), 
+natural numbers $\mathbb{N}$,
+% the symbolic constants
+the program's input variables $\inpvar$ 
+% (i.e., the set of the program's input variables), 
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
 assigned by queries.
 \\
-The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+Difference constraint: $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$
+ \\
+$DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ represents all the difference constraints over the 
+variable and symbolic constants.
+% The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ 
+It is a set of the inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
+$y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{Z}$. 
 \\
+This difference constraint is defined in the same way as
+\cite{sinn2017complexity}. 
+% represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$. 
+\\
+% The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+% It consists of 
+% natural number $\mathbb{N}$,
+% the symbolic constants $\inpvar$ (i.e., the set of the program's input variables), 
+% and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
+% assigned by queries.
+% \\
+% The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+% \\
 For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ .
 \\
 % % $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
@@ -548,19 +568,8 @@ For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \co
 \\
 % % $DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
 % \\
-We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
-\\
-1. First normalize all the boolean expressions in the guards of $\ewhile$ header into the form 
-$ a > 0 $ or $a \geq 0$, generating a set of variables involved into these boolean expressions, $\grdvar \subseteq \mathcal{VAR}$.
-\\
-2. Then, we symbolic executing the assignment commands 
-(substituting the variables in every expression by the symbolic expression assigned to it previously) until 
-all the expressions stabilized.
-\\
-3. Then, abstract the stabilized expression in every assignment command into a constraint in $DC(\mathcal{VAR}  \cup \constdom)$, or a $\top$ representing
-$\etrue$, as follows:
-\\
-Expression Abstraction:
+Expression Abstraction: (adopted from the expression abstraction method in paper \cite{sinn2017complexity})
+% We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
 $\absexpr : \expr \to \mathcal{VAR} \to DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\} $,
 computes the abstract value for each variable 
 according to the expression $\expr$ assigned to it in the command.
@@ -590,7 +599,9 @@ according to the expression $\expr$ assigned to it in the command.
   In line:4 of case where variable in the $\grdvar$ is updated by a variable $y$ not in this set, we add $y$ into the set $\grdvar$ and repeat 
   above procedure  until $\grdvar$ and $\absexpr(\expr, x)$ is stabilized for every variable.
   \\
-More specifically in understanding the intuition, we handle a simplified normalized guard expression ($ x > 0$ for $x^l \in \lvar_c$)
+More specifically in 
+% understanding the intuition, 
+we handle a simplified normalized guard expression ($ x > 0$ for $x^l \in \lvar_c$)
  in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}.
 \\
 The counter variables only increase, decrease or reset by expression in the form of arithmetic minus and plus (able to extend to max and min.)
