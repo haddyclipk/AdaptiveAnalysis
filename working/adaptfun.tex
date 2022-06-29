@@ -6,30 +6,37 @@
 % \mg{
 % In this section, we present our static program analysis for computing an upper bound on the adaptivity a program $c$
 % }
-In this section, we present our static program analysis for computing an upper bound on the adaptivity a program $c$
+In this section, we present our static program analysis for computing an upper bound on the adaptivity a program $c$.
 %
 \subsection{Adaptivity Based on Program Analysis in \THESYSTEM}
-In order to give bound on the program's adaptivity, 
-we first build a program-based data-dependency graph to {over-}approximate the 
-trace-based dependency graph. 
-Then, we define the program-based adaptivity over this approximated graph, as the upper bound for $A(c)$.
+In order to give a bound on the program's adaptivity, we first build a
+program-based data-dependency graph to {over-}approximate the
+trace-based dependency graph.  Then, we define a program-based
+adaptivity over this approximated graph, as an upper bound for
+$A(c)$.
 
-This program-based graph has the similar topology structure as the trace-based (semantic) dependency graph, with the same vertices and query labels, 
-and approximated edges and weights. 
-The approximated edges corresponds to a program-based data dependency relation ($\flowsto$ in Definition~\ref{def:flowsto}) and approximated weight corresponds to a reachability bound analysis results from Definition~\ref{def:transition_closure}.
+This program-based graph has a similar topology structure as the one
+of the trace-based (semantic) dependency graph. It has the same
+vertices and query labels, and approximated edges and weights.  An
+approximated edge correspond to a program-based data dependency
+relation ($\flowsto$ in Definition~\ref{def:flowsto}) and an approximated
+weight corresponds to a reachability bound analysis results from
+Definition~\ref{def:transition_closure}.
 
 %
 \subsubsection{Program-Based Variable Dependency}
-The program-based dependency relation over two labeled variables ($x^i, y^j)$ are defined as a $\flowsto$ relation with respect to the program $c$, as $\flowsto(x^i, y^j, c)$.
-\\
-$\flowsto \in \mathcal{LVAR} \times \mathcal{LVAR} \times \cdom \to \{\etrue, \efalse\}$
+The program-based dependency relation over two labeled variables ($x^i, y^j)$ is defined as a $\flowsto$ relation with respect to the program $c$ as follows.
 %
 \begin{defn}[Data Flow Relation between Assigned Variables ($\flowsto$)].
 \label{def:flowsto}
 \\
-In a program  ${c}$,
-a variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$
-in ${c}$, denoted as $\flowsto({x^i, y^j, c})$, is defined as follows:
+Given a program  ${c}$,
+a variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$, if and only if:
+\mg{I cannot even parse the next formula. Why there is a big disjunction on the left? Disjunction is a binary operation, or n-ary if given a set, what is this disjunction between?}\\
+\mg{please, remove the underscript $c$ in the exists. It just makes everything mroe difficult to parse.}\\
+\mg{The use of $\lor$ is odd. E.g. $\exists {(\expr \lor \qexpr)}$ or
+  $ [{\assign{y}{\expr \lor \query(\qexpr)}}]^{j} $. I suggest to write the whole formula instead of using weird shortenings.}\\
+\mg{Also, now it is too late to change this but instead of breaking down the definition using the subterm relation and then defining the flowto relation, it would have been better to give just one inductive definition of Flowto - I imagine that this makes also the proof more awkward.}
 %
 {\footnotesize 
 \[
@@ -76,6 +83,8 @@ in ${c}$, denoted as $\flowsto({x^i, y^j, c})$, is defined as follows:
 %
 \end{defn}
 %
+\mg{The next notation is inconsistent with the one used above. Also, this definition should be given before the definition of flowto. From the description I have no cluse what this notion of reachability means. Also, the definition is referred to does not define this notation.}\\
+\mg{the definition somehow seems to make sense but until when the or notation is fixed and I don't see the definition of RD, I cannot tell for sure.}
 $\live^l(c) \subseteq \lvar_c$,
 which is the set of all the reachable variables at location of label $l$ in the program $c$.
 For every labelled variable $x^l$ in this set, 
@@ -83,6 +92,7 @@ the value assigned to that variable
 in the assignment command associated to that label is reachable at the entry point of  executing the command of label $l$.
 This is formally defined , formally computed in Definition~\ref{def:feasible_flowsto}
 \\
+\mg{This description seems inconsistent with the definition. I suggest to use the same variables and terms.}
 To understand the $\flowsto$ intuition, 
 given a program  ${c}$ with its labelled variables $\lvar_c$, and two variables ${x^i}, y^j  \in \lvar_c $ 
 % showing up as $i$-th, $j$-th elements in $\lvar$ 
@@ -109,6 +119,8 @@ and $y$ shows up in the left hand of an assignment command and this assignment c
 % expression $\expr$, boolean expression $\sbexpr$ and query expression $\qexpr$ respectively.
 %
 %
+\mg{I don't understand what this definition of equivalence means. It is not observational equivalence
+and it is not syntactic equivalence. What are we trying to capture here? Also, it is equivalence of programs, not of program.}
 \begin{defn}[Equivalence of Program]
 %
 \label{def:aq_prog}
@@ -144,6 +156,7 @@ As usual, we denote by $c_1 \neq_{c} c_2$ the negation of the equivalence.
 %
 \end{defn}
 %
+\mg{This definition needs to go before it is used. }
 Given 2 programs $c$ and $c'$, we denote by $c' \in_{c} c$  that $c'$ is a sub-program of $c$ defined as follows,
 \begin{equation}
 c' \in_{c} c \triangleq \exists c_1, c_2, c''. ~ s.t.,~
