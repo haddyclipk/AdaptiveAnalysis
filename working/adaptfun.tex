@@ -24,11 +24,11 @@ The program-based dependency relation over two labeled variables ($x^i, y^j)$ ar
 \\
 $\flowsto \in \mathcal{LVAR} \times \mathcal{LVAR} \times \cdom \to \{\etrue, \efalse\}$
 %
-\begin{defn}[Data Flows between Assigned Variables ($\flowsto$)].
+\begin{defn}[Data Flow Relation between Assigned Variables ($\flowsto$)].
 \label{def:flowsto}
 \\
 In a program  ${c}$,
-an variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$
+a variable ${x^i}  \in \lvar_c $ is in the \emph{flows to} relation with another variable ${y^j} \in \lvar_c$
 in ${c}$, denoted as $\flowsto({x^i, y^j, c})$, is defined as follows:
 %
 {\footnotesize 
@@ -93,15 +93,15 @@ the value of $y^j$ directly or indirectly influence the evaluation of the value 
 \begin{itemize}
 \item (Explicit Influence) The program ${c}$ contains either 
 a command $[\assign{{x}}{\aexpr}]^i$ or $[\assign{{x}}{\query({\qexpr})}]^i$,
-such that ${y}$ shows up as a free variable in $\sexpr$ or ${\qexpr}$.
+such that ${y}$ shows up as a free variable in $\expr$ or ${\qexpr}$.
 We use $\flowsto({x^i, y^j, c})$ to denote $y^j$ flows to $x^i$ in ${c}$.
 %
 \item (Implicit Influence) The program ${c}$ contains either a while loop
 command
-or if condition command, 
+or if command, 
 such that $x$ shows up in the guard
-and $y$ shows up in the left hand of an assignment command, and this assignment command shows up
- in the body associated to that condition command.
+and $y$ shows up in the left hand of an assignment command and this assignment command showing up
+ in the body of the while loop, or branches of if command.
 \end{itemize}
 %
 % This is formally defined in \ref{def:flowsto}.
@@ -140,11 +140,11 @@ c_1 =_{c} c_2
   \right.
 \]
 %
-$c_1 \neq_{c} c_2$  is defined vice versa.
+As usual, we denote by $c_1 \neq_{c} c_2$ the negation of the equivalence.
 %
 \end{defn}
 %
-Given 2 programs $c$ and $c'$, $c'$ is a sub-program of$c$, i.e., $c' \in_{c} c$ is defined as:
+Given 2 programs $c$ and $c'$, we denote by $c' \in_{c} c$  that $c'$ is a sub-program of $c$ defined as follows,
 \begin{equation}
 c' \in_{c} c \triangleq \exists c_1, c_2, c''. ~ s.t.,~
 c =_{c} c_1; c''; c_2 \land c' =_{c} c''
@@ -166,15 +166,15 @@ $\progG({c}) = (\vertxs, \edges, \weights, \qflag)$ is defined as:
 \begin{array}{rlcl}
 \text{Vertices} &
 \vertxs & := & \left\{ 
-x^l \in \mathcal{LVAR} 
+x^l \in \mathcal{LV} 
 ~ \middle\vert ~
-x^l \in \lvar({{c}})
+x^l \in \lvar_{c}
 \right\}
 \\
 \text{Directed Edges} &
 \edges & := & 
 \left\{ 
-  ({x}_1^{i}, {x}_2^{j}) \in \mathcal{LVAR} \times \mathcal{LVAR}
+  ({x}_1^{i}, {x}_2^{j}) \in \mathcal{LV} \times \mathcal{LV}
   ~ \middle\vert ~
   \begin{array}{l}
     {x}_1^{i}, {x}_2^{j} \in \vertxs
@@ -192,15 +192,15 @@ x^l \in \lvar({{c}})
 \weights & := &
 % \bigcup
 % \begin{array}{l}
-	\left\{ (x^l, w) \in  \mathcal{LVAR} \times EXPR(\constdom)
+	\left\{ (x^l, w) \in  \mathcal{LV} \times EXPR(\constdom)
 	\mid
 	x^l \in \lvar_{{c}} \land w = \absW(l)
 	\right\}
 % \end{array} 
 \\
-\text{Query Label} &
+\text{Query Annotation} &
 \qflag & := & 
-\left\{(x^l, n)  \in  \mathcal{LVAR} \times \{0, 1\} 
+\left\{(x^l, n)  \in  \mathcal{LV} \times \{0, 1\} 
 ~ \middle\vert ~
  x^l \in \lvar_{c},
 n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
@@ -209,8 +209,11 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 \] 
 }
 , where the $\absW(l)$ is the symbolic reachability bound in domain of $EXPR(\constdom)$,
-for the assignment command of label $l$ to which the labeled variable $x^l$ is associated, 
-computed from the $\THESYSTEM$ algorithm in Definition~\ref{def:transition_closure}.
+% for the assignment command of label $l$ to which  
+the labeled variable $x^l$, 
+% is associated, 
+computed from the $\THESYSTEM$ algorithm 
+in Definition~\ref{def:transition_closure}.
 The $EXPR(\constdom)$ is an expression over symbolic constants containing the
 input variables and natural number.
 \end{defn} 
@@ -220,12 +223,16 @@ input variables and natural number.
 Given a program ${c}$, we generate its program-based graph 
 $\progG({c}) = (\vertxs, \edges, \weights, \qflag)$.
 %
-Then the adaptivity bound based on program analysis for ${c}$ is the number of query vertices on a finite walk in $\progG({c})$. This finite walk satisfies:
-\begin{itemize}
-\item the number of query vertices on this walk is maximum
-\item the visiting times of each vertex $v$ on this walk is bound by its reachability bound $\weights(v)$.
-\end{itemize}
-It is formally defined in \ref{def:prog_adapt}.
+Then the adaptivity bound based on program analysis for ${c}$ 
+% is the number of query vertices on a finite walk in $\progG({c})$. This finite walk satisfies:
+% \begin{itemize}
+% \item the number of query vertices on this walk is maximum
+% \item the visiting times of each vertex $v$ on this walk is bound by its reachability bound $\weights(v)$.
+% \end{itemize}
+is computed as the maximum query length over all finite walks in $\walks(\progG({c}))$,
+%
+% It is formally defined in \ref{def:prog_adapt}.
+defined formally as follows.
 %
 %
 \begin{defn}
@@ -1234,7 +1241,6 @@ $\progF = \{(l, q) \in \mathcal{L} \times \{0, 1\}| q = 1 \iff l \in \qvar_c, q 
 
 \clearpage
 \subsubsection{Computing Adaptivity from refined weighted-labeled data-flow graph}
-A .
 This step finds the walk with the longest query length on a program $c$'s execution-based dependency graph 
 $\progG(c) = (\vertxs, \edges, \weights, \qflag)$, through a combination of DFS and BFS algorithms 
 as defined in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.

@@ -1,7 +1,11 @@
 %
 %
 %
-\subsection{Events Dependency}
+\subsection{Dependency}
+We first show a definition of event \emph{May-Dependency}, which is the foundation of our variable may-dependency.
+Then we give a formal definition of variable \emph{May-Dependency} 
+%  based on the trace-based operational semantics,
+by considering all the possible execution traces.
 %
 % \mg{I don't think labeled variables were defined before. Also the set of labeled variables was not defined.}\\
 % \jl{it is defined above in Definition~\ref{def:avar} and Definition~\ref{def:lvar}}\\
@@ -82,20 +86,38 @@
 \end{defn}
 % \todo{add explnanation}
 \jl{The event \emph{May-Dependency} relation considers two situations (the value dependency and 
-value control dependency) as discussed above.
-In both of the two situations, we modify the value assigned to the first variable by changing the value 
+value control dependency) as discussed in Section 4.1.
+In both of the two situations, we modify the value assigned to the 
+% first variable 
+first variable in $\event_1$, by changing the value 
 of $\event_1$ in trace $\trace_1 \tracecat [\event_1]$ into $\event_1'$.
-Then we continuously execute the same program from the same location with the trace $\trace_1 :: \event_1'$, which only differ in 
+We use $\diff(\event_1, \event_1')$ to guarantee they only differ in their assigned value and equal on variable name and label.
+\\
+Then we continuously execute the same program from the same location, 
+but with a different trace $\trace_1 \tracecat [\event_1']$. 
+The two traces only differ in 
 the $\event_1$ and $\event_1'$, specifically the value of the two events.
 \\
 Then, we observe two different possible changes of execution in the value dependency and 
 value control dependency situations respectively.
 \\
-In the first situation, we are witnessing that the value assigned to the variable in $\event_2$
-changes in $\event_2'$, have the same variable and label and only differ in their assigned value. 
-In particularly for query, if $\event_2$ and $\event_2'$ are query assignment events, then 
+% In the first situation, we are witnessing 
+In the first situation, we witness
+% that the value assigned to the second variable in $\event_2$
+the appearance of $\event_2'$ in the second execution, and
+% a variation in $\event_2$, which changes into $\event_2'$.
+a variation between $\event_2$ and $\event_2'$ on their value.
+% changes in $\event_2'$.
+Specifically, the constraint $\diff(\event_2, \event_2')$ guarantees that they
+have the same variable name and label but only differ 
+% in their assigned value. 
+in their values assigned to the same variable. 
+In particularly for query, if $\event_2$ and $\event_2'$ are 
+% query assignment events, then 
+generated from query requesting, then $\diff(\event_2, \event_2)$ guarantees that
 they differ in their query value rather than the assigned value. 
-In order to handle the muliple occurence of the same event through iterations of the while loop,
+\\
+In order to handle the multiple occurrence of the same event through iterations of the while loop,
  where  $\event_2$ and $\event_2'$ could be 
 in different while loop,
 we restrict the occurrence times of $\event_2$'s label in the first trace equals to the occurrence times of $\event_2'$'s label in the second trace,
@@ -103,14 +125,20 @@ through $\vcounter(\vtrace, \pi_2(\event_2))
 = 
 \vcounter(\vtrace', \pi_2(\event_2'))$.
 \\
-In the second situation, we are witnessing the disappearance of $\event_2$ through observing the change of a testing event $\event_b$.
-In order to change the appearance of and event, the command that generating $\event_2$ must not be executed in 
+In the second situation, we 
+% are witnessing 
+witness
+the disappearance of $\event_2$ through observing the change of a testing event $\event_b$.
+In order to change the appearance of 
+% and event, the command that generating $\event_2$ must not be executed in 
+an event, the command that generates $\event_2$ must not be executed in 
 the second execution. 
-The only way to control whether or not a command will be executed, is through the change of guard in the if or while command.
-So we first observe the testing event changes into $\neg \event_b$ in the second execution, then the disappearance of $\event_2$
-in the second trace.
+The only way to control whether a command will be executed, is through the change of a guard's 
+evaluation result in the if or while command.
+So we first observe the testing event $\event_b$ changes into $\neg \event_b$ in the second execution, 
+following with the disappearance of $\event_2$ in the second trace.
 \\
-In the same way, we restrict the occurrence times of $\event_b$'s label in the two traces be equal
+In the same way, we restrict the occurrence times of $\event_b$'s label in the two traces being equal
 % s to the occurrence times of $\event_2'$'s label in the second trace,
 through $\vcounter(\trace', \pi_2(\event_b)) = \vcounter(\trace, \pi_2(\event_b)) $ to handle the while loop.
 % changes in $\event_2'$, have the same variable and label and only differ in their assigned value. 
@@ -409,10 +437,11 @@ then we say the two variables have \emph{Variable May-Dependency} relation.
 %
 %
 %
-\subsection{Trace-based May-Dependency Graph}
+\subsection{Execution Based Dependency Graph}
 %
 %
 %
+Through the variable \emph{May-Dependency} relation, we define the execution based dependency graph.
 %
 \begin{defn}[Execution Based Dependency Graph]
 \label{def:trace_graph}
