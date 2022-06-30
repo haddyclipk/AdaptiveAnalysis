@@ -1643,24 +1643,21 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 % The function $computeBound$ takes into a transition system (a disjuction of transitions), and computes the bound. There are ranking functions which take a transition and return the bound, that is used by $computeBound$. There are some heuristics in compute the bound based on the transitions systems, if interested, please look at the paper for more details.
 
 % \paragraph{Add Weight} We also need to take care about the situation when a bound can not be predicted by {$\rb$}, we need to use another loose analysis to get a loose bound.
-
-
-
-\clearpage
+% \clearpage
 \subsection{Adaptivity Upper Bound Computation}
 %  from refined weighted-labeled data-flow graph}
 \label{sec:alg_adaptcompute}
-This phase compute the adaptivity upper bound for a program $c$.
+This phase computes the adaptivity upper bound for a program $c$.
 % Given a program ${c}$, we generate
-Based on 
+\\
+With
 % its 
-$c$'s program-based data dependency graph 
-$\progG({c}) = (\vertxs, \edges, \weights, \qflag)$. 
+$c$'s program-based data dependency graph $\progG({c})$ approximated above,
 %
 its adaptivity upper bound 
 % Defined in Definition~\ref{def:prog_adapt} as 
 %
-is defined as
+is estimated as
 % Then the adaptivity bound based on program analysis for ${c}$ 
 % is the number of query vertices on a finite walk in $\progG({c})$. This finite walk satisfies:
 % \begin{itemize}
@@ -1687,7 +1684,7 @@ $\progG({c}) = (\vertxs, \edges, \weights, \qflag)$,
 the program-based adaptivity for $c$ is defined as%
 \[
 \progA({c}) 
-:= \max
+\triangleq \max
 \left\{ \qlen(k)\ \mid \  k\in \walks(\progG({c}))\right \}.
 \]
 }
@@ -1702,21 +1699,45 @@ in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
 
 \paragraph*{Challenge}
 Following is the challenge of computing the adaptivity on a program based dependency graph.
-In order to search for the finite walk having the longest query length, which isn't a simple longest weighted path.
 \\
-The visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
-So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
-We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
-because the weight is symbolic and simply traversing leads to non-termination.
+In order to 
+% search for the finite walk having the longest query length, which isn't a simple longest weighted path.
+compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
+search for a finite walk having the longest query length.
 \\
-We can simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
-However, this gives us over-approximation to a large extend.
+However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk},
+we cannot 
+% simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
+simply adopt a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
+% However, this gives us over-approximation to a large extend.
+It is easy to see that this gives us over-approximation to a large extend.
+\\
+Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
+the visiting times of every vertex on this walk should be no more than its weight.
+% which is a symbolic expression.
+% So we cannot simply 
+So searching for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
+\\
+Moreover, because the weight of each vertex is symbolic
+% because the weight is symbolic and simply traversing leads to non-termination.
+we cannot simply traverse on this graph by decreasing the weight of every node by one after every visiting neither. 
+The simple 
+traversing strategy leads to non-termination for most programs.
+\\
+% We can simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
+% However, this gives us over-approximation to a large extend.
 % In Algorithm~\ref{alg:adpt_alg}, 
 % we first find all the strong connected components of this graph, 
-
+This challenge gives the necessary to design a path search algorithm through a combination of 
+% DFS and BFS algorithm 
+deep first search and breath first search strategy
+% as defined 
+as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
+%
+\paragraph*{The Adaptivity Computation Algorithm ($\pathsearch$)}
 \begin{algorithm}
     \caption{
-    {Longest Adaptivity Search Algorithm ($\pathsearch$)}
+    {Adaptivity Computation Algorithm ($\pathsearch$)}
     \label{alg:adpt_alg}
     }
     \begin{algorithmic}[1]
@@ -1773,10 +1794,12 @@ However, this gives us over-approximation to a large extend.
     \end{algorithmic}
     \end{algorithm}
     %
-
-    In Algorithm~\ref{alg:adpt_alg}, 
-    it first finds all the strong connected components (SCC) of this graph using the Kosaraju’s algorithm in line:3.
-    Every $\kw{SCC_1}, \cdots, \kw{SCC_n}, 0 \leq n \leq |\vertxs|$ is a sub-graph of $\progG(c)$, where $\kw{SCC_i} = (\vertxs_i, \edges_i, \weights_i, \qflag_i)$.
+%
+    % In Algorithm~\ref{alg:adpt_alg}, 
+    % it 
+    This algorithm first finds all the strong connected components (SCC) of $\progG(c)$ using the Kosaraju’s algorithm in line:3.
+    Every $\kw{SCC_1}, \cdots, \kw{SCC_n}$
+    where $0 \leq n \leq |\vertxs|$ is a sub-graph of $\progG(c)$, where $\kw{SCC_i} = (\vertxs_i, \edges_i, \weights_i, \qflag_i)$.
     % where $\kw{SCC_i} = (\vertxs_i, \edges_i, \weights_i, \qflag_i)$.
     Then, 
     % we compute the adaptivity on every SCC, which is a subgraph of the $\progG(c)$, in line:4-5 by Algorithm~\ref{alg:adaptscc}.
@@ -1910,9 +1933,10 @@ However, this gives us over-approximation to a large extend.
     %     \end{algorithmic}
     %     \end{algorithm}%
         %
+  \paragraph*{Adaptivity Computation Algorithm on SCC Graph ($\kw{\pathsearch_{scc}(G)}$)}
     \begin{algorithm}
             \caption{
-            {Adaptivity on $\kw{SCC}$}
+            {Adaptivity Computation Algorithm on SCC Graph }
             \label{alg:adaptscc}
             }
             \begin{algorithmic}[1]
@@ -1975,15 +1999,15 @@ However, this gives us over-approximation to a large extend.
             \RETURN  $\kw{r_{scc}}$
             \end{algorithmic}
             \end{algorithm}
-            \\
-Following is the challenge of computing the adaptivity on a program based dependency graph.
-In order to search for the finite walk having the longest query length, which isn't a simple longest weighted path.
-\\
-the visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
-So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
-We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
-because the weight is symbolic and simply traversing leads to non-termination.
-\\
+            % \\
+% Following is the challenge of computing the adaptivity on a program based dependency graph.
+% In order to search for the finite walk having the longest query length, which isn't a simple longest weighted path.
+% \\
+% the visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
+% So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
+% We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
+% because the weight is symbolic and simply traversing leads to non-termination.
+% \\
 In Algorithm~\ref{alg:adaptscc}, if an SCC contains only one vertex without any edge, 
 then it is easy to know that it will be visited 
 at most once since there isn't edge going back to this vertex. 
