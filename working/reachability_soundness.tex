@@ -347,18 +347,21 @@ Given a program ${c}$, we have:
 \end{array}
 \]
 \end{lem}
-%
-%
-\begin{lem}[Correspondance between $flow(c)$ and $\absflow(c)$]
-  \label{lem:flow_to_absflow}
-Given a program ${c}$, we have:
-%
-\[
-\forall \absevent = (l, dc, l') \st 
-\absevent \in \absflow(c) \land l' \neq l_e
-\implies (l, l') \in flow(c)
-\]
-\end{lem}
 \begin{proof}
   This is proved trivially by induction on the program $c$.
 \end{proof}
+%
+%
+% \begin{lem}[Correspondance between $flow(c)$ and $\absflow(c)$]
+%   \label{lem:flow_to_absflow}
+% Given a program ${c}$, we have:
+% %
+% \[
+% \forall \absevent = (l, dc, l') \st 
+% \absevent \in \absflow(c) \land l' \neq l_e
+% \implies (l, l') \in flow(c)
+% \]
+% \end{lem}
+% \begin{proof}
+%   This is proved trivially by induction on the program $c$.
+% \end{proof}

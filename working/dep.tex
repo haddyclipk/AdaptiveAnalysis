@@ -533,6 +533,22 @@ But it need to change many notations later. So I think to think if it is necessa
 %
 % \jl{TODO: add description}
 %
+\jl{The query annotations is 
+% the weight for each vertex in $\progV(c)$,
+% as 
+a set of pairs $\progF(c) \in \mathcal{P}(\mathcal{LV} \times \{0, 1\} )$ 
+% is the set of pairs 
+% The weight for each vertex in $\progV(c)$ is computed 
+mapping each $x^l \in \progV(c)$ to $0$ or $1$, indicating whether this labeled variable is assigned by a query request.}
+\\
+\jl{
+  a set of pairs $\progW(c) \in \mathcal{P}(\mathcal{LV} \times \mathbb{N})$ 
+% is the set of pairs 
+% The weight for each vertex in $\progV(c)$ is computed 
+mapping each $x^l \in \progV(c)$ to a natural number. 
+This natural number is the maximum occurrence time of label $l$
+in program's execution trace, 
+}
 % The edge is directed, when an annotated query $q(v)^{(l,w)}$ may depend on its previous query $q(v')^{(l',w')}$, we have the directed
 % edge $(q(v)^{(l,w)}, q(v')^{(l'.w')})$, from $q(v)^{(l,w)} $ to $q(v')^{(l'.w')}$.
 % 
@@ -550,7 +566,9 @@ But it need to change many notations later. So I think to think if it is necessa
 % \jl{I removed this, it is mainly used for simplify the soundness proof.}
 % For any program $c$, by the injectivity of $\weights$ in its dependency graph, $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$, 
 % $\weights$ forms a function. 
-We use $\weights(v)$ to indicate the weight of $v$ in a program $c$'s execution-based dependency graph $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.
+\jl{We use $\traceW(x^l)$ to indicate the weight of 
+% $v$ in a program $c$'s execution-based dependency graph $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.}
+$x^l$ in $c$'s execution-based dependency graph $\traceG(c)$. }
 %
 % \mg{Is this definition given a ``labelled weighted graph'' or an ``execution-based dependency graph''? you did not define the former but only the latter. Also, you say ``there exists'', can there be more sequences of vertices satisfying this definition given a sequence of edges?}
 % \jl{execution-based dependency graph}
