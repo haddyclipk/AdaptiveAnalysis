@@ -57,7 +57,7 @@ computes the upper bound for adaptivity over this approximated graph.
 
 This program-based graph has a similar topology structure as the one
 of the trace-based (semantic) dependency graph. It has the same
-vertices and query labels, and approximated edges and weights.  
+vertices and query annotations, and approximated edges and weights.  
 % An
 % approximated edge correspond to a program-based data dependency
 % relation ($\flowsto$ in Definition~\ref{def:flowsto}) and an approximated
@@ -498,7 +498,7 @@ this  {over-}approximate graph identical to the execution-based graph, specifica
 as follows,
   \highlight{
 \[
-    \progV \triangleq \left\{ 
+    \progV(c) \triangleq \left\{ 
   x^l \in \mathcal{LV} 
   ~ \middle\vert ~
   x^l \in \lvar_{c}
@@ -521,7 +521,7 @@ as follows,
 %     \item An algorithm to perform a Reachability number analysis to calculate the weight of each node in the graph generated in phase 1.
 %     \item An algorithm to find the appropriate path in the weighted data control flow graph
 % \end{enumerate}
-\subsection{Vertex Weight and Edge Estimation}
+\subsection{Weight and Edge Estimation}
 \label{sec:alg_weightedgegen}
 The edge and weight in execution-based graph is built on all possible execution traces,
 in order to approximate them statically, we show how to analyze the program to 
@@ -551,15 +551,15 @@ This analysis
     an abstract control flow graph over all labels, 
     % which are used as program's control locations,
     %
-    \item then compute the weight of every vertex in $\progV$ by computing a symbolic reachability bound for each label,
+    \item then compute the weight of every vertex in $\progV(c)$ by computing a symbolic reachability bound for each label,
     % \\
-    \item then estimate the edges between every vertex in $\progV$ by computing the feasible data flow relation between every labeled variables.
+    \item then estimate the edges between every vertex in $\progV(c)$ by computing the feasible data flow relation between every labeled variables.
   
 \end{enumerate}
 \subsubsection{Abstract Execution Control Flow graph}
 \label{sec:abscfg}
 We first show how to generate the abstract control flow graph in this part, in order to estimate 
-the vertex weight and edges.
+the weight for vertex in $\progV(c)$ and edges between vertices in $\progV(c)$.
 \\
 In this abstract control flow graph, every vertex is a label,
  corresponding to a label command in the program.
@@ -833,9 +833,13 @@ through the reachability bound analysis as follows.
 %
 % It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
-\subsubsection{Vertex Weight Estimation}
+\subsubsection{Weight Estimation}
 \label{sec:alg_weightgen}
 %
+In order to estimate weight for every vertex in $\progV(c)$,
+we first show how to compute the reachability bound for every label in $c$,
+then show how to compute the weight for every vertex in $\progV(c)$.
+\\
 we infer the invariant for every variable, and compute the transition closure for every abstract transition. By solving the closure
 with the invariants of variables involved in this closure for every transition, we compute
 the symbolic reachability bound of every commands corresponding to this transition.
@@ -990,10 +994,10 @@ Then compute the weight for each vertex in $\progV$ as follows,
 \highlight{
 % :
 % \\
- \[\progW \triangleq
+ \[\progW(c) \triangleq
    \left\{ (x^l, w) \in  \mathcal{LV} \times EXPR(\constdom)
 \mid
-x^l \in \progV \land w = \absW(l)
+x^l \in \progV(c) \land w = \absW(l)
 \right\}
 \]
 }
@@ -1175,11 +1179,12 @@ by generating the set of feasible data-flow between labeled variables as follows
     \flowsto(x^i, y^j, \clabel{\assign{x}{\expr}}{}^l)  & \triangleq (x^i, y^j) \in \{ (y^i, x^l) | y \in FV(e) \land (y,i) \in \live_{in}(l, \clabel{\assign{x}{\expr}}^l) \}  \\
     \flowsto(x^i, y^j, \clabel{\assign{x}{\query(\qexpr)}}{}^l)  & \triangleq (x^i, y^j) \in \{ (y^i, x^l) | y \in FV(e) \land (y,i) \in \live_{in}(l,\clabel{\assign{x}{\query(\qexpr)}}^l) \}  \\
     \flowsto(x^i, y^j, [\eskip]^{l})  & = \emptyset \\
-    \flowsto(x^i, y^j, [\eif [b]^l \ethen c_1 \eelse c_2)  & \triangleq (x^i, y^j) \in  dcdg(c_1) \cup dcdg(c_2)\\ & \cup 
+    \flowsto(x^i, y^j, \eif [b]^l \ethen c_1 \eelse c_2)  & \triangleq \flowsto(x^i, y^j, c_1) \lor \flowsto(x^i, y^j, c_2) \\ 
+        & \lor (x^i, y^j) \in
        \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_1) \} \\
-       &\cup \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_2) \} \\
-       \flowsto(x^i, y^j, [\ewhile [b]^l \edo c)  & \triangleq (x^i, y^j) \in  dcdg(c) \cup \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(C) \} \\
-       \flowsto(x^i, y^j, c_1 ;c_2)  & \triangleq (x^i, y^j) \in dcdg(c_1) \cup  dcdg(c_2) \\
+       &\lor (x^i, y^j) \in \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_2) \} \\
+       \flowsto(x^i, y^j, \ewhile [b]^l \edo c_w)  & \triangleq  \flowsto(x^i, y^j, c_w) \lor (x^i, y^j) \in  \{(x^i,y^j) | x \in FV(b) \land (x,i) \in \live_{in}(l) \land ([y = \_]^j) \in blocks(c_w) \} \\
+       \flowsto(x^i, y^j, c_1 ;c_2)  & \triangleq \flowsto(x^i, y^j, c_1) \lor \flowsto(x^i, y^j, c_2) \\
    \end{array}
    \]
    }
@@ -1188,12 +1193,12 @@ by generating the set of feasible data-flow between labeled variables as follows
 \paragraph*{Edges Generation}
 \highlight{
   \[
-    \progE \triangleq 
+    \progE(c) \triangleq 
     \left\{ 
     ({x}_1^{i}, {x}_2^{j}) \in \mathcal{LV} \times \mathcal{LV}
     ~ \middle\vert ~
     \begin{array}{l}
-      {x}_1^{i}, {x}_2^{j} \in \progV
+      {x}_1^{i}, {x}_2^{j} \in \progV(c)
     \land
       % \\
       \exists n \in \mathbb{N}, z_1^{r_1}, \cdots, z_n^{r_n} \in \lvar_{{c}} \st 
@@ -1310,11 +1315,11 @@ Finally we build the estimated data dependency graph based on program static ana
 \\
 \highlight{
   \[
-    \progG(c) = (\progV, \progE, \progW, \progF)
+    \progG(c) = (\progV(c), \progE(c), \progW(c), \progF(c))
     \]
 }
-with $\progV, \progE, \progW$ as computed in each steps above,\\
-and $\progF =\left\{(x^l, n)  \in  \mathcal{LV} \times \{0, 1\} 
+with $\progV(c), \progE(c), \progW(c)$ as computed in each steps above,\\
+and $\progF(c) =\left\{(x^l, n)  \in  \mathcal{LV} \times \{0, 1\} 
 ~ \middle\vert ~
 x^l \in \lvar_{c},
 n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
