@@ -1716,11 +1716,20 @@ Specifically, according to the finite walk definition in Definition~\ref{def:fin
 the visiting times of every vertex on this walk should be no more than its weight.
 % which is a symbolic expression.
 % So we cannot simply 
-So searching for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
+So by searching for the longest weight path, 
+% and approximating the finite walk by this weight path, 
+and use it as an approximated finite walk with the longest query length, 
+the visiting times of the vertex on 
+% it 
+this approximated walk could 
+% possibly 
+exceed its weights. 
+Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
+and this weighted length is obviously greater than the maximum query length of the finite walk.
 \\
 Moreover, because the weight of each vertex is symbolic
 % because the weight is symbolic and simply traversing leads to non-termination.
-we cannot simply traverse on this graph by decreasing the weight of every node by one after every visiting neither. 
+we can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
 The simple 
 traversing strategy leads to non-termination for most programs.
 \\
@@ -1807,9 +1816,9 @@ as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
     % , which is a subgraph of the $\progG(c)$, 
     in line:4-5 by Algorithm~\ref{alg:adaptscc}.
     We guarantee the soundness of the adaptivity on SCC by Lemma~\ref{lem:sound_adaptalg_scc} with proof in Appendix~\ref{apdx:adaptalg_soundness}.
-    The $\progG(c)$ is then shrank into an acyclic directed graph where 
+    The $\progG(c)$ is then shrunk into an acyclic directed graph where 
     % vertices are all the SCCs and edges are between every SCCs with their adaptivities as weights.
-    $\kw{SCC_1}, \cdots, \kw{SCC_n}$ are vertices with the adaptivities as weights.
+    $\kw{SCC_1}, \cdots, \kw{SCC_n}$ are vertices with their adaptivities as weights.
     % , and directed edges are .
     For every $(v_i, v_j) \in \edges$ such that $v_1 \in \vertxs_i$, $v_j \in \vertxs_j$ and $i \neq j$,
     there is a edge $(s_i, s_j)$ in this shrank graph. \\ 
@@ -1960,7 +1969,7 @@ as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
             % \#\{For every vertex, 
             recording the minimum weight when the walk reaching 
             that vertex, inside a cycle\}
-            \\ \qquad  $\kw{querynum[v]}$: INT List,
+            \\ \qquad  $\kw{querynum}$: INT List,
             %  of length $|\vertxs|$, initialize with $\qflag(v)$ for every vertex. 
             \\ \qquad  \#\{length $|\vertxs|$, initialize with $\qflag(v)$ for every vertex, 
             % \#\{For every vertex, 
@@ -2008,48 +2017,93 @@ as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
 % We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
 % because the weight is symbolic and simply traversing leads to non-termination.
 % \\
-In Algorithm~\ref{alg:adaptscc}, if an SCC contains only one vertex without any edge, 
-then it is easy to know that it will be visited 
+% In Algorithm~\ref{alg:adaptscc}, 
+This algorithm first check if an SCC contains only one vertex without any edge, as in line:4-5 in Algorithm~\ref{alg:adaptscc}.
+% then 
+\\
+If yes, then it's easy to know that it will be visited 
 at most once since there isn't edge going back to this vertex. 
 So we can know that the adaptivity on this SCC is at most one if it is a query vertex,
 and zero otherwise.
 \\
-For the SCC contains at least one edge, we are searching for the finite walk having the longest query length through a deep first search strategy.
-The difficulty is, the visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
-So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
-We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
-because the weight is symbolic and simply traversing leads to non-termination.
+If not, then the SCC contains at least one edge, we are searching for the finite walk having the longest query length through a deep first search strategy.
 \\
-So we use the dfs to search for the finite path with a capacity limitation and use special parameter to compute the adaptivity
-for every path.
-We use a special parameter $\kw{flowcapacity}$  to track the minimum weight during the dfs process, and $\kw{querynum[v]}$
-to track the total number of vertices which are query vertices.
+% The difficulty is, the visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
+As the challenges discussed above, we want to guarantee the visiting time of each vertex smaller than 
+its weight, in the meantime the algorithm termination. 
+Additionally, we are computing the query length rather than sum of the weights.
+% So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
+% We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
+% because the weight is symbolic and simply traversing leads to non-termination.
+% \\
+\\
+In order to guarantee the termination, 
+% this algorithm 
+$\kw{\pathsearch_{scc}(G)}$
+terminates the recursion if monitored a cycle, as in line:8 and line:14, through a boolean list $\kw{visited}$. 
+% search for finite walk  
+% So we use the dfs to search for the 
+\\
+In order to guarantee the visiting times of each vertex, 
+we use a special parameter $\kw{flowcapacity}$  to track the minimum weight during the 
+% dfs process, 
+deep first searching along the walk.
+% 
+\\
+Then, to compute the query length of this walk, 
+we use another parameter $\kw{querynum}$
+to track the total number of vertices which are query vertices along the walk.
 
-we first initialize some parameters,
-the $\kw{visited}$ a list of $\etrue$ or $\efalse$ for every vertex on this SCC, to guarantee the termination;
-\\ 
-$\kw{r}$ : INT List of length $|\vertxs|$, initialize with $\qflag(v)$ for every vertex. The adaptivity reaching each vertex.
-\\ 
-$\kw{flowcapacity}$ a list of symbolic expressions for every vertex, recording the minimum weight when the walk reaching 
-that vertex, inside a cycle\}
-\\ 
-$\kw{querynum[v]}$: INT List of length $|\vertxs|$, initialize with $\qflag(v)$ for every vertex. 
-\#\{For every vertex, recording the query numbers when the path reaching.
+The detail steps of this dfs strategy
+% of this algorithm is described as follows,
+from line: 6-16 in Algorithm~\ref{alg:adaptscc} is described as follows,
+searching for the finite walk having the longest query length through a deep first search strategy
+with a capacity limitation and use special parameter to compute the adaptivity
+for every path.
 \\
-Then from line5:11, we record the minimum weight and number of query vertices alone the path and update the adaptivity reaching 
+We first initialize some parameters:
+\\
+$\kw{visited}$ is initialized as a list of $0$ for every vertex on this SCC, in order to guarantee the termination;
+\\ 
+$\kw{r}$ is initialized  as a list of integer with length $|\vertxs|$, initialize with $\qflag(v)$ for every vertex. The adaptivity reaching each vertex.
+\\ 
+$\kw{flowcapacity}$ a list of symbolic expressions for every vertex, recording the minimum weight when the walk reaching that vertex, which  is initialized by $\infty$.
+% , inside a cycle\}
+\\ 
+$\kw{querynum}$ is a list of integer with length $|\vertxs|$, which is initialized with $\qflag(v)$ for every vertex. 
+For every vertex, 
+% recording the query numbers when the path reaching.
+in order to record the total query numbers when the walk reaches a vertex.
+\\
+Then from line: 5-11, we record the minimum weight and number of query vertices alone the path and update the adaptivity reaching 
 this vertex, and then recursively dfs on all vertices heading out from this vertex.
 \\
-At line 12 where this vertex is visited the second time, 
+At line: 12 where this vertex is visited, 
 we only update the adaptivity reaching this vertex and neither recursion nor update the $\kw{flowcapacity}$  and 
-$\kw{querynum[v]}$.
+$\kw{querynum}$.
 \\
-not recursion in order to guarantee the termination,
-do not update the $\kw{querynum[v]}$ because a second visiting of the same vertex indicates there is a cycle goes back to this vertex, 
-then, when we continuously search path heading out of this vertex, the minimum weight on this cycle will not affect the walks going out of this vertex that not pass this cycle.
-However, if we keep recording the minimum weight, we are restricting the visiting times on a walk By
+Non-recursion 
+% in order to 
+guarantees the termination and
+Non-updating the $\kw{querynum}$ and $\kw{flowcapacity}$ guarantees the soundness.
+Specifically,
+% because a second visiting of the same vertex 
+if this vertex is visited, it indicates that a cycle is monitored and  
+% indicates there is a cycle goes back to this vertex, 
+the traverse on this cycle is finished by going back to this vertex.
+%
+% then, when 
+When we continuously search for walks heading out of this vertex, 
+the minimum weight on this cycle will not affect the walks going out of this vertex that not pass this cycle.
+However, if we keep recording the minimum weight, we are restricting the visiting times on a walk by
  using the minimum weight of vertices not on this walk, it is unsound anymore.
- %
- Then we compute the adaptivity of this SCC by taking the maximum adaptivity reaching every vertex on this SCC.
+ \\
+In the last line of this dfs algorithm, line: 16, it returns the adaptivity heading out from its input vertex.
+\\
+By applying this deep first search strategy on every vertex on this SCC, 
+we compute the adaptivity of this SCC by taking the maximum 
+% adaptivity reaching every vertex on this SCC.
+value over every vertex.
 %
 The soundness is formally guaranteed in Lemma~\ref{lem:sound_adaptalg_scc} in Appendix~\ref{apdx:adaptalg_soundness}.
             % \begin{algorithm}
