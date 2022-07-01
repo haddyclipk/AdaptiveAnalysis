@@ -446,7 +446,9 @@ Through the variable \emph{May-Dependency} relation, we define the execution bas
 \begin{defn}[Execution Based Dependency Graph]
 \label{def:trace_graph}
 Given a program ${c}$,
-its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$ is defined as follows over all possible traces,
+its \emph{Execution-Base Dependency Graph} 
+% $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$ is defined as follows over all possible traces,
+$\traceG({c}) = (\traceV, \traceV, \traceW, \traceF)$ is defined as follows over all possible traces,
 %
 {\footnotesize
 \[
@@ -486,13 +488,14 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
 % \end{array}
 \begin{array}{rlcl}
   \text{Vertices} &
-  \vertxs & := & \left\{ 
+  \traceV & := & \left\{ 
   x^l \in \mathcal{LV}
   ~ \middle\vert ~ x^l \in \lvar_{c}
   \right\}
   \\
   \text{Directed Edges} &
-  \edges & := & 
+  % \edges & := & 
+  \traceE & := & 
   \left\{ 
   (x^i, y^j) \in \mathcal{LV} \times \mathcal{LV}
   ~ \middle\vert ~
@@ -501,7 +504,8 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \right\}
   \\
   \text{Weights} &
-  \weights & := & 
+  % \weights & := & 
+  \traceW & := & 
   \left\{ 
   (x^l, n) \in \mathcal{LV} \times \mathbb{N}
   ~ \middle\vert ~ 
@@ -513,7 +517,8 @@ its \emph{Execution-Base Dependency Graph} $\traceG({c}) = (\vertxs, \edges, \we
   \\
   % \text{Query Label} &
   \text{Query Annotation} &
-  \qflag & := & 
+  % \qflag & := & 
+  \traceF & := & 
 \left\{(x^l, n)  \in  \mathcal{LV}\times \{0, 1\} 
 ~ \middle\vert ~
  x^l \in \lvar_{c} \land

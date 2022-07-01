@@ -1507,7 +1507,7 @@ in Appendix~\ref{apdx:adapt_soundness}.
 % the first labeled variable is reachable at the second label.
 % % \\
 % The formal definition is as follows.
-Finally we build the estimated data dependency graph based on program static analysis as follows:
+Finally we build the estimated data dependency graph based on the above program static analysis as follows:
 \\
 \highlight{
   \[
@@ -1520,9 +1520,11 @@ with $\progV(c), \progE(c), \progW(c)$ and $ \progF(c)$ as computed in each step
 % x^l \in \lvar_{c},
 % n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
 % \right\} $,
-This program-based graph has a similar topology structure as the one
-of the trace-based (semantic) dependency graph. It has the same
-vertices and query annotations, and approximated edges and weights.  
+This program-based graph program-based graph has a similar topology structure as 
+% the one
+% of 
+the Execution-Based Dependency Graph. It has the same
+vertices and query annotations, but approximated edges and weights.  
 % The algorithm computation is 
 It is formally defined in Definition~\ref{def:prog_graph}.
 % Through the reachable definition set on every label,
@@ -1714,7 +1716,8 @@ in Algorithm~\ref{alg:adpt_alg}.
 \\
 {
 Given a program ${c}$ and its program-based graph 
-$\progG({c}) = (\vertxs, \edges, \weights, \qflag)$,
+$\progG({c})$
+%  = (\vertxs, \edges, \weights, \qflag)$,
 %
 the program-based adaptivity for $c$ is defined as%
 \[
@@ -1726,7 +1729,9 @@ the program-based adaptivity for $c$ is defined as%
 \end{defn} 
 
 The following algorithm finds the walk with the longest query length on a program $c$'s execution-based dependency graph 
-$\progG(c) = (\vertxs, \edges, \weights, \qflag)$, through a combination of 
+$\progG(c)$
+%  = (\vertxs, \edges, \weights, \qflag)$, 
+through a combination of 
 % DFS and BFS algorithm 
 deep first search and breath first search strategy
 % as defined 
@@ -1738,75 +1743,188 @@ Following is the challenge of computing the adaptivity on a program based depend
 In order to 
 % search for the finite walk having the longest query length, which isn't a simple longest weighted path.
 compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
-search for a finite walk having the longest query length.
+search for the finite walk having the longest query length.
 \\
 However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
 \\
 \textbf{Challenge I:}
-As in Definition~\ref{def:finitewalk}, we cannot 
+% As in Definition~\ref{def:finitewalk}, w
+We cannot 
 % simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
-simply adopt a deep first strategy to estimate the adaptivity as the length of the longest weight path, like in Algorithm~\ref{alg:overadp_alg}.
+simply adopt a deep first strategy to 
+search for the longest weighted path
+estimate the adaptivity as the weighted query length of this path
+% of the longest weight path, 
+as in Algorithm~\ref{alg:overadp_alg}.
 % However, this gives us over-approximation to a large extend.
 It is easy to see that this gives us over-approximation to a large extend.
 \\
 Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
-the visiting times of every vertex on this walk should be no more than its weight.
+the visiting time of every vertex on a walk should be no more than its weight.
 % which is a symbolic expression.
 % So we cannot simply 
-So by searching for the longest weighted path, 
+However, by searching for the longest weighted path, 
 % and approximating the finite walk by this weight path, 
-and use it as an approximated finite walk with the longest query length, 
+and use it as the approximated finite walk with the longest query length, 
 the visiting times of the vertex on 
 % it 
 this approximated walk could 
 % possibly 
-exceed its weights. 
+exceed 
+% its weights. 
+the visiting times it can have.
 Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
-and this weighted length is obviously greater than the maximum query length of the finite walk.
+and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
+This over-approximation could result in a $\infty$ adaptivity upper bound on the program with actual adaptivity $2$.
 \todo{For example}
 \\
 Look at the two-round example in overview, 
-it is easy to find that the longest weighted path is  $x^3 \to a^5 \to l^6$.
-If we use this path to approximate a finite walk, with weight of each vertex as their visiting times, 
-it isn't a qualified walk. 
+it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
+If we use this path to approximate a finite walk, and weight of each vertex as
+%  their visiting times, 
+its visiting time,
+then it isn't a qualified walk. 
 Because $l^6$ can only be visited as most once by its weight,
 % and this lead to 
-resulting in the restriction on the maximum visiting time of $a^5$,
-such that $a^5$ is only able to be visited at most once as well.
+resulting in the restriction on the maximum visiting time of $x^3$,
+such that $x^3$ is only able to be visited at most once as well.
 %
-However, $a^5$ is visited $k$ times in this approximated walk.
+However, $x^3$ is visited $k$ times in this approximated walk.
 % Moever, with the longest query length, then 
+In order to have $x^3$ be visited $k$ time, we need to go back to 
+$x^3$ on this walk from either $a^5$ or $l^6$ for $k$ time.
+This is impossible since there is no edge going back to $x^3$ in $\progG(twoRound)$.
 Obviously,
 % the with the weighted length $1 + k$. It is obviously
-its query length, $1 + k$, 
+its weighted query length, $1 + k$, 
 % which is 
 over approximates 
 % its 
-the adaptivity of this example to a large extend, which supposed to be $2$.
+the adaptivity of this example to a large extend, which supposed to be $2$. 
 %  for this program, 
 % that 
 \\
 \textbf{Challenge II:}
 % Moreover, b
-Because the weight of each vertex is symbolic
-% because the weight is symbolic and simply traversing leads to non-termination.
-we can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
+We can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
 The simple 
-traversing strategy leads to non-termination for most programs.
+traversing strategy leads to non-termination for most programs. 
+Specifically, this challenge comes from the weight of each vertex estimated in program's Program-Based Dependency Graph,
+which isn't a number but a symbolic expression. 
+% because the weight is symbolic and simply traversing leads to non-termination.
+It is difficult to tell when to terminate the recursion when the domain of this symbolic expression isn't finite,
+while, in most of our cases, the programs' Program-Based Dependency Graphs are having symbolic weights with infinite domains on vertices.
 \todo{for example:}
-Look at the following simple example where $k$ is the input variable from domain $\mathbb{N}$,
+Look at the simple example in Figure~\ref{fig:alg_adaptsearch_simplewhile}, where $k$ is the input variable from domain $\mathbb{N}$,
 %  in Figure~\ref{} in Section~\ref{sec:overview},
-\[                    
-  \kw{whileSim(k)} \triangleq
+\begin{figure}
+\centering
+{\footnotesize
+\begin{subfigure}{.25\textwidth}
+\begin{centering}
+$ 
 \begin{array}{l}
-    \clabel{ \assign{j}{k} }^{0} ; \\
-    \clabel{ \assign{x}{\query(\chi[0])} }^{1} ; \\
-        \ewhile ~ \clabel{j > 0}^{2} ~ \edo ~ \\
-        \Big(
-         \clabel{\assign{x}{\query(\chi[x]) }}^{3}  ; \\
-        \clabel{\assign{j}{j-1}}^{4}       \Big)
-    \end{array}
-\]
+  \kw{whileSim(k)} \triangleq \\
+  \clabel{ \assign{j}{k} }^{0} ; \\
+  \clabel{ \assign{x}{\query(\chi[0])} }^{1} ; \\
+      \ewhile ~ \clabel{j > 0}^{2} ~ \edo ~ \\
+      \Big(
+       \clabel{\assign{x}{\query(\chi[x]) }}^{3}  ; \\
+      \clabel{\assign{j}{j-1}}^{4}       \Big)
+  \end{array}
+$
+\caption{}
+\end{centering}
+\end{subfigure}
+\quad
+\begin{subfigure}{.25\textwidth}
+\begin{centering}
+     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+    \draw[] (6, 8.1) circle (15pt) node
+    {\tiny{ $a^0$}};
+    \draw[] (6, 4.1) circle (15pt) node
+    {\tiny{ $j^1$}};
+    \draw[] (8, 7.1) circle (15pt) node
+    {\tiny{ $x^3$}};
+    \draw[] (8, 5.1) circle (15pt) node
+    {\tiny{ $j^4$}};
+    \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
+    {\tiny{ $a^{5}$}};
+    % \draw[thick] (12, 5.1) circle (15pt) node
+    % {\tiny{ $x_1^{3}$}};
+    \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
+    %
+    % \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
+    %  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
+        % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
+    \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
+    %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
+    %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
+      \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
+      \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
+        %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
+    % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
+    \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
+     \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
+    % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
+    % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
+    \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
+    \end{tikzpicture}
+\caption{}
+\end{centering}
+\end{subfigure}
+\begin{subfigure}{.4\textwidth}
+%}
+\qquad
+\begin{centering}
+ \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+\draw[] (6, 8.1) circle (15pt) node
+{\tiny{ $a^0$}};
+\draw[] (6, 4.1) circle (15pt) node
+{\tiny{ $j^1$}};
+\draw[] (8, 7.1) circle (15pt) node
+{\tiny{ $x^3$}};
+\draw[] (8, 5.1) circle (15pt) node
+{\tiny{ $j^4$}};
+\draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
+{\tiny{ $a^{5}$}};
+% \draw[thick] (12, 5.1) circle (15pt) node
+% {\tiny{ $x_1^{3}$}};
+\draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
+%
+% \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
+%  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
+    % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
+\draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
+%  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
+%   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
+  \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
+  \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
+    %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
+% \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
+\draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
+ \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
+% \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
+% \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
+\draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
+% \draw[thick,->, blue] (5.5, 8.0)  -- (2.6, 5.3) ;
+% \draw[thick,->, blue] (5.5, 6.0)  -- (2.6, 5.3) ;
+% \draw[thick,->, blue] (5.5, 4.0)  -- (2.6, 4.9) ;
+% \draw[thick,->, blue] (5.5, 2.0)  -- (2.6, 4.9) ;
+% \draw[very thick,->, red] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
+% \draw[very thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
+\end{tikzpicture}
+\caption{}
+\end{centering}
+\end{subfigure}
+}
+% \end{wrapfigure}
+% \end{equation*}
+\vspace{-0.4cm}
+ \caption{(a) Simple While Loop Example, (b) Execution-Based Dependency Graph, (c) The Static Program-Based Dependency graph.}
+\label{fig:alg_adaptsearch_simplewhile}
+\vspace{-0.5cm}
+\end{figure}
 % Analysis Results: $ \progA(\kw{whileRec}(k)) = 1 + k$
 %
 If we traverse on it's $\progG(c)$, and decrease the weight of $x^3$ by one after every visit,
@@ -2158,7 +2276,10 @@ to track the total number of vertices which are query vertices along the walk in
 
 The detail steps of this dfs strategy
 % of this algorithm is described as follows,
-from line: 6-16 in Algorithm~\ref{alg:adaptscc} is described as follows.
+from line: 3-16 in Algorithm~\ref{alg:adaptscc},
+particularly from line: 7-15 on how to 
+use these two special parameters to resolve \textbf{Challenge I}
+ is described as follows.
 % searching for the finite walk having the longest query length through a deep first search strategy
 % with a capacity limitation and use special parameter to compute the adaptivity
 % for every path.
@@ -2184,27 +2305,54 @@ At line: 12 where this vertex is visited,
 we only update the adaptivity reaching this vertex and neither recursion nor update the $\kw{flowcapacity}$  and 
 $\kw{querynum}$.
 \\
-Non-recursion 
+Again, Non-recursion in the second branch
 % in order to 
-guarantees the termination and
-Non-updating the $\kw{querynum}$ and $\kw{flowcapacity}$ guarantees the soundness.
+guarantees the termination and resolves \textbf{Challenge I}.
+\\
+The updating operation in these two branches, 
+specifically $\kw{flowcapacity[v] \times querynum[v]}$ in line: 11 and line: 15 
+guarantees 
+1.the visiting times of each vertex on the walk reaching $v$ is no more than 
+the maximum visiting it can be on this walk, through $\kw{flowcapacity[v]}$. 
+%  its minimum visiting time, 
+In this way, we resolve the \textbf{Challenge II} and in the same time without losing the soundness 
+% this 
+% 2. then 
+by using $\kw{flowcapacity[v] \times querynum[v]}$ to compute the query length. 
+% without lose the adaptivity.
+%
+\\
+Notice here, another special operation we have in the second branch is Non-updating of
+% Non-updating the 
+$\kw{querynum}$ and $\kw{flowcapacity}$.
+This guarantees both the accuracy and the soundness.
 Specifically,
 % because a second visiting of the same vertex 
 if this vertex is visited, it indicates that a cycle is monitored and  
 % indicates there is a cycle goes back to this vertex, 
-the traverse on this cycle is finished by going back to this vertex.
+the traversing on this cycle is finished by going back to this vertex.
 %
 % then, when 
 When we continuously search for walks heading out of this vertex, 
-the minimum weight on this cycle will not affect the walks going out of this vertex that not pass this cycle.
-However, if we keep recording the minimum weight, we are restricting the visiting times on a walk by
- using the minimum weight of vertices not on this walk, it is unsound anymore.
- \todo{example} Look at the Following example program:
+the minimum weight on this cycle does not affect the walks going out of this vertex that not pass this cycle.
+However, if we keep recording the minimum weight, then we
+%  are restricting 
+restrict the visiting times of vertices on a walk by
+ using the minimum weight of vertices not on this walk.
+%  , it is unsound anymore.
+Then, it is obviously that this leads to unsoundness.
+\todo{example} Look at a Nested While Loop example program in Figure~\ref{fig:alg_adaptsearch_nestedwhile}.
  %
- \[
   %
-  \kw{nestedWhileMultiVarRecAcross}(k) \triangleq 
-  \begin{array}{l}
+  \begin{figure}
+    \centering
+    {\footnotesize
+    \begin{subfigure}{.25\textwidth}
+    \begin{centering}
+    % 
+    $ 
+    \begin{array}{l}
+      \kw{nestedWhileMultiVarRecAcross}(k) \triangleq \\
       \clabel{\assign{i}{k} }^{0} ; \\
       \clabel{ \assign{x}{\query(\chi[0])}}^{1} ; \\
       \clabel{ \assign{y}{\query(\chi[1])}}^{2} ; \\
@@ -2219,17 +2367,109 @@ However, if we keep recording the minimum weight, we are restricting the visitin
             \clabel{\assign{x}{\query(\chi(\ln(y))+\chi[x])} }^{9}
             \Big) \Big)
       \end{array}
-  \]
-  %
-  If we update the $\kw{flowcapacity}[y^6]$ as $k$ after visiting $y^6$ the second time 
-  on the walk $y^6 \to y^6$,
+    %       
+    $
+    \caption{}
+    \end{centering}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}{.25\textwidth}
+    \begin{centering}
+         \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+        \draw[] (6, 8.1) circle (15pt) node
+        {\tiny{ $a^0$}};
+        \draw[] (6, 4.1) circle (15pt) node
+        {\tiny{ $j^1$}};
+        \draw[] (8, 7.1) circle (15pt) node
+        {\tiny{ $x^3$}};
+        \draw[] (8, 5.1) circle (15pt) node
+        {\tiny{ $j^4$}};
+        \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
+        {\tiny{ $a^{5}$}};
+        % \draw[thick] (12, 5.1) circle (15pt) node
+        % {\tiny{ $x_1^{3}$}};
+        \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
+        %
+        % \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
+        %  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
+            % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
+        \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
+        %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
+        %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
+          \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
+          \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
+            %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
+        % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
+        \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
+         \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
+        % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
+        % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
+        \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
+        \end{tikzpicture}
+    \caption{}
+    \end{centering}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+    %}
+    \qquad
+    \begin{centering}
+     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+    \draw[] (6, 8.1) circle (15pt) node
+    {\tiny{ $a^0$}};
+    \draw[] (6, 4.1) circle (15pt) node
+    {\tiny{ $j^1$}};
+    \draw[] (8, 7.1) circle (15pt) node
+    {\tiny{ $x^3$}};
+    \draw[] (8, 5.1) circle (15pt) node
+    {\tiny{ $j^4$}};
+    \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
+    {\tiny{ $a^{5}$}};
+    % \draw[thick] (12, 5.1) circle (15pt) node
+    % {\tiny{ $x_1^{3}$}};
+    \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
+    %
+    \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
+    %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
+    %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
+      \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
+      \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
+        %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
+    % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
+    \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
+     \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
+    % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
+    % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
+    \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
+    \end{tikzpicture}
+    \caption{}
+    \end{centering}
+    \end{subfigure}
+    }
+    % \end{wrapfigure}
+    % \end{equation*}
+    \vspace{-0.4cm}
+     \caption{(a) Nested While Loop Example, (b) Execution-Based Dependency Graph, (c) The Static Program-Based Dependency graph.}
+    \label{fig:alg_adaptsearch_nestedwhile}
+    \vspace{-0.5cm}
+    \end{figure}
+    %
+    When we searched for a walk: $y^6 \to y^6$,
+  if we update the $\kw{flowcapacity}[y^6]$ as $k$ after visiting $y^6$ the second time 
+  on this walk,
+  % the walk $y^6 \to y^6$,
   and continuously visit $x^9$,
-  Then the $\kw{flowcapacity[k]}$ is $\min(k, k^2)$ which 
-  restricting the visiting times of $x^9$ by $k$.
+  then the $\kw{flowcapacity[k]}$ is 
+  updated as $\min(k, k^2)$.
+  So
+  %  which 
+  % restricting 
+  the visiting times of $x^9$ is restricted by $k$ on the walk $y^6 \to y^6 \to x^9$.
   This restriction excludes the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ and $x^9$ visited by $k^2$ times
-  in the computation.
+  in the computation. 
   However, the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ is visited $k$ times and $x^9$ $k^2$ times is 
-  a qualified walk, and exactly the longest walk we aim to find.
+  a qualified walk, and exactly the longest walk we aim to find. So, by Non-updating the $\kw{flowcapacity}$ after 
+  visiting $y$ again, we guarantee that the visiting times og vertices on every searched walk will not be restricted by weights not on this walk,
+  i.e., the soundness.
  \\
 In the last line of this dfs algorithm, line: 16, it returns the adaptivity heading out from its input vertex.
 \\
