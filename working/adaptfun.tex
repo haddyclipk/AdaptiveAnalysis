@@ -1837,86 +1837,64 @@ $
 \end{centering}
 \end{subfigure}
 \quad
-\begin{subfigure}{.25\textwidth}
-\begin{centering}
-     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-    \draw[] (6, 8.1) circle (15pt) node
-    {\tiny{ $a^0$}};
-    \draw[] (6, 4.1) circle (15pt) node
-    {\tiny{ $j^1$}};
-    \draw[] (8, 7.1) circle (15pt) node
-    {\tiny{ $x^3$}};
-    \draw[] (8, 5.1) circle (15pt) node
-    {\tiny{ $j^4$}};
-    \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
-    {\tiny{ $a^{5}$}};
-    % \draw[thick] (12, 5.1) circle (15pt) node
-    % {\tiny{ $x_1^{3}$}};
-    \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
-    %
-    % \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
-    %  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
-        % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
-    \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
-    %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
-    %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
-      \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
-      \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
-        %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
-    % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
-    \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
-     \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
-    % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
-    % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
-    \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
-    \end{tikzpicture}
-\caption{}
-\end{centering}
-\end{subfigure}
-\begin{subfigure}{.4\textwidth}
-%}
-\qquad
-\begin{centering}
- \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-\draw[] (6, 8.1) circle (15pt) node
-{\tiny{ $a^0$}};
-\draw[] (6, 4.1) circle (15pt) node
-{\tiny{ $j^1$}};
-\draw[] (8, 7.1) circle (15pt) node
-{\tiny{ $x^3$}};
-\draw[] (8, 5.1) circle (15pt) node
-{\tiny{ $j^4$}};
-\draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
-{\tiny{ $a^{5}$}};
-% \draw[thick] (12, 5.1) circle (15pt) node
-% {\tiny{ $x_1^{3}$}};
-\draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
+\begin{subfigure}{.3\textwidth}
+  \begin{centering}
+%   \todo{abstract-cfg for two round}
+\begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+\draw[] (-5, 10) circle (0pt) node{{ $0$}};
+\draw[] (0, 10) circle (0pt) node{{ $1$}};
+\draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
+\draw[] (0, 4) circle (0pt) node{{ $3$}};
+\draw[] (0, 1) circle (0pt) node{{ $4$}};
+\draw[] (-5, 1) circle (0pt) node{{ $5$}};
+% Counter Variables
+\draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
+\draw[] (3, 4) circle (0pt) node {{ $ex$}};
 %
-% \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
-%  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
-    % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
-\draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
-%  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
-%   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
-  \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
-  \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
-    %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
-% \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
-\draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
- \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
-% \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
-% \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
-\draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
-% \draw[thick,->, blue] (5.5, 8.0)  -- (2.6, 5.3) ;
-% \draw[thick,->, blue] (5.5, 6.0)  -- (2.6, 5.3) ;
-% \draw[thick,->, blue] (5.5, 4.0)  -- (2.6, 4.9) ;
-% \draw[thick,->, blue] (5.5, 2.0)  -- (2.6, 4.9) ;
-% \draw[very thick,->, red] (6, 0.5)  to [out=30,in=240] (11, 3.2) ;
-% \draw[very thick,->, blue] (6, 0.5)  to [out=150,in=300]  (1, 3.2) ;
+% Control Flow Edges:
+\draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
+\draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
+\draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
+\draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
+\draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
+\draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
+\draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
+\draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
 \end{tikzpicture}
 \caption{}
-\end{centering}
-\end{subfigure}
+  \end{centering}
+  \end{subfigure}
+  \begin{subfigure}{.33\textwidth}
+  \begin{centering}
+  \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+\draw[] (0, 10) circle (0pt) node
+{{ $a^0: {}^1_{0}$}};
+\draw[] (0, 7) circle (0pt) node
+{\textbf{$x^3: {}^{k}_{1}$}};
+\draw[] (0, 4) circle (0pt) node
+{{ $a^5: {}^{k}_{0}$}};
+\draw[] (0, 1) circle (0pt) node
+{{ $l^6: {}^{1}_{1}$}};
+% Counter Variables
+\draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
+\draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+%
+% Value Dependency Edges:
+\draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
+\draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
+\draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
+\draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
+\draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
+\draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+% Control Dependency
+\draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+\draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+\draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
+\draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+\end{tikzpicture}
+\caption{}
+  \end{centering}
+  \end{subfigure}
 }
 % \end{wrapfigure}
 % \end{equation*}
@@ -2373,77 +2351,64 @@ Then, it is obviously that this leads to unsoundness.
     \end{centering}
     \end{subfigure}
     \quad
-    \begin{subfigure}{.25\textwidth}
-    \begin{centering}
-         \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-        \draw[] (6, 8.1) circle (15pt) node
-        {\tiny{ $a^0$}};
-        \draw[] (6, 4.1) circle (15pt) node
-        {\tiny{ $j^1$}};
-        \draw[] (8, 7.1) circle (15pt) node
-        {\tiny{ $x^3$}};
-        \draw[] (8, 5.1) circle (15pt) node
-        {\tiny{ $j^4$}};
-        \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
-        {\tiny{ $a^{5}$}};
-        % \draw[thick] (12, 5.1) circle (15pt) node
-        % {\tiny{ $x_1^{3}$}};
-        \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
-        %
-        % \draw[->, red, very thick, dashed](6.5, 2.1)  -- (7.5, 2.8) ;
-        %  \draw[->, red, very thick, dashed] (8.5, 3.1)  -- (11.5, 3.9) ;
-            % \draw[thick,->, blue] (8.5, 5.1)  -- (11.5, 5.9) ;
-        \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
-        %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
-        %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
-          \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
-          \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
-            %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
-        % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
-        \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
-         \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
-        % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
-        % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
-        \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
-        \end{tikzpicture}
+    \begin{subfigure}{.3\textwidth}
+      \begin{centering}
+   %   \todo{abstract-cfg for two round}
+   \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+   \draw[] (-5, 10) circle (0pt) node{{ $0$}};
+   \draw[] (0, 10) circle (0pt) node{{ $1$}};
+   \draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
+   \draw[] (0, 4) circle (0pt) node{{ $3$}};
+   \draw[] (0, 1) circle (0pt) node{{ $4$}};
+   \draw[] (-5, 1) circle (0pt) node{{ $5$}};
+   % Counter Variables
+   \draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
+   \draw[] (3, 4) circle (0pt) node {{ $ex$}};
+   %
+   % Control Flow Edges:
+   \draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
+   \draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
+   \draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
+   \draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
+   \draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
+   \draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
+   \draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
+   \draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
+   \end{tikzpicture}
     \caption{}
-    \end{centering}
-    \end{subfigure}
-    \begin{subfigure}{.4\textwidth}
-    %}
-    \qquad
-    \begin{centering}
-     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-    \draw[] (6, 8.1) circle (15pt) node
-    {\tiny{ $a^0$}};
-    \draw[] (6, 4.1) circle (15pt) node
-    {\tiny{ $j^1$}};
-    \draw[] (8, 7.1) circle (15pt) node
-    {\tiny{ $x^3$}};
-    \draw[] (8, 5.1) circle (15pt) node
-    {\tiny{ $j^4$}};
-    \draw[very thick, dashed, red] (8, 3.1) circle (15pt) node
-    {\tiny{ $a^{5}$}};
-    % \draw[thick] (12, 5.1) circle (15pt) node
-    % {\tiny{ $x_1^{3}$}};
-    \draw[very thick, dashed, red] (12, 8.1) circle (17pt) node{\tiny{\textbf{ $l^6$}}};
-    %
-    \draw[thick,->, blue] (8.5, 7.1)  -- (11.5, 7.9) ;
-    %  \draw[thick,->, blue] (10.5, 4.1)  -- (11.5, 4.8) ;
-    %   \draw[thick,->, red] (10.5, 4.1)  -- (11.5, 3.3) ;
-      \draw[thick,->, blue] (7.5, 3.5)  -- (6.5, 4.0) ;
-      \draw[thick,->, blue] (6.5, 4.1)  -- (7.5, 4.8) ;
-        %  \draw[thick,->, blue] (10.5, 6.1)  -- (11.5, 6.8) ;
-    % \draw[thick,->, blue] (10, 6.6)  -- (10, 7.6) ;
-    \draw[thick,->, blue] (7.5, 5.5)  -- (6.5, 6.0) ;
-     \draw[thick,->, blue] (6.5, 6.1)  -- (7.5, 6.8) ;
-    % \draw[thick,->, blue] (8.5, 9.1)  -- (9.5 , 9.8) ;
-    % \draw[thick,->, blue] (8, 9.6)  -- (8, 10.6) ;
-    \draw[thick,->, blue] (7.5, 7.5)  -- (6.5, 8.0) ;
-    \end{tikzpicture}
-    \caption{}
-    \end{centering}
-    \end{subfigure}
+      \end{centering}
+      \end{subfigure}
+      \begin{subfigure}{.33\textwidth}
+      \begin{centering}
+      \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+   \draw[] (0, 10) circle (0pt) node
+   {{ $a^0: {}^1_{0}$}};
+   \draw[] (0, 7) circle (0pt) node
+   {\textbf{$x^3: {}^{k}_{1}$}};
+   \draw[] (0, 4) circle (0pt) node
+   {{ $a^5: {}^{k}_{0}$}};
+   \draw[] (0, 1) circle (0pt) node
+   {{ $l^6: {}^{1}_{1}$}};
+   % Counter Variables
+   \draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
+   \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+   %
+   % Value Dependency Edges:
+   \draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
+   \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
+   \draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
+   \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
+   \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
+   \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+   % Control Dependency
+   \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+   \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+   \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
+   \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+   \end{tikzpicture}
+   \caption{}
+      \end{centering}
+      \end{subfigure}
     }
     % \end{wrapfigure}
     % \end{equation*}
