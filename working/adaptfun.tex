@@ -12,13 +12,74 @@ In this section, we present our static program analysis for computing an upper b
 In order to have the upper bound of the  adaptivity of a program $c$, we design a program analysis framework {\THESYSTEM}. It can be divided as two steps: 1) to construct a weighted depdenency graph based on $c$. 2) to find a path in this graph, which is used to estimate an upper bound on the adaptivity of $c$.
 \begin{figure}
   \centering    
-\includegraphics[width=0.7\columnwidth]{adapfun.png}
+\includegraphics[width=1.0\columnwidth]{adapfun.png}
   \vspace{-0.3cm}
   \caption{The overview of {\THESYSTEM}}
   \label{fig:adaptfun}
   \vspace{-0.5cm}
 \end{figure}
-\subsubsection{Graph construction}
+\subsubsection{Graph Estimation}
+%
+%
+% \subsection{A guide to the algorithm}
+% In order to have the upper bound of adaptivity:
+% \\
+% \begin{enumerate}
+% \item $\THESYSTEM$  first builds a program-based dependency graph to {over-}approximate the
+% % execution-based dependency graph (in Definition~\ref{def:trace_graph})
+% Execution-Based Dependency Graph (in Definition~\ref{def:trace_graph})
+% through Section~\ref{sec:alg_vertexgen}, Section~\ref{sec:alg_weightedgegen} and~\ref{sec:alg_graphgen}:
+% % in the phases one to phases four of $\THESYSTEM$ in Section~\ref{sec:abscfg} to Section~\ref{sec:alg_graphgen}:
+% \\
+% 1.1 approximate the vertices: 
+% % in the forth step of
+% in the first phase of $\THESYSTEM$ in
+% % the algorithm in Section~\ref{sec:alg_graphgen} 
+% Section~\ref{sec:alg_vertexgen}
+% without extra static analysis technique.
+% \\
+% 1.1 approximate the query annotations: 
+% % in the forth step of
+% in the first phase of $\THESYSTEM$ in
+% % the algorithm in Section~\ref{sec:alg_graphgen} 
+% Section~\ref{sec:alg_vertexgen}
+% without extra static analysis technique.
+% \\
+% 1.2 approximate the vertices weights:
+% in the second phase of 
+% % the algorithm in  
+% of $\THESYSTEM$ specifically in Section~\ref{sec:alg_weightgen}
+% \\
+% 1.3 approximate the edges between vertices:
+% also in the second phase of $\THESYSTEM$ specifically in 
+% % Section~\ref{sec:alg_weightgen}
+% Section~\ref{sec:alg_edgegen}
+% \\
+% 1.4 generate the final approximated program-based dependency graph in Section~\ref{sec:alg_graphgen}
+% %  to {over-}approximate the
+% % approximate the query annotation: 
+% % in the forth step of
+% in the third phase of $\THESYSTEM$.
+% % the algorithm  without extra static analysis technique.
+% % \\
+% This program-based graph has a similar topology structure as 
+% % the one
+% % of 
+% the Execution-Based Dependency Graph. It has the same
+% vertices and query annotations, but approximated edges and weights. 
+% \item Then in the last phase in Section~\ref{sec:alg_adaptcompute}, $\THESYSTEM$
+% % we compute the upper bound for adaptivity over this approximated graph:
+% % , as an upper bound for
+% % program's adaptivity
+% computes the upper bound for adaptivity over this approximated graph.
+% % in the last phase of this algorithm in Section~\ref{sec:alg_adaptcompute}.
+% % \subsection{Adaptivity Based on Program Analysis in \THESYSTEM}
+% % In order to give a bound on the program's adaptivity, we first build a
+% % program-based data-dependency graph to {over-}approximate the
+% % trace-based dependency graph.  Then, we define a program-based
+% % adaptivity over this approximated graph, as an upper bound for
+% % $A(c)$.
+% \end{enumerate}
 According to the dependency graph we use in adaptivity definition, we want to build a similar graph to {over-}approximate the
 % execution-based dependency graph (in Definition~\ref{def:trace_graph})
 Execution-Based Dependency Graph (in Definition~\ref{def:trace_graph}). The construction considers the vertices, edges, and the weight of every node, as well as some annotations which marks the query usage. The overall picture of this step is organized as follows.
@@ -56,7 +117,7 @@ vertices and query annotations, but approximated edges and weights. We call the 
 % $A(c)$.
 
 
-\subsubsection{Path searching algorithm}
+\subsubsection{Adaptivity Computation}
 
 Likewise the adaptivity is defined as a finite walk in the execution based depdenency graph, our static estimation on this adaptivity also relies on finding a path in the static analysis depdenency graph.   The construction of the stastic analysis dependency graph is of great value of showing some useful properties of the target program, such as dependency between variables, the execution upper bound of a certian command, while the key novelty is our path searching algorithm, which connects all the information we need in the static anlaysis dependency graph and provides us a sound over-estimation of adaptivity! In order to get a sound but precise upper bound, we will discuss some challenges in finding the 'appropriate' path in the graph, and how our algorithm responds to these challengs. We presetn the path seaching algorithm in Section~\ref{sec:alg_adaptcompute}.
  
