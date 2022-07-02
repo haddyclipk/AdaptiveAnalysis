@@ -79,14 +79,14 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
 \centering
 \begin{subfigure}{0.3\textwidth}
     $
-\kw{multipleRoundsSimp(k, c)} \triangleq
+\kw{multipleRounds(k, c)} \triangleq
 \begin{array}{l}
      \left[j \leftarrow k \right]^1 ; \\
     \left[I \leftarrow [] \right]^2; \\
     \ewhile ~ \clabel{j > 0}^{3} ~ \edo ~ \\
     \Big(
     \clabel{\assign{j}{j-1}}^{4} ;\\
-    \left[p \leftarrow c \right]^5; \\
+    \clabel{\assign{ns}{upd-nscore(a)}}^5; \\
     \left[ a \leftarrow \query (\chi[I]) \right]^6;\\
     \left[I \leftarrow \mathrel{\mathsf{update}} ( {I}, (a, p))  \right]^7
     \Big) 
