@@ -27,8 +27,13 @@ Then the tracking list is updated by the two scores for every round.
 % Then the list $I$ is updated by the two scores for every round. 
 After the $r$ rounds, the algorithm returns the columns of the hidden database $D$ not specified in the tracking list $I$, which is $D \setminus I$. 
 \\
-The algorithm is written in the {\tt Query While} language as $\kw{multipleRounds(k, c)} $ taking two parameters $k$ and $c$ for 
-number of iterations and the distribution sampling primitive $c$.
+The algorithm is written in the {\tt Query While} language as $\kw{multipleRounds(k)} $ taking 
+% two parameters $k$ and $c$ for 
+% number of iterations and the distribution sampling primitive $c$.
+a parameter $k$ 
+% and $c$ for 
+number of iterations.
+% and the distribution sampling primitive $c$.
 It starts from an initialized empty tracking list $I$ as well,
 % a score called Nscore $ns=0$ , another score Cscore $cs=0$. There is a hidden database $X$ as well.
 % It goes $k$ rounds and every round, the two scores $ns$ and $cs$ are updated by a query result. 
@@ -39,11 +44,15 @@ and obtain the query result $a$.
 Then, the tracking list $I$ is updated by a query result. 
 % Then the list $I$ is updated by the two scores for every round. 
 After the $r$ rounds, the algorithm returns the columns of the hidden database $D$ not specified in the tracking list $I$.
-The $\mathrel{\mathsf{update}} ( {I}, (a, p))$ function takes $I, a, p$ as input and compute the updated results for $I$.
-$\mathsf{update}$ function is used here to simplify the complex update computation of Nscore, Cscore and the tracking list $I$.
+% The $\mathrel{\mathsf{update}} ( {I}, (a, p))$ function takes $I, a, p$ as input and compute the updated results for $I$.
+% $\mathsf{update}$ function is used here to simplify the complex update computation of Nscore, Cscore and the tracking list $I$.
+We use functions $\kw{updnscore}(p,a)$,
+$\kw{updcscore}(p,a)$,$\kw{update}(I,ns,cs)$ to simplify the complex update computation of Nscore, Cscore and the tracking list $I$. 
 It will not change our analysis because these functions provides enough information through their arguments.%
 }
-% It uses a loop for the $k$ rounds computation and. We use functions $update\_nscore(p,a)$,$update\_cscore(p,a)$,$update(I,ns,cs)$ to simplify the complex update computation of Nscore, Cscore and the tracking list $I$. It will not change our analysis because these functions provides enough information through their arguments.
+% It uses a loop for the $k$ rounds computation and. 
+% We use functions $\kw{updnscore}(p,a)$,
+% $\kw{updcscore}(p,a)$,$\kw{update}(I,ns,cs)$ to simplify the complex update computation of Nscore, Cscore and the tracking list $I$. It will not change our analysis because these functions provides enough information through their arguments.
 % As described in the two round algorithm, the multi-round algorithm has a loop as well.
 % compare to two round algorithm
 
@@ -66,13 +75,92 @@ The query in one iteration $j$ now depends on the tracking list $I$ from its pre
 % The input of this function is $a, p$, where $a$ is the result of the query in current iteration.
 % \\
 % By assuming a specific database $D = [[1, 1], [0, 0], [1, 1], [1, 1]]$,
-\todo{The adaptivity through dependency graph}
+% \todo{The adaptivity through dependency graph}
+% \jl{
+% We first show its query-based dependency graph in Figure~\ref{fig:multi_graphs}(a), the execution trace $t_{mr}$ is generated as follows.}
 \jl{
-We first show its query-based dependency graph in Figure~\ref{fig:multi_graphs}(a), the execution trace $t_{mr}$ is generated as follows.}
+We first show its Execution-Based Dependency graph in Figure~\ref{fig:multi_graphs}(b).
+Each vertex corresponds to a labeled variable in program,
+and annotated with its weights and query annotation. 
+The edges are constructed by checking all the possible program execution trace.
+For example taking an arbitrary initial trace,
+$\trace_0 = [(k, in, 2, \bullet)]$, 
+we observe the execution trace as
+$
+% \trace_0 \tracecat
+[ 
+(j, 0, 2, \bullet),
+% (I, 1, [], \bullet),
+% (ns, 2, 0, \bullet),
+% (cs, 3, 0, \bullet),
+\cdots,
+(j>0, 4, \etrue, \bullet),
+(j, 5, 1, \bullet),
+(a, 6, v_1, []),
+\cdots,
+(I, 9, [1], \bullet),
+\cdots,
+(a, 6, v_2, [1]),
+\cdots,
+(I, 9, [1,1], \bullet), 
+(j>0, 4, \efalse, \bullet)
+]$.
+Then, by modifying the event $(I, 9, [1], \bullet)$ into 
+$(I, 9, [1, 0], \bullet)$ in the first loop iteration, 
+ and continuously executing the next command, 
+ we 
+ observe this execution,
+% trace 
+we obtain another execution trace:
+$
+% \trace_0 \tracecat
+[ 
+(j, 0, 2, \bullet),
+% (I, 1, [], \bullet),
+% (ns, 2, 0, \bullet),
+% (cs, 3, 0, \bullet),
+\cdots,
+(j>0, 4, \etrue, \bullet),
+(j, 5, 1, \bullet),
+(a, 6, v_1, []),
+\cdots,
+(I, 9, [1], \bullet),
+\cdots,
+(a, 6, v_2', [1, 0]),
+\cdots,
+(I, 9, [1,1], \bullet),
+(j>0, 4, \efalse, \bullet)
+]$.
+In the two traces, the value assigned to $a$ at line 6 changed from the event $(a, 6, v_2, [1])$ into $(a, 6, v_2', [1, 0])$.
+So we construct the directed edge from $a^6$ to $I^9$ and same way for all the other edges.
+For the weight, we observe the occurrence time of the label for each 
+labeled variable over all possible execution traces.
+Given $k \in \mathbb{N}$, we observe the infinite number of occurrence times
+for labels inside the loop.
+Then, we assign the labeled variable of the same weight.
+}
 % For a better presentation of the graph, we add some notations: $q_a$ for $q(f( I_a))^{5, [4:1]}$, similar for $q_b$, $q_c$ for $q(f( I_b))^{5, [4:2]}$, $q(f( I_c))^{5, [4:3]}$. We can see the red dashed path from $q_c \to q_b \to q_a$ is the round of adpativity our theorem wants, as the longest path in the dependency graph. Since $k =3$, the multiple rounds algorithm takes in total $k=3$ queries from an data analyst, answers the queries. And from the graph, we know that there are 3-round adaptive queries in these 3 input queries(fully adaptive), since the red path has length $3$. 
-\todo{The static analysis results from each steps}
+% \todo{The static analysis results from each steps}
 \jl{
-Next, we show our algorithm providing the estimated upper bound for this multiple rounds example through constructing a variable-based weighted dependency graph in Figure\ref{fig:multi_graphs}(b). We use a short in the graph, such as $a_1^{3}$ for $a_1^{(5, [4:3])}$ and so on. We show the most weighted path in the graph, which is the red dashed path as usual. Along the red dashed path, $3$ weighted nodes $a_1^{3},a_1^{2},a_1^{1} $, correspond to our queries $q_c, q_b$ and $q_a$ respectively. This is our intuition to estimate one graph in Figure~\ref{fig:multi_graphs}(b), to upper bound another graph(Figure~\ref{fig:multi_graphs})(a). Here, we simplify the estimated graph by omitting some variables such $ns_1$, $cs_1$ in  Figure~\ref{fig:multi_graphs}(b).  Every query node in the query-based dependency graph has a corresponding node(variable the query is associated) in the variable-based dependency graph generated by our analysis algorithm {\THESYSTEM}. }
+Next, we show our algorithm providing the estimated upper bound for this multiple rounds example through constructing a 
+% variable-based weighted dependency graph in Figure\ref{fig:multi_graphs}(b). We use a short in the graph, such as $a_1^{3}$ for $a_1^{(5, [4:3])}$ and so on. We show the most weighted path in the graph, which is the red dashed path as usual. Along the red dashed path, $3$ weighted nodes $a_1^{3},a_1^{2},a_1^{1} $, correspond to our queries $q_c, q_b$ and $q_a$ respectively. This is our intuition to estimate one graph in Figure~\ref{fig:multi_graphs}(b), to upper bound another graph(Figure~\ref{fig:multi_graphs})(a). Here, we simplify the estimated graph by omitting some variables such $ns_1$, $cs_1$ in  Figure~\ref{fig:multi_graphs}(b).  Every query node in the query-based dependency graph has a corresponding node(variable the query is associated) in the variable-based dependency graph generated by our analysis algorithm {\THESYSTEM}. 
+Program-based weighted dependency graph,
+ant this graph has identical topology to the Execution-Based dependency graph as in Figure\ref{fig:multi_graphs}(b). 
+% We use a short in the graph, such as $a_1^{3}$ for $a_1^{(5, [4:3])}$ and so on. We show the most weighted path in the graph, which is the red dashed path as usual. 
+Along the red dashed path, $3$ weighted nodes 
+$a^{6}: {}^k_1 \to I^9:{}^k_0 \to ns^7:{}^k_0$, corresponds
+to the variable $a$ assigned by the result of the query request
+$ $
+at line 6 for $k$ times, etc.
+% correspond to our queries $q_c, q_b$ and $q_a$ respectively. 
+% This is our intuition to estimate one graph in Figure~\ref{fig:multi_graphs}(b), to upper bound another graph(Figure~\ref{fig:multi_graphs})(a). 
+% Here, we simplify the estimated graph by omitting some variables such $ns_1$, $cs_1$ in  Figure~\ref{fig:multi_graphs}(b).  
+% Every query node in the query-based dependency graph has a corresponding node(variable the query is associated) in the variable-based dependency graph generated by our analysis algorithm {\THESYSTEM}. 
+And this path corresponds to the finite walk where 
+every vertex is visited $k$ times.
+Then, by summing up the number of query vertices showing up
+the query length is $k$, where $k$ is the program's adaptivity.
+}
 
 %
 \begin{figure}
@@ -172,26 +260,9 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
     \label{fig:multi_graphs}
 \end{figure}
 %
-\begin{example}[Linear Regression Algorithm]
-    This example is a linear regression algorithm 
-    in order to
-    model a linear relationship between a dependent variable $y$,
-    % corresponding to the observed value in the column $\chi[1]$ in database, 
-    and one independent variable $x$, $y = a \times x + c$,
-    % corresponding to the observed value in the column $\chi[0]$ in database, 
-    through sending queries to a training data set.
-    This algorithm is written in our {\tt Query While} language in Figrue~\ref{fig:linear_regression}(a),
-    as a reminder,
-    the notation $\chi[1]$ is used to access the second column in training data set as the observed label value for variable $y$,
-    and 
-    % The dependent variable $y$,
-    % corresponds to the observed value in the column $\chi[1]$ in data set,
-    % and the independent variable $x$ corresponds to the observed value in column $\chi[0]$.
-    $\chi[0]$ for the first column as the observed feature value of variable $x$, when requesting a query.
-    % corresponds to the observed value in column .
-    % This regression by observing a sequence of query requesting results from the dataset.
-    In this regression, the loss function is the mean square error between the approximated and the observed value from database,
-    and the gradient decent algorithm is used for optimizing the loss function.
+\begin{example}[Linear Regression Algorithm with Gradient Decent Optimization]
+    The linear regression algorithm with gradient decent Optimization works well 
+    in our $\THESYSTEM$ as well.
             %   \[
             %   %
             %   \begin{array}{l}
@@ -290,21 +361,82 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
 Analysis Results: $ \progA(\kw{linearRegression(step, rate)}) = k$
 \end{example} 
 %
+ 
+This linear regression algorithm 
+% in order to
+aims to
+model a linear relationship between a dependent variable $y$,
+% corresponding to the observed value in the column $\chi[1]$ in database, 
+and one independent variable $x$, $y = a \times x + c$,
+% corresponding to the observed value in the column $\chi[0]$ in database, 
+through sending queries to a training data set.
+This training data set contains two columns (easy to extend to higher dimensional data sets), first column is used as the observed value for the independent variable $x$,
+second column is used as the observed label value for the dependent variable $y$.
+This algorithm is written in our {\tt Query While} language in Figure~\ref{fig:linear_regression}(a) as $linearRegression(step, rate)$ taking the iteration number $\kw{step}$ 
+and the learning rate $\kw{step}$ for gradient decent optimization.
+As a reminder,
+the notation 
+% The dependent variable $y$,
+% corresponds to the observed value in the column $\chi[1]$ in data set,
+% and the independent variable $x$ corresponds to the observed value in column $\chi[0]$.
+$\chi[0]$ is used to access the first column of the training data set
+and $\chi[1]$ for 
+% is used to access 
+the second column when requesting a query.
+%  in training data set as the observed label value for variable $y$,
+% and 
+% The dependent variable $y$,
+% corresponds to the observed value in the column $\chi[1]$ in data set,
+% and the independent variable $x$ corresponds to the observed value in column $\chi[0]$.
+% $\chi[0]$ for the first column as the observed feature value of variable $x$, when requesting a query.
+% corresponds to the observed value in column .
+% This regression by observing a sequence of query requesting results from the dataset.
+In this regression, the loss function is the mean square error between the approximated and the observed value from database,
+and the standard gradient decent algorithm is used for optimizing the loss function.
+%
+\\
+This linear regression algorithm starts from initializing the linear model parameters and the counter varaible,
+and then goes into the training iterations.
+In each iteration, it computes the differential value w.r.t. parameter
+$a$ and $c$ respectively,
+through requesting two queries, $\query(-2 * (\chi[1] - (\chi[0]\times a + c)) \times (\chi[0]))$ and 
+$\query(-2 * (\chi[1] - (\chi[0]\times a + c)))$
+at line 4 and 5.
+Then, use these two differential values stored in variable $da$ and $dc$ to update the linear model parameters $a$ and $c$ 
+%
+By dynamic analysis, we have there Execution-Based Dependency Graph as in Figure~\ref{fig:linear_regression}.
+In this graph, the dotted path corresponds to a finite walk with the longest query length and its adaptivity on this walk is $k$.
+%
+By static analysis, we obtained identical graph and identical weights and annotations, as well as the adaptivity $k$.
+%
 \begin{example}
 [Over-approximation Algorithm]
 Our algorithm comes across an over-approximation on the estimation due to its path-insensitive nature. It occurs when the control flow can be decided in a particular way in front of conditional branches, while the static analysis fails to witness. 
 
 We use one example to show the over-approximation, Figure~\ref{fig:overappr_example}(a). This example is the variant of the multiple rounds strategy, 
-we call it a multiple rounds odd iteration algorithm. In this algorithm, at every iteration, a query $q(b+\chi[i])$ based on previous query results stored in $b$ is asked by the analyst like in the multiple rounds strategy. The difference is that only the query answers from odd iterations ($i =1,3, 5$) are added to $b$. 
-  Because the execution trace only updates $b$ using the query answers at odd iterations, so the answers from even iterations do not affect the queries at odd iterations. From the query-based dependency graph in Figure~\ref{fig:overappr_example}(b), we can see that there is no edge from queries at odd iterations (such as $q_1,q_3,q_5$) to queries at even iteration(such as $q_2,q_4$). The longest path is dashed with a length $3$.  However, {\THESYSTEM} fails to realize that odd iteration will always execute then branch and even iteration means else branch, so its dependency graph considers both branches for every iteration. In this sense, the dependency graph by {\THESYSTEM} is similar to the one in the multiple rounds strategy. We show the estimated graph in Figure~\ref{fig:overappr_example}(c). The estimated upper bound is then, $5$, instead of $3$. 
-%
-\\
-Analysis Results: $ \progA(\kw{whileMultiplePath}(k)) = 1 + 2 * k $ --> Over-Approximated
+we call it a multiple rounds odd iteration algorithm. In this algorithm, at line 5 of every iteration, 
+a query $\query(\chi[x])$ based on previous query results stored in $x$ is asked by the analyst like in the multiple rounds strategy. The difference is that only the query answers from the even iterations ($i =0, 2, \cdots $) are 
+% used to $b$. 
+used in the query 
+in line 7, $\query(\chi[\ln(y)])$.
+  Because the execution trace only updates 
+%   $b$ using the query answers at odd iterations, so the answers from even iterations do not affect the queries at odd iterations. From the query-based dependency graph in Figure~\ref{fig:overappr_example}(b), we can see that there is no edge from queries at odd iterations (such as $q_1,q_3,q_5$) to queries at even iteration(such as $q_2,q_4$). The longest path is dashed with a length $3$.  However, {\THESYSTEM} fails to realize that odd iteration will always execute then branch and even iteration means else branch, so its dependency graph considers both branches for every iteration. In this sense, the dependency graph by {\THESYSTEM} is similar to the one in the multiple rounds strategy. We show the estimated graph in Figure~\ref{fig:overappr_example}(c). The estimated upper bound is then, $5$, instead of $3$. 
+$x$ using the query answers at even iterations, so the answers from odd iterations do not affect the queries at even iterations. 
+From the Execution-based dependency graph in Figure~\ref{fig:overappr_example}(b), 
+we can see that the visiting times of labeled variable $y^5$ is 
+$k/2$ and 
+% there is no edge from queries at odd iterations (such as $q_1,q_3,q_5$) to queries at even iteration(such as $q_2,q_4$). The longest path is dashed with a length $3$.  
+However, {\THESYSTEM} fails to realize that odd iteration will always execute then branch and even iteration means else branch, so 
+% its dependency 
+it considers both branches for every iteration. 
+In this sense, the weight estimated for $y^6$ and $w^6$ are both 
+$k$.
+As a result, the adaptivity estimated from the Program-Based Dependency graph from {\THESYSTEM} by finding the walk with the longest query length is $1 + 2 * k$, instead of $1 + k$. We show the estimated graph in Figure~\ref{fig:overappr_example}(c). 
 %
 { \small
 \begin{figure}
 \centering
-    \begin{subfigure}{0.5\textwidth}
+    \begin{subfigure}{0.45\textwidth}
 \centering
 \[
     %
@@ -324,15 +456,15 @@ Analysis Results: $ \progA(\kw{whileMultiplePath}(k)) = 1 + 2 * k $ --> Over-App
  \caption{}
     \end{subfigure}
 %
-\begin{subfigure}{.42\textwidth}
+\begin{subfigure}{.45\textwidth}
     \begin{centering}
     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
 % Variables Initialization
-\draw[] (5, 1) circle (0pt) node{{ $x^1: {}^1_{0}$}};
+\draw[] (5, 1) circle (0pt) node{{ $x^1: {}^1_{1}$}};
 % Variables Inside the Loop
- \draw[] (0, 7) circle (0pt) node{{ $y^5: {}^{k}_{0}$}};
- \draw[] (0, 4) circle (0pt) node{{ $w^6: {}^{k}_{0}$}};
- \draw[] (0, 1) circle (0pt) node{{ $x^7: {}^{k}_{0}$}};
+ \draw[] (0, 7) circle (0pt) node{{ $y^5: {}^{k/2}_{1}$}};
+ \draw[] (0, 4) circle (0pt) node{{ $w^6: {}^{k/2}_{1}$}};
+ \draw[] (0, 1) circle (0pt) node{{ $x^7: {}^{k}_{1}$}};
  % Counter Variables
  \draw[] (5, 7) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
  \draw[] (5, 4) circle (0pt) node {{ $j^3: {}^{k}_{0}$}};
