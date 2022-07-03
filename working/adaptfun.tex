@@ -1169,20 +1169,35 @@ We prove that this
 symbolic expression for $x^l \in \progV(c)$ is a sound upper bound of 
 the maximum visiting times of $x^l$ over all execution traces of $c$ in Appendix~\ref{apdx:reachability_soundness}. 
 %
+
+
+
+
+
 \subsubsection{Edge Estimation}
 \label{sec:alg_edgegen}
-We show how to estimation the directed edges between vertices in $\progV(c)$ in this part.
-\\
-In this step, through 
-% the vertices and edges in 
-$c$'s abstract contrl flow graph $\absG(c)$,
- $\THESYSTEM$ performs a feasible data-flow analysis 
- using the reachable definition algorithm,
-%  and then Then we generated the set of feasible data-flow between labeled variables based on that.
-and generates the 
-%set of 
-feasible data-flow relation between labeled variables.
-\\
+
+\wq{We show how to estimate the directed edges in the static analysis dependency graph.
+We develop a variant of data flow analysis, called Feasible Data-Flow Generation, which 
+considers both the control flow and data flow and
+is a sound approximation of the edges in the excucution based dependency graph.}
+
+\wq{Also, worith to mention, we use the result of reaching definition on the abstract control flow graph in feasible 
+data-flow generation to have a more precise approximation. Let us see a simple example, a program $ [x = 0]^{1}; [x=2]^{2};  [y = x+1]^{3}$. The standard data flow analysis 
+tells us that both the labeled variable $x^{1}$ and $x${2} may flow to $y^{3}$, which will result in an unnecessary edge ($x^{1}, y^{3}$). The result of reaching definition 
+can helps us elimiate this kind of edge by telling us, at line $3$, only variable $x^{2}$ is reachable. }
+
+
+% In this step, through 
+% % the vertices and edges in 
+% $c$'s abstract contrl flow graph $\absG(c)$,
+%  $\THESYSTEM$ performs a feasible data-flow analysis 
+%  using the reachable definition algorithm,
+% %  and then Then we generated the set of feasible data-flow between labeled variables based on that.
+% and generates the 
+% %set of 
+% feasible data-flow relation between labeled variables.
+% \\
 %  By generating set of all the reachable variables at location of label $l$ in the program $c$.
 % For every labelled variable $x^l$ in this set, 
 % the value assigned to that variable
