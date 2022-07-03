@@ -83,17 +83,46 @@ $
 \end{centering}
 \end{subfigure}
 \begin{subfigure}{.5\textwidth}
-%}
-\qquad
-\begin{centering}
-$\vcenter{\hbox{
-\todo{graph}
-}
-}
-$
-\caption{}
-\end{centering}
-\end{subfigure}
+    \begin{centering}
+    \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+% Variables Initialization
+\draw[] (-5, 1) circle (0pt) node{{ $I^1: {}^1_{0}$}};
+\draw[] (-5, 7) circle (0pt) node{{$ns^2: {}^{1}_{0}$}};
+\draw[] (-5, 4) circle (0pt) node{{ $cs^3: {}^{1}_{0}$}};
+% Variables Inside the Loop
+ \draw[] (0, 10) circle (0pt) node{{ $a^6: {}^{k}_{1}$}};
+ \draw[] (0, 7) circle (0pt) node{{ $ns^7: {}^{k}_{0}$}};
+ \draw[] (0, 4) circle (0pt) node{{ $cs^8: {}^{k}_{0}$}};
+ \draw[] (0, 1) circle (0pt) node{{ $I^9: {}^{k}_{0}$}};
+ % Counter Variables
+ \draw[] (5, 9) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
+ \draw[] (5, 6) circle (0pt) node {{ $j^5: {}^{k}_{0}$}};
+ %
+ % Value Dependency Edges:
+ \draw[ thick, -latex,] (0, 1.5)  -- (0, 3.5) ;
+ \draw[ ultra thick, -latex, densely dotted,] (0, 7.5)  -- (0, 9.5) ;
+ \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
+ \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
+ \draw[ thick, -Straight Barb] (1, 7.2) arc (220:-100:1);
+ \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+ % Value Dependency Edges on Initial Values:
+ \draw[ thick, -latex,] (-0.5, 1)  -- (-4.5, 1) ;
+ \draw[ thick, -latex,] (-0.5, 4)  -- (-4.5, 4) ;
+ \draw[ thick, -latex,] (-0.5, 7)  -- (-4.5, 7) ;
+ %
+ \draw[ ultra thick, -latex, densely dotted,] (-0.5, 10)  to  [out=-130,in=130]  (-0.5, 1);
+ \draw[ ultra thick, -latex, densely dotted,] (-0.5, 1.5)  to  [out=-250,in=250]  (-0.5, 7);
+ % Control Dependency
+%  \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+%  \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+ \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
+ \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+ \draw[ thick,-latex] (1.5, 1)  -- (4, 6) ;
+ \draw[ thick,-latex] (1.5, 10)  -- (4, 6) ;
+ \end{tikzpicture}
+ \caption{}
+    \end{centering}
+    \end{subfigure}
 % \end{wrapfigure}
 % \end{equation*}
 \vspace{-0.4cm}
