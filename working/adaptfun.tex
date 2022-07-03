@@ -1797,66 +1797,9 @@ In order to
 compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
 search for the finite walk having the longest query length.
 \\
-However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
-\\
-\textbf{Challenge I:}
-% As in Definition~\ref{def:finitewalk}, w
-We cannot 
-% simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
-simply adopt a deep first strategy to 
-search for the longest weighted path
-estimate the adaptivity as the weighted query length of this path
-% of the longest weight path, 
-as in Algorithm~\ref{alg:overadp_alg}.
-% However, this gives us over-approximation to a large extend.
-It is easy to see that this gives us over-approximation to a large extend.
-\\
-Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
-the visiting time of every vertex on a walk should be no more than its weight.
-% which is a symbolic expression.
-% So we cannot simply 
-However, by searching for the longest weighted path, 
-% and approximating the finite walk by this weight path, 
-and use it as the approximated finite walk with the longest query length, 
-the visiting times of the vertex on 
-% it 
-this approximated walk could 
-% possibly 
-exceed 
-% its weights. 
-the visiting times it can have.
-Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
-and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
-This over-approximation could result in a $\infty$ adaptivity upper bound on the program with actual adaptivity $2$.
-\todo{For example}
-\\
-Look at the two-round example in overview, 
-it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
-If we use this path to approximate a finite walk, and weight of each vertex as
-%  their visiting times, 
-its visiting time,
-then it isn't a qualified walk. 
-Because $l^6$ can only be visited as most once by its weight,
-% and this lead to 
-resulting in the restriction on the maximum visiting time of $x^3$,
-such that $x^3$ is only able to be visited at most once as well.
-%
-However, $x^3$ is visited $k$ times in this approximated walk.
-% Moever, with the longest query length, then 
-In order to have $x^3$ be visited $k$ time, we need to go back to 
-$x^3$ on this walk from either $a^5$ or $l^6$ for $k$ time.
-This is impossible since there is no edge going back to $x^3$ in $\progG(twoRound)$.
-Obviously,
-% the with the weighted length $1 + k$. It is obviously
-its weighted query length, $1 + k$, 
-% which is 
-over approximates 
-% its 
-the adaptivity of this example to a large extend, which supposed to be $2$. 
-%  for this program, 
-% that 
-\\
-\textbf{Challenge II:}
+% However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
+However, by Definition~\ref{def:finitewalk}, this finite walk isn't easy to find, below are the challenges in order to find this walk.
+\textbf{Non-Termination Challenge:}
 % Moreover, b
 We can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
 The simple 
@@ -1931,6 +1874,63 @@ we will never terminate because we only know $k \in \mathbb{N}$.
 % However, this gives us over-approximation to a large extend.
 % In Algorithm~\ref{alg:adpt_alg}, 
 % we first find all the strong connected components of this graph, 
+\\
+\textbf{Approximation Challenge:}
+% As in Definition~\ref{def:finitewalk}, w
+We cannot 
+% simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
+simply adopt a deep first strategy to 
+search for the longest weighted path
+estimate the adaptivity as the weighted query length of this path
+% of the longest weight path, 
+as in Algorithm~\ref{alg:overadp_alg}.
+% However, this gives us over-approximation to a large extend.
+It is easy to see that this gives us over-approximation to a large extend.
+\\
+Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
+the visiting time of every vertex on a walk should be no more than its weight.
+% which is a symbolic expression.
+% So we cannot simply 
+However, by searching for the longest weighted path, 
+% and approximating the finite walk by this weight path, 
+and use it as the approximated finite walk with the longest query length, 
+the visiting times of the vertex on 
+% it 
+this approximated walk could 
+% possibly 
+exceed 
+% its weights. 
+the visiting times it can have.
+Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
+and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
+This over-approximation could result in a $\infty$ adaptivity upper bound on the program with actual adaptivity $2$.
+\todo{For example}
+\\
+Look at the two-round example in overview, 
+it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
+If we use this path to approximate a finite walk, and weight of each vertex as
+%  their visiting times, 
+its visiting time,
+then it isn't a qualified walk. 
+Because $l^6$ can only be visited as most once by its weight,
+% and this lead to 
+resulting in the restriction on the maximum visiting time of $x^3$,
+such that $x^3$ is only able to be visited at most once as well.
+%
+However, $x^3$ is visited $k$ times in this approximated walk.
+% Moever, with the longest query length, then 
+In order to have $x^3$ be visited $k$ time, we need to go back to 
+$x^3$ on this walk from either $a^5$ or $l^6$ for $k$ time.
+This is impossible since there is no edge going back to $x^3$ in $\progG(twoRound)$.
+Obviously,
+% the with the weighted length $1 + k$. It is obviously
+its weighted query length, $1 + k$, 
+% which is 
+over approximates 
+% its 
+the adaptivity of this example to a large extend, which supposed to be $2$. 
+%  for this program, 
+% that 
 \\
 These challenges give us the necessary to design a walk search algorithm through a combination of 
 % DFS and BFS algorithm 
