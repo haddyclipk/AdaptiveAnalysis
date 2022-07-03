@@ -125,32 +125,36 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
     %   \caption{}
     %     \end{centering}
     %     \end{subfigure}
-        \begin{subfigure}{.45\textwidth}
+        \begin{subfigure}{.5\textwidth}
         \begin{centering}
         \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
 % Variables Initialization
-\draw[] (-5, 10) circle (0pt) node{{ $I^1: {}^1_{0}$}};
+\draw[] (-5, 1) circle (0pt) node{{ $I^1: {}^1_{0}$}};
 \draw[] (-5, 7) circle (0pt) node{{$ns^2: {}^{1}_{0}$}};
 \draw[] (-5, 4) circle (0pt) node{{ $cs^3: {}^{1}_{0}$}};
 % Variables Inside the Loop
-     \draw[] (0, 10) circle (0pt) node{{ $a^6: {}^{k}_{0}$}};
-     \draw[] (0, 7) circle (0pt) node{{ $ns^7: {}^{k}_{1}$}};
+     \draw[] (0, 10) circle (0pt) node{{ $a^6: {}^{k}_{1}$}};
+     \draw[] (0, 7) circle (0pt) node{{ $ns^7: {}^{k}_{0}$}};
      \draw[] (0, 4) circle (0pt) node{{ $cs^8: {}^{k}_{0}$}};
-     \draw[] (0, 1) circle (0pt) node{{ $I^9: {}^{k}_{1}$}};
+     \draw[] (0, 1) circle (0pt) node{{ $I^9: {}^{k}_{0}$}};
      % Counter Variables
      \draw[] (5, 9) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
      \draw[] (5, 6) circle (0pt) node {{ $j^5: {}^{k}_{0}$}};
      %
      % Value Dependency Edges:
-     \draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
-     \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
-     \draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
+     \draw[ thick, -latex,] (0, 1.5)  -- (0, 3.5) ;
+     \draw[ ultra thick, -latex, densely dotted,] (0, 7.5)  -- (0, 9.5) ;
      \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
      \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
      \draw[ thick, -Straight Barb] (1, 7.2) arc (220:-100:1);
      \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+     % Value Dependency Edges on Initial Values:
+     \draw[ thick, -latex,] (-0.5, 1)  -- (-4.5, 1) ;
+     \draw[ thick, -latex,] (-0.5, 4)  -- (-4.5, 4) ;
+     \draw[ thick, -latex,] (-0.5, 7)  -- (-4.5, 7) ;
      %
-     \draw[ ultra thick, -latex, densely dotted,] (-0.5, 10)  --  (-0.5, 1);
+     \draw[ ultra thick, -latex, densely dotted,] (-0.5, 10)  to  [out=-130,in=130]  (-0.5, 1);
+     \draw[ ultra thick, -latex, densely dotted,] (-0.5, 1.5)  to  [out=-250,in=250]  (-0.5, 7);
      % Control Dependency
     %  \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
     %  \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
@@ -212,7 +216,7 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
                    %
 \begin{figure}
 \centering
-\begin{subfigure}{0.3\textwidth}
+\begin{subfigure}{0.55\textwidth}
     \centering
     \footnotesize{
         \[
@@ -236,66 +240,48 @@ Next, we show our algorithm providing the estimated upper bound for this multipl
         }
      \caption{}
         \end{subfigure}
-        \begin{subfigure}{.3\textwidth}
-            \begin{centering}
-         %   \todo{abstract-cfg for two round}
-         \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-         \draw[] (-5, 10) circle (0pt) node{{ $0$}};
-         \draw[] (0, 10) circle (0pt) node{{ $1$}};
-         \draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
-         \draw[] (0, 4) circle (0pt) node{{ $3$}};
-         \draw[] (0, 1) circle (0pt) node{{ $4$}};
-         \draw[] (-5, 1) circle (0pt) node{{ $5$}};
-         % Counter Variables
-         \draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
-         \draw[] (3, 4) circle (0pt) node {{ $ex$}};
-         %
-         % Control Flow Edges:
-         \draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
-         \draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
-         \draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
-         \draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
-         \draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
-         \draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
-         \draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
-         \draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
-         \end{tikzpicture}
-          \caption{}
-            \end{centering}
-            \end{subfigure}
-            \begin{subfigure}{.33\textwidth}
+        \begin{subfigure}{.42\textwidth}
             \begin{centering}
             \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-         \draw[] (0, 10) circle (0pt) node
-         {{ $a^0: {}^1_{0}$}};
-         \draw[] (0, 7) circle (0pt) node
-         {\textbf{$x^3: {}^{k}_{1}$}};
-         \draw[] (0, 4) circle (0pt) node
-         {{ $a^5: {}^{k}_{0}$}};
-         \draw[] (0, 1) circle (0pt) node
-         {{ $l^6: {}^{1}_{1}$}};
+    % Variables Initialization
+    \draw[] (-5, 1) circle (0pt) node{{ $a^0: {}^1_{0}$}};
+    \draw[] (-5, 4) circle (0pt) node{{ $c^1: {}^{1}_{0}$}};
+    % Variables Inside the Loop
+         \draw[] (0, 10) circle (0pt) node{{ $da^4: {}^{k}_{1}$}};
+         \draw[] (0, 7) circle (0pt) node{{ $dc^5: {}^{k}_{0}$}};
+         \draw[] (0, 4) circle (0pt) node{{ $a^6: {}^{k}_{0}$}};
+         \draw[] (0, 1) circle (0pt) node{{ $c^7: {}^{k}_{0}$}};
          % Counter Variables
-         \draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
-         \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+         \draw[] (5, 9) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
+         \draw[] (5, 6) circle (0pt) node {{ $j^8: {}^{k}_{0}$}};
          %
          % Value Dependency Edges:
-         \draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
-         \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
-         \draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
-         \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
+         \draw[ thick, -latex,] (0, 1.5)  -- (0, 3.5) ;
+         \draw[ thick, -Straight Barb] (1, 4.2) arc (220:-100:1);
          \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
          \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+         \draw[ thick, -Straight Barb] (1., 1.5) arc (120:-200:1);
+         % Value Dependency Edges on Initial Values:
+         \draw[ thick, -latex,] (-0.5, 1)  -- (-4.5, 1) ;
+         \draw[ thick, -latex,] (-0.5, 4)  -- (-4.5, 4) ;
+         %
+         \draw[ ultra thick, -latex, densely dotted,] (-0.5, 1.5)  to  [out=-220,in=220]  (-0.5, 7);
+         \draw[ ultra thick, -latex, densely dotted,] (-0.5, 4)  to  [out=-220,in=220]  (-0.5, 10);
+         \draw[ ultra thick, -latex, densely dotted,]  (0.5, 7) to  [out=-60,in=60] (0.5, 1) ;
+         \draw[ ultra thick, -latex, densely dotted,]  (0.5, 10)  to  [out=-50,in=50] (0.5, 4);
          % Control Dependency
-         \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
-         \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+        %  \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+        %  \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
          \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
          \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+         \draw[ thick,-latex] (1.5, 1)  -- (4, 6) ;
+         \draw[ thick,-latex] (1.5, 10)  -- (4, 6) ;
          \end{tikzpicture}
          \caption{}
             \end{centering}
             \end{subfigure}
     \vspace{-0.4cm}
-    \caption{(a) The dependency graph for linear regression algorithm 
+    \caption{(a) The linear regression algorithm 
     (b) The weighted data dependency graph from $\THESYSTEM$}
     \vspace{-0.2cm}
     \label{fig:linear_regression}
@@ -318,7 +304,7 @@ Analysis Results: $ \progA(\kw{whileMultiplePath}(k)) = 1 + 2 * k $ --> Over-App
 { \small
 \begin{figure}
 \centering
-    \begin{subfigure}{0.3\textwidth}
+    \begin{subfigure}{0.5\textwidth}
 \centering
 \[
     %
@@ -338,67 +324,46 @@ Analysis Results: $ \progA(\kw{whileMultiplePath}(k)) = 1 + 2 * k $ --> Over-App
  \caption{}
     \end{subfigure}
 %
-\begin{subfigure}{.3\textwidth}
-    \begin{centering}
- %   \todo{abstract-cfg for two round}
- \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
- \draw[] (-5, 10) circle (0pt) node{{ $0$}};
- \draw[] (0, 10) circle (0pt) node{{ $1$}};
- \draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
- \draw[] (0, 4) circle (0pt) node{{ $3$}};
- \draw[] (0, 1) circle (0pt) node{{ $4$}};
- \draw[] (-5, 1) circle (0pt) node{{ $5$}};
- % Counter Variables
- \draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
- \draw[] (3, 4) circle (0pt) node {{ $ex$}};
- %
- % Control Flow Edges:
- \draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
- \draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
- \draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
- \draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
- \draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
- \draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
- \draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
- \draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
- \end{tikzpicture}
-  \caption{}
-    \end{centering}
-    \end{subfigure}
-    \begin{subfigure}{.33\textwidth}
+\begin{subfigure}{.42\textwidth}
     \begin{centering}
     \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
- \draw[] (0, 10) circle (0pt) node
- {{ $a^0: {}^1_{0}$}};
- \draw[] (0, 7) circle (0pt) node
- {\textbf{$x^3: {}^{k}_{1}$}};
- \draw[] (0, 4) circle (0pt) node
- {{ $a^5: {}^{k}_{0}$}};
- \draw[] (0, 1) circle (0pt) node
- {{ $l^6: {}^{1}_{1}$}};
+% Variables Initialization
+\draw[] (5, 1) circle (0pt) node{{ $x^1: {}^1_{0}$}};
+% Variables Inside the Loop
+ \draw[] (0, 7) circle (0pt) node{{ $y^5: {}^{k}_{0}$}};
+ \draw[] (0, 4) circle (0pt) node{{ $w^6: {}^{k}_{0}$}};
+ \draw[] (0, 1) circle (0pt) node{{ $x^7: {}^{k}_{0}$}};
  % Counter Variables
- \draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
- \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+ \draw[] (5, 7) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
+ \draw[] (5, 4) circle (0pt) node {{ $j^3: {}^{k}_{0}$}};
  %
  % Value Dependency Edges:
- \draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
- \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
- \draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
- \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
- \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
- \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+ \draw[ thick, -latex,]  (0, 3.5) -- (0, 1.5) ;
+%  \draw[ thick, -Straight Barb] (1, 4.2) arc (220:-100:1);
+ \draw[ thick, -Straight Barb] (6.5, 4.5) arc (150:-150:1);
+ \draw[ thick, -latex] (5, 4.5)  -- (5, 6.5) ;
+%  \draw[ thick, -Straight Barb] (1., 1.5) arc (120:-200:1);
+ % Value Dependency Edges on Initial Values:
+ \draw[ thick, -latex,] (0.5, 1)  -- (4.5, 1) ;
+ %
+ \draw[ ultra thick, -latex, densely dotted,] (-0.5, 1.5)  to  [out=-220,in=220]  (-0.5, 7);
+%  \draw[ ultra thick, -latex, densely dotted,] (-0.5, 4)  to  [out=-220,in=220]  (-0.5, 10);
+ \draw[ ultra thick, -latex, densely dotted,]  (0.5, 7) to  [out=-60,in=60] (0.5, 1) ;
+%  \draw[ ultra thick, -latex, densely dotted,]  (0.5, 10)  to  [out=-50,in=50] (0.5, 4);
  % Control Dependency
- \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
- \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
- \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
- \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+%  \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+%  \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+ \draw[ thick,-latex] (1., 7)  -- (4, 6) ;
+ \draw[ thick,-latex] (1., 4)  -- (4, 6) ;
+ \draw[ thick,-latex] (1., 1)  -- (4, 6) ;
+%  \draw[ thick,-latex] (1.5, 10)  -- (4, 6) ;
  \end{tikzpicture}
  \caption{}
     \end{centering}
     \end{subfigure}
     \vspace{-0.3cm}
 \caption{(a) The labeled program implementing multiple round odd iteration example 
-(b) The execution-based dependency graph (c) The program analysis-based weighted dependency graph for the same example.}
+(b) The program analysis-based weighted dependency graph for the same example.}
     \label{fig:overappr_example}
     \vspace{-0.5cm}
 \end{figure}

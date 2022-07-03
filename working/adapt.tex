@@ -1,5 +1,6 @@
 %
 \subsection{Trace-based Adaptivity}
+% \subsection{Trace-based Adaptivity}
 % \mg{This description is confusing. It is repeting something that was said before, e.g. ``the visiting times of each vertex $v$ on this walk is bound by its weight $\weights(v)$.'' buit it also say something new. Also it talks about program analysis which has not been defined, yet. I think it needs more work.}
 % Given a program $c$, we generate its program-based graph 
 % $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.
@@ -56,51 +57,48 @@ It is formally defined in \ref{def:trace_adapt}.
     \{ \qlen(k) \mid k \in \walks(\traceG(c) \big \} 
     $$
     \end{defn}
-% \mg{
-% \begin{defn}
-% [Adaptivity of a Program].
-% \label{def:trace_adapt}
-% \\
-% Given a program ${c}$, 
-% its adaptivity is defined as follows:
-% %
-% $$
-% A(c) = \max \big 
-% \{ \qlen(k) \mid k \in \walks(\traceG(c) \big \} 
-% $$
-% \end{defn}
-% }
 %
-%
-%
-%
-% \begin{lem}
-% [Adaptivity is Bounded].
-% \\
-% {
-% Given the program $c$ with a certain database $D$ and starting memory $m$, the $A(c)$ w.r.t. the $D$ and $m$ is bounded, i.e.,:
-% %
-% \[
-% \config{} 
-% \rightarrow^{*} 
-% \config{m', \eskip, t', w'} 
-% \implies
-% A_{D, m}(c) \leq |t'|
-% \]
-% }
-% \end{lem}
-% %
-% \begin{proof}
-% {
-% Proof is obvious based on the Lemma \ref{lem:DAG}.
-% }
-% \end{proof}
-%
-%
-%
-%
-% \subsection{SSA Transformation and Soundness of Transformation}
-% in File {\tt ``ssa\_transform\_sound.tex''}
-% \input{ssa_transform_sound}
-%
-\clearpage
+{\footnotesize
+\begin{figure}
+ \centering
+%}
+\quad
+\begin{subfigure}{.4\textwidth}
+\begin{centering}
+$
+    \begin{array}{l}
+           \clabel{ \assign{y}{0}}^{0} ; 
+            \clabel{\assign{i}{0} }^{1} ;             
+            \clabel{\assign{w}{0} }^{2} ; \\
+            \eif(\clabel{ x = 0}^{3}, \clabel{ \assign{y}{\query(z)}}^{3}; ,\eskip);\\
+            \ewhile ~ \clabel{i \neq x}^{2} ~ \edo ~ \\
+            \Big(
+             \clabel{\assign{w}{\query(\chi[y]+w)} }^{3}  ; \\
+             \clabel{\assign{j}{j-1}}^{4} ;\\
+                        \eif(\clabel{ x = 0}^{3}, \clabel{ \assign{y}{\query(z)}}^{3}; ,\eskip)
+     \Big);\\
+        \end{array}
+$
+\caption{}
+\end{centering}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+%}
+\qquad
+\begin{centering}
+$\vcenter{\hbox{
+\todo{graph}
+}
+}
+$
+\caption{}
+\end{centering}
+\end{subfigure}
+% \end{wrapfigure}
+% \end{equation*}
+\vspace{-0.4cm}
+ \caption{(a) Example of a program where this definition is untight (c) The corresponding adaptivity through the trace-based dependency graph.}
+\label{fig:simpl-two-round-graph}
+\vspace{-0.5cm}
+\end{figure}
+}

@@ -1889,54 +1889,21 @@ $
 \end{centering}
 \end{subfigure}
 \quad
-\begin{subfigure}{.3\textwidth}
-  \begin{centering}
-%   \todo{abstract-cfg for two round}
-\begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-\draw[] (-5, 10) circle (0pt) node{{ $0$}};
-\draw[] (0, 10) circle (0pt) node{{ $1$}};
-\draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
-\draw[] (0, 4) circle (0pt) node{{ $3$}};
-\draw[] (0, 1) circle (0pt) node{{ $4$}};
-\draw[] (-5, 1) circle (0pt) node{{ $5$}};
-% Counter Variables
-\draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
-\draw[] (3, 4) circle (0pt) node {{ $ex$}};
-%
-% Control Flow Edges:
-\draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
-\draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
-\draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
-\draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
-\draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
-\draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
-\draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
-\draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
-\end{tikzpicture}
-\caption{}
-  \end{centering}
-  \end{subfigure}
-  \begin{subfigure}{.33\textwidth}
+  \begin{subfigure}{.6\textwidth}
   \begin{centering}
   \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-\draw[] (0, 10) circle (0pt) node
-{{ $a^0: {}^1_{0}$}};
 \draw[] (0, 7) circle (0pt) node
-{\textbf{$x^3: {}^{k}_{1}$}};
+{\textbf{$x^1: {}^{1}_{1}$}};
 \draw[] (0, 4) circle (0pt) node
-{{ $a^5: {}^{k}_{0}$}};
-\draw[] (0, 1) circle (0pt) node
-{{ $l^6: {}^{1}_{1}$}};
+{{ $x^3: {}^{k}_{1}$}};
 % Counter Variables
-\draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
+\draw[] (5, 9) circle (0pt) node {{$j^2: {}^{1}_{0}$}};
 \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
 %
 % Value Dependency Edges:
-\draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
 \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
-\draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
-\draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
-\draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
+\draw[ ultra thick, -latex, densely dotted,] (0.5, 4.2) arc (150:-180:1);
+\draw[ thick, -Straight Barb] (5.5, 6.2) arc (150:-150:1);
 \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
 % Control Dependency
 \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
@@ -2377,7 +2344,7 @@ Then, it is obviously that this leads to unsoundness.
   \begin{figure}
     \centering
     {\footnotesize
-    \begin{subfigure}{.25\textwidth}
+    \begin{subfigure}{.5\textwidth}
     \begin{centering}
     % 
     $ 
@@ -2403,60 +2370,40 @@ Then, it is obviously that this leads to unsoundness.
     \end{centering}
     \end{subfigure}
     \quad
-    \begin{subfigure}{.3\textwidth}
-      \begin{centering}
-   %   \todo{abstract-cfg for two round}
-   \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-   \draw[] (-5, 10) circle (0pt) node{{ $0$}};
-   \draw[] (0, 10) circle (0pt) node{{ $1$}};
-   \draw[] (0, 7) circle (0pt) node{\textbf{$2$}};
-   \draw[] (0, 4) circle (0pt) node{{ $3$}};
-   \draw[] (0, 1) circle (0pt) node{{ $4$}};
-   \draw[] (-5, 1) circle (0pt) node{{ $5$}};
-   % Counter Variables
-   \draw[] (3, 7) circle (0pt) node {\textbf{$6$}};
-   \draw[] (3, 4) circle (0pt) node {{ $ex$}};
-   %
-   % Control Flow Edges:
-   \draw[ thick, -latex] (-4.5, 10)  -- node [above] {$a \leq 0$}(-0.5, 10);
-   \draw[ thick, -latex] (0, 9.5)  -- node [left] {$j \leq k$} (0, 7.5) ;
-   \draw[ thick, -latex] (0, 6.5)  -- node [left] {$\top$}  (0, 4.5);
-   \draw[ thick, -latex] (0, 3.5)  -- node [right] {$x \leq \max(\dbdom)$} (0, 1.5) ;
-   \draw[ thick, -latex] (0, 1)  -- node [above] {$j \leq j - 1$} (-4.5, 1) ;
-   \draw[ thick, -latex] (-5, 1.5)  -- node [left] {$a \leq a + x$} (-0.5, 7)  ;
-   \draw[ thick, -latex] (0.5, 7)  -- node [above] {$\top$}  (2.5, 7);
-   \draw[ thick, -latex] (3, 6.5)  -- node [left] {$\top$} (3, 4.5) ;
-   \end{tikzpicture}
-    \caption{}
-      \end{centering}
-      \end{subfigure}
-      \begin{subfigure}{.33\textwidth}
+    \begin{subfigure}{.42\textwidth}
       \begin{centering}
       \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
-   \draw[] (0, 10) circle (0pt) node
-   {{ $a^0: {}^1_{0}$}};
-   \draw[] (0, 7) circle (0pt) node
-   {\textbf{$x^3: {}^{k}_{1}$}};
-   \draw[] (0, 4) circle (0pt) node
-   {{ $a^5: {}^{k}_{0}$}};
-   \draw[] (0, 1) circle (0pt) node
-   {{ $l^6: {}^{1}_{1}$}};
+% Variables Initialization
+\draw[] (-5, 1) circle (0pt) node{{ $a^0: {}^1_{0}$}};
+\draw[] (-5, 7) circle (0pt) node{{ $x^1: {}^{1}_{0}$}};
+% Variables Inside the Loop
+   \draw[] (0, 7) circle (0pt) node{{ $y^6: {}^{k}_{0}$}};
+   \draw[] (0, 1) circle (0pt) node{{ $x^9: {}^{k}_{0}$}};
    % Counter Variables
-   \draw[] (5, 9) circle (0pt) node {\textbf{$j^2: {}^{1}_{0}$}};
-   \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+   \draw[] (5, 9) circle (0pt) node {{$i^0: {}^{1}_{0}$}};
+   \draw[] (5, 6) circle (0pt) node {{ $i^4: {}^{k}_{0}$}};
+   \draw[] (5, 3) circle (0pt) node {{$j^0: {}^{1}_{0}$}};
+   \draw[] (5, 0) circle (0pt) node {{ $j^8: {}^{k}_{0}$}};
    %
    % Value Dependency Edges:
-   \draw[ ultra thick, -latex, densely dotted,] (0, 1.5)  -- (0, 3.5) ;
-   \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
-   \draw[ thick, -latex] (0, 7.5)  -- (0, 9.5) ;
-   \draw[ thick, -Straight Barb] (1.5, 3.5) arc (120:-200:1);
-   \draw[ thick, -Straight Barb] (6.5, 6.5) arc (150:-150:1);
+   \draw[ ultra thick, -latex, densely dotted,] (0, 7.5) arc (220:-100:1.5);
    \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+   \draw[ thick, -latex] (5, 0.5)  -- (5, 2.5) ;
+   \draw[ ultra thick, -latex, densely dotted,] (1., 0.5) arc (120:-200:1.5);
+   % Value Dependency Edges on Initial Values:
+   \draw[ thick, -latex,] (-0.5, 1)  -- (-4.5, 1) ;
+   \draw[ thick, -latex,] (-0.5, 7)  -- (-4.5, 7) ;
+   %
+   \draw[ ultra thick, -latex, densely dotted,] (-0.5, 1.5)  to  [out=-220,in=220]  (-0.5, 7);
+   \draw[ ultra thick, -latex, densely dotted,]  (0.5, 7) to  [out=-60,in=60] (0.5, 1) ;
    % Control Dependency
-   \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
-   \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
-   \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
-   \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+  %  \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+  %  \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+  \draw[ thick, -latex, ] (6.5, 6.5) arc (150:-150:1);
+  \draw[ thick, -latex, ] (6.5, 0.5) arc (150:-150:1);
+  \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
+   \draw[ thick,-latex] (1.5, 1)  -- (4, 6) ;
+   \draw[ thick,-latex] (1.5, 1)  -- (4, 1) ;
    \end{tikzpicture}
    \caption{}
       \end{centering}
