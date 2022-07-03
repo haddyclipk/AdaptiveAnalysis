@@ -91,7 +91,7 @@ Execution-Based Dependency Graph (in Definition~\ref{def:trace_graph}). The cons
 without extra static analysis technique.git 
 \item Query annotations are also decided directly from the program, when there is a query request, the associated variables which are the results of the query requests are marked in the form of a flag, $0$ means no query, $1$ represents query related. See Section~\ref{sec:alg_vertexgen}.
 \item Every vertice has a weight, which tells the maximal times this vertices can be visited in realistic execution. This weight is estimated by a reachability bound analysis on each vertice, See Section~\ref{sec:alg_weightgen}.
-\item The edges between vertices considers both control flow and data flow, See.
+\item The edges between vertices considers both control flow and data flow, See
 Section~\ref{sec:alg_edgegen}
 \item  Finally, with all the ingredients ready, we construct the final approximated program-based dependency graph in Section~\ref{sec:alg_graphgen}
 \end{enumerate}
@@ -119,7 +119,7 @@ vertices and query annotations, but approximated edges and weights. We call the 
 
 \subsubsection{Adaptivity Computation}
 
-Likewise the adaptivity is defined as a finite walk in the execution based depdenency graph, our static estimation on this adaptivity also relies on finding a path in the static analysis depdenency graph.   The construction of the stastic analysis dependency graph is of great value of showing some useful properties of the target program, such as dependency between variables, the execution upper bound of a certian command, while the key novelty is our path searching algorithm, which connects all the information we need in the static anlaysis dependency graph and provides us a sound over-estimation of adaptivity! In order to get a sound but precise upper bound, we will discuss some challenges in finding the 'appropriate' path in the graph, and how our algorithm responds to these challengs. We presetn the path seaching algorithm in Section~\ref{sec:alg_adaptcompute}.
+Likewise the adaptivity is defined as a finite walk in the execution based depdenency graph, our static estimation on this adaptivity also relies on finding a path in the static analysis depdenency graph.   The construction of the stastic analysis dependency graph is of great value of showing some useful properties of the target program, such as dependency between variables, the execution upper bound of a certian command, while the key novelty is our path searching algorithm, which connects all the information we need in the static anlaysis dependency graph and provides us a sound over-estimation of adaptivity! In order to get a sound but precise upper bound, we will discuss some challenges in finding the 'appropriate' path in the graph, and how our algorithm responds to these challengs. We present the path seaching algorithm in Section~\ref{sec:alg_adaptcompute}.
  
 % An
 % approximated edge correspond to a program-based data dependency
@@ -553,12 +553,8 @@ Likewise the adaptivity is defined as a finite walk in the execution based depde
 % \subsection{Dependency Graph Estimation}
 \subsection{Vertices Estimation and Query Annotation Estimation}
 \label{sec:alg_vertexgen}
-The vertices and query annotations in the Execution-Based Dependency Graph is built on static information, 
-we reuse this information and construct the vertices and query annotations on 
-this  {over-}approximate graph identical to the Execution-Based Dependency Graph, specifically
-%  in the last step of
-% the algorithm in Section~\ref{}
-as follows,
+The vertices in the static analysis dependency graph are actually identical as the  Execution-Based Dependency Graph, which are assigned variables in the program annotated with the unique label(line number). These vertices are collected by statically scanning the program, like what we do for vertices of its Execution-Based Dependency Graph. The vertices are defined formally as follows.
+
   \highlight{
 \[
     \progV(c) \triangleq \left\{ 
@@ -569,19 +565,20 @@ as follows,
   \]
   }
   %
-\[\progF(c) =\left\{(x^l, n)  \in  \mathcal{LV} \times \{0, 1\} 
-~ \middle\vert ~
-x^l \in \lvar_{c},
-n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \in \qvar_{c} .
-\right\}\]
-%
-The query annotations $\progF(c)$ is 
-% the weight for each vertex in $\progV(c)$,
-% as 
+
+The static scanning of the programs also tells us whether one vertice(assigned variable) is assigned by a query request. We have similar definition when defining the Execution-Based Dependency Graph, 
 a set of pairs $\progF(c) \in \mathcal{P}(\mathcal{LV} \times \{0, 1\} )$ 
 % is the set of pairs 
 % The weight for each vertex in $\progV(c)$ is computed 
-mapping each $x^l \in \progV(c)$ to $0$ or $1$, indicating whether this labeled variable is assigned by a query request.
+mapping each $x^l \in \progV(c)$ to a flag, either $0$ or $1$, where $1$  means $x^{l}$ is a member of $ \qvar_{c}$, a set of those variables assigned with query requests, and $0$ means $x^{l}$ not in this set. It is defined formally below.
+
+\[\progF(c) =\left\{(x^l, n)  \in  \mathcal{LV} \times \{0, 1\} 
+~ \middle\vert ~
+x^l \in \lvar_{c},
+n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \not\in \qvar_{c} .
+\right\}\]
+%
+
 % \wq{To do: Add $\THESYSTEM$, a data flow analysis algorithm to scan the program and give a graph.}
 % {\THESYSTEM} consists of three phases: 
 % \begin{enumerate}
@@ -598,11 +595,19 @@ mapping each $x^l \in \progV(c)$ to $0$ or $1$, indicating whether this labeled 
 %     \item An algorithm to perform a Reachability number analysis to calculate the weight of each node in the graph generated in phase 1.
 %     \item An algorithm to find the appropriate path in the weighted data control flow graph
 % \end{enumerate}
+
 \subsection{Weight and Edge Estimation}
 \label{sec:alg_weightedgegen}
-The edge and weight in execution-based graph is built on all possible execution traces,
-in order to approximate them statically, we show how to static analyze the program to 
-get an accurate approximation as follows.
+
+Since the edges of the execution-based graph of a program relies on the dependency relation, which handles both control flow and data flow, as an over-approximation of this graph, the edges of our static anlaysis dependency graph also covers these two kind of flows. We develop a feasible data flow relation to catch these two flows, in Section~\ref{sec:alg_edgegen}.
+
+
+The weight of every vertice in the execution-based graph is built on all possible execution traces.
+In order to over-approximate the weight statically but still tightly, we present a symbolic reachability bound analysis for estimation of the weight of each vertice(label) in Section~\ref{sec:alg_weightgen},
+in spirit of some reachablility bound techiniques.
+
+
+The edges and weight estimation are both performed on basis of an abstract control flow graph of the program, we first show how to generate this abstract execution control flow graph before the introduction of  the edge and weight estimation.  
 
 % This analysis first 
 %  generate an abstract control flow graph
@@ -621,108 +626,104 @@ get an accurate approximation as follows.
 % % \jl{Better to have a graph or picture of overview of the algorithm}
 % \todo{graph}
 % \todo{pass again}
-This analysis
-\begin{enumerate}
-    % \item Generating 
-    \item first generate 
-    an abstract control flow graph
-    %  over all labels,
-    (remove?? with program's labels as vertices and abstract transitions as edges)
-    in Section~\ref{sec:abscfg},
-    % used to analyze 
-    for analyzing the weight of every vertex in $\progV(c)$ and edges between every vertex in $\progV(c)$ in the next two steps;
-    %  \ref{sec:alg_weightgen} and 
-    % \ref{sec:alg_edgegen}.
+% This analysis
+% \begin{enumerate}
+%     % \item Generating 
+%     \item first generate 
+%     an abstract control flow graph
+%     %  over all labels,
+%     (remove?? with program's labels as vertices and abstract transitions as edges)
+%     in Section~\ref{sec:abscfg},
+%     % used to analyze 
+%     for analyzing the weight of every vertex in $\progV(c)$ and edges between every vertex in $\progV(c)$ in the next two steps;
+%     %  \ref{sec:alg_weightgen} and 
+%     % \ref{sec:alg_edgegen}.
 
-    % which are used as program's control locations,
-    %
-    \item then use the abstract control flow graph generated above, 
-    compute the weight of every vertex in $\progV(c)$ by computing a symbolic reachability bound for each label in Section~\ref{sec:alg_weightgen},
-    % \\
-    \item and then use the same graph again to estimate the edges between every vertex in $\progV(c)$ by computing the feasible data flow relation between every labeled variables in Section~\ref{sec:alg_edgegen}.
+%     % which are used as program's control locations,
+%     %
+%     \item then use the abstract control flow graph generated above, 
+%     compute the weight of every vertex in $\progV(c)$ by computing a symbolic reachability bound for each label in Section~\ref{sec:alg_weightgen},
+%     % \\
+%     \item and then use the same graph again to estimate the edges between every vertex in $\progV(c)$ by computing the feasible data flow relation between every labeled variables in Section~\ref{sec:alg_edgegen}.
   
-\end{enumerate}
+% \end{enumerate}
+
 \subsubsection{Abstract Execution Control Flow graph}
 \label{sec:abscfg}
-We first show how to generate the abstract control flow graph 
-%
-for a program $c$
-% in this part, 
-in order to 
-perform the analysis in Section~\ref{sec:alg_weightgen} and 
-\ref{sec:alg_edgegen} to estimate 
-the weight for vertex in $\progV(c)$ and edges between vertices in $\progV(c)$.
-\\
-In this 
-% a program $c$ 
-abstract control flow graph $\absG(c)$, 
-every 
-vertex is a 
-% program 
-label,
-%  corresponding to a label command in the program.
- corresponding to the label command in program.
-%  $c$.
-Each directed 
- edge represents an abstract transition 
- between two control locations, i.e., the labels of two commands (we call the labels also control location and they refer to the same thing), 
- where the second labeled command will be executed after execution of the command with first label.
- The abstract transition contains a set of difference constraints for variables, generated by abstracting the command of the first labeled.
-%  We present the detail of program abstraction and the graph generation in following steps.
-\\
-% We present the detail of generating program $c$'s abstract control flow graph $\absG(c)$:
+% We first show how to generate the abstract control flow graph 
+% %
+% for a program $c$
+% % in this part, 
+% in order to 
+% perform the analysis in Section~\ref{sec:alg_weightgen} and 
+% \ref{sec:alg_edgegen} to estimate 
+% the weight for vertex in $\progV(c)$ and edges between vertices in $\progV(c)$.
 % \\
+In an 
+% a program $c$ 
+abstract control flow graph for a program $c$, $\absG(c)$, 
+every 
+vertex corresponds to the unique
+label.
 Specifically,
 the vertices of this graph is the set of $c$'s labels with an exit label $l_{ex}$, 
 \[ 
   \absV(c) = labels(c)\cup\{l_{ex}\}
   \]
-and the edges between labels are built program's abstract execution trace.
+%  corresponding to a label command in the program.
+
+The edge is directed, 
+ representing an abstract transition 
+ between two control locations uniquely decided by the labels.   
+  (We refer control location and the label to the same thing). The abstract transition is of the form of a set of difference constraints for variables, built from the abstract execution trace of the program. For instance, the edge $(l_1, dc, l_2)$ from $l_1$ to $l_2$,
+ represents an abstract transition 
+ between two control locations with a set of difference constraints on it.
+In this transition, the  command labeled with the second location $l_2$, 
+ will be executed after execution of the command with label $l_1$,
+%  The abstract transition contains a set of difference constraints for variables, 
+with the difference constraints generated by abstracting the command of the first label. Difference constraints is a constraint on difference between variables and constants, which will be formally introduced when we discuss experssion abstraction.
+
 % over program's abstract execution 
-% mainly 
-This abstract execution trace for program is constructed through a program abstraction procedure in following steps:
-\\
-% In order to compute the program's abstrace execution trace, we first
-1. Computing the abstract expression for every assignment command.
-\\
-2. Computing the abstract event for every labeled command in the program. Intuitively, this abstract event aims 
-to approximate the 
-% event corresponding to the 
-event in program's execution trace.
-\\
-3. Constructing the abstract execution trace for a program.
-%
-\\
-% The details are as follows.
-We present the detail of generating a program $c$'s abstract control flow graph $\absG(c)$ as follows.
+
+Overall, the key point of the abstract excution control flow graph is the construction of the abstract execution trace of a program, which relies on a program abstraction procedure in following steps:
+
+\begin{enumerate}
+\item  Computing the abstract expression for every assignment command in the program.
+\item Computing the abstract event for every labeled command in the program. Intuitively, this abstract event aims 
+to approximate the event in program's execution trace.
+\item Constructing the abstract execution trace for a program.
+\end{enumerate}  
+
 %
 \paragraph*{Expression Abstraction}
-We introduce the following notations and operations first
-% an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
-\\
-% is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
-The Symbolic Constant:  $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
-%  is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
-It consists of 
+
+The expression assigned to the variable on the left hand of the assignment command is abstracted to an abstract value: (adopted from the expression abstraction method in paper \cite{sinn2017complexity}). The abstract value is expressed in the form of Difference constraint, denotated as $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$.  $\constdom$ is called the Symbolic Constant defined as $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $, which consists of 
 natural numbers $\mathbb{N}$,
-% the symbolic constants
-the program's input variables $\inpvar$ 
-% (i.e., the set of the program's input variables), 
+the program's input variables $\inpvar$  
 and a constant value $\max(\dbdom)$ for estimating the upper bound of variables which are
-assigned by queries.
-\\
-Difference constraint: $DC : \mathcal{VAR} \cup \constdom \to \mathcal{\mathcal{VAR} \times (\mathcal{VAR} \cup \constdom) } \times (\mathbb{Z} \cup \{\infty\})$
- \\
-$DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ represents all the difference constraints over the 
-variable and symbolic constants.
+assigned by queries. 
+
+Give an instance of difference constraint used here,
+$DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ represents all the difference constraints over 
+variable and symbolic constants. 
 % The difference constraint $DC$ over $\mathcal{VAR} \cup \constdom$ 
 It is a set of the inequality of form $x \leq y + v$ where $x \in \mathcal{VAR} $, 
 $y \in \mathcal{VAR}  \cup \constdom$ and $v \in \mathbb{Z}$. 
-\\
 This difference constraint is defined in the same way as
-\cite{sinn2017complexity}. 
+\cite{sinn2017complexity}. For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ .
+
+
+We show the expression abstraction $\absexpr : \expr \to \mathcal{VAR} \to DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\} $ below.
+
+% We introduce the following notations and operations first
+% % an expression abstraction method based on the expression abstraction in paper \cite{sinn2017complexity}.
+% \\
+% % is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
+% T
+% \\
+
 % represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$. 
-\\
+
 % The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
 % It consists of 
 % natural number $\mathbb{N}$,
@@ -732,20 +733,15 @@ This difference constraint is defined in the same way as
 % \\
 % The symbolic constant is enriched into $\constdom \triangleq \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $.
 % \\
-For concise, we use $\dcdom^{\top}$ to represent the $DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}$ .
-\\
+
 % % $ \absdom: \mathcal{P}(DC(\mathcal{VAR}  \cup \constdom) \cup \{\top \})$:
 % \\
 % $\constdom: \mathbb{N} \cup \inpvar \cup \{\max{(\dbdom)}\} $ 
 % The  constant 
-\\
+% \\
 % % $DC(\mathcal{VAR}  \cup \constdom)$ represents the set of inequality over all $\mathcal{VAR}  \cup \constdom$.
 % \\
-Expression Abstraction: (adopted from the expression abstraction method in paper \cite{sinn2017complexity})
-% We simplify the expression abstraction method from paper \cite{sinn2017complexity}, where 
-$\absexpr : \expr \to \mathcal{VAR} \to DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\} $,
-computes the abstract value for each variable 
-according to the expression $\expr$ assigned to it in the command.
+
 % \[
 %   \begin{array}{ll} 
 %     \absexpr(y + c, x)  = x' \leq y + c  & c \in \mathbb{N} \land y \in (VAR \cup \constdom) \\
@@ -769,13 +765,15 @@ according to the expression $\expr$ assigned to it in the command.
       \absexpr(\expr, x) = \top  &  x \notin \grdvar \\
     \end{array}
     \]
+  
+  \wq{ $\grdvar$ is }. 
   In line:4 of case where variable in the $\grdvar$ is updated by a variable $y$ not in this set, we add $y$ into the set $\grdvar$ and repeat 
-  above procedure  until $\grdvar$ and $\absexpr(\expr, x)$ is stabilized for every variable.
+  above procedure  until $\grdvar$ and $\absexpr(\expr, x)$ is stabilized for every variable. \wq{I do not understand this sentence:-(}
   \\
-More specifically in 
+More specifically 
 % understanding the intuition, 
 we handle a simplified normalized guard expression ($ x > 0$ for $x^l \in \lvar_c$)
- in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}
+ in $\ewhile$ and the same forms of the counter modification as in paper \cite{sinn2017complexity}. \wq{I do not understand this sentence:-(}
 %  .
 % \\
 % The counter variables only increase, decrease or reset by expression in the form of arithmetic minus and plus (able to extend to max and min.)
@@ -786,20 +784,16 @@ simple arithmetic expression (mainly multiplication, division, minus and plus (a
 For more complex expression assignments, where the counter reset, or calculated from $\elog$, 
 multiplication or division, and expressions involving multiple variables, the constraint is approximated as reset of $\infty$.
 \\
-This simplification doesn't affect our analysis results in our examples. It is easy to extend the normalized expression 
+This simplification \wq{which part we simplify here?} doesn't affect our analysis results in our examples. It is easy to extend the normalized expression 
 into more complex forms as in \cite{sinn2017complexity}, as well as the 
 counter variable manipulation with more advanced expressions.
 % \\ 
 % The boolean expression in the guard of $\ewhile$ command is normalized into form of $ x > 0$ where $x^l \in \lvar_c$ for some $l$.
+
+
 \paragraph{Program Event Abstraction}
-We first compute the abstract initial and final state for program and then generate the abstract event for program in 
-computing the abstract execution trace.
-\\
-The abstract initial state is a label from $\ldom$.
-\\
-The abstract final state is a pair from $\ldom \times \dcdom^{\top}$,  
-where first component is a label from $\ldom$ and the second component is a constraint from $\dcdom^{\top}$.
-%
+We show the abstract event definition, which is generated when computing its abstract execution trace.
+
 \begin{defn}[Abstract Event]
   \label{def:abs_event}
   Abstract Event: 
@@ -815,8 +809,11 @@ where first component is a label from $\ldom$ and the second component is a cons
   Specifically, in an abstract event, 
   the first label correspond to an initial state, and 
   the second label and the constraint correspond to an abstract final state.
-  The abstract event for program is generated when computing its abstract execution trace.
-\\
+ The abstract initial state is a label from $\ldom$.
+The abstract final state is a pair from $\ldom \times \dcdom^{\top}$,  
+where first component is a label from $\ldom$ and the second component is a constraint from $\dcdom^{\top}$.
+%
+
 %
 Given a program $c$, its abstract initial state,
 and the set of its abstract final state is computed as follows,
@@ -849,17 +846,17 @@ computes the set of Abstract Final State for the command.
  \]
  %
  \paragraph{Abstract Execution Trace}
- Then, we  extract the abstract execution trace  $\absflow(c)$ for a program, which computes the Abstract Execution Trace for program $c$, as a set of the abstract events $\absevent$.
+ Now, we  extract the abstract execution trace  $\absflow(c)$ for a program, which computes the Abstract Execution Trace for program $c$, as a set of the abstract events $\absevent$.
  %
  \begin{defn}[Abstract Execution Trace]
  \label{def:abs_trace}
   $\absflow \in \cdom \to \mathcal{P}( \ldom \times DC(\mathcal{VAR}  \cup \constdom) \cup \{\top\}) \times \ldom )$
   \end{defn}
  %
- Abstract Execution Trace Computation:
-  \\
+
+ 
+  We now show how to compute the abstract execution trace. 
   For simplicity, we use $\mathcal{P}(\absevent)$ represent the power set of all abstract events, and we have $\absflow(c) \in \mathcal{P}(\absevent)$.
- \\
  We first append a skip command with 
 %  a symbolic label $l_e$, i.e., $\clabel{\eskip}^{l_e}$ at the end of the program $c$, and compute the $\absflow(c) = \absflow'(c')$ for $c'$, where $c' = c;\clabel{\eskip}^{l_e}$ as follows,
 the exist label $l_{ex}$, i.e., $\clabel{\eskip}^{l_{ex}}$ at the end of the program $c$, 
@@ -884,9 +881,9 @@ and compute the $\absflow(c) = \absflow'(c')$ for $c'$, where $c' = c;\clabel{\e
    \]
    }
 
-   The $\absflow'([x := \expr]^{l})$, $\absflow'([x := \query(\qexpr)]^{l})$ and $\absflow'([\eskip]^{l})$ are all empty set. 
+   Notice $\absflow'([x := \expr]^{l})$, $\absflow'([x := \query(\qexpr)]^{l})$ and $\absflow'([\eskip]^{l})$ are all empty set. 
    For every event $\event$ with label $l$ in an execution trace $\trace$ of program $c$, 
-   there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$. 
+   there is an abstract event in program's abstract execution trace of form $(l, \_, \_)$.  We also show the soundness of the abstract execution trace, which says \wq{...}
    \begin{lem}[Soundness of the Abstract Execution Trace]
      \label{lem:abscfg_sound}
    Given a program ${c}$, we have:
@@ -933,10 +930,12 @@ Then, we build the edge for $c$'s abstract control flow graph as follos,
 
 % We have a pre-processing algorithm to go through the programs and returns the list of labels associating with a loop and whose visiting times need to be analyzed.
 %
+
+
 \paragraph{Abstract Control Flow Graph} 
-With the vertices $\absV(c)$ and edges $\absE(c)$ buit above, we construct its abstract control flow graph, formally 
+With the vertices $\absV(c)$ and edges $\absE(c)$ ready, we construct the abstract control flow graph, formally 
 % Through a program $c$'s abstract execution trace, its abstract control flow graph is computed 
-in 
+defined in 
 Definition~\ref{def:abs_cfg}.
 % Given program $c$ with its abstract control flow $\absflow(c)$, the Abstract Control Flow Graph:
 % \\
@@ -961,19 +960,19 @@ $\absV(c) = labels(c)\cup\{l_{ex}\}$
 % , where the weight of every label to be computed in the next step.
 \end{defn}
 % 
-The vertices in this graph are program's labels with an exit label $l_{ex}$.
-Each directed 
- edge $(l_1, dc, l_2)$ from $l_1$ to $l_2$,
- represents an abstract transition 
- between two control locations with a set of difference constraints on it.
-%  , i.e., the labels of two commands (we call the labels also control location and they refer to the same thing), 
-%  where 
-In this transition, the  command labeled with the second location $l_2$, 
- will be executed after execution of the command with label $l_1$,
-%  The abstract transition contains a set of difference constraints for variables, 
-with the difference constraints generated by abstracting the command of the first label.
-% \\
-% It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
+% The vertices $\absV(c)$ in this graph are program's labels with an exit label $l_{ex}$.
+% Each directed 
+%  edge $(l_1, dc, l_2)$ from $l_1$ to $l_2$,
+%  represents an abstract transition 
+%  between two control locations with a set of difference constraints on it.
+% %  , i.e., the labels of two commands (we call the labels also control location and they refer to the same thing), 
+% %  where 
+% In this transition, the  command labeled with the second location $l_2$, 
+%  will be executed after execution of the command with label $l_1$,
+% %  The abstract transition contains a set of difference constraints for variables, 
+% with the difference constraints generated by abstracting the command of the first label.
+% % \\
+% % It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 Notice we also define the $\absW(c)$ in this graph without giving an actual value.
 This $\absW(c)$ is the set of weight for every 
 % vertex 
@@ -983,6 +982,7 @@ through the reachability bound analysis as follows.
 %
 % It is easy to show for every $(l_1, dc, l_2) \in \absflow(c)$ such that $l_2 \neq l_e$, $(l_1, l_2) \in flow(c)$. The formal Lemma and proof can be found in Lemma~\ref{lem:flow_to_absflow} in Appendix~\ref{apdx:reachability_soundness}.
 %
+
 \subsubsection{Weight Estimation}
 \label{sec:alg_weightgen}
 %
