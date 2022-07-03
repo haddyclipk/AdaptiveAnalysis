@@ -1799,6 +1799,7 @@ search for the finite walk having the longest query length.
 \\
 % However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
 However, by Definition~\ref{def:finitewalk}, this finite walk isn't easy to find, below are the challenges in order to find this walk.
+\\
 \textbf{Non-Termination Challenge:}
 % Moreover, b
 We can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
@@ -1912,6 +1913,7 @@ If we use this path to approximate a finite walk, and weight of each vertex as
 %  their visiting times, 
 its visiting time,
 then it isn't a qualified walk. 
+In the approximated walk, we have the vertices as $x^3 \to \cdots \to x^3 \to a^5 \to \cdots \to a^5 \to l^6$.
 Because $l^6$ can only be visited as most once by its weight,
 % and this lead to 
 resulting in the restriction on the maximum visiting time of $x^3$,
