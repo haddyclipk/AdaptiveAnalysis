@@ -292,7 +292,7 @@ the query length is $k$, where $k$ is the program's adaptivity.
     \footnotesize{
         \[
         \begin{array}{l}
-            \kw{linearRegression(step, rate)} \triangleq \\
+            \kw{linearRegressionGD(step, rate)} \triangleq \\
                    \clabel{ a \leftarrow 0}^{0} ; \\
                    \clabel{ c \leftarrow 0}^{1} ; \\
                     \clabel{\assign{j}{\kw{step}} }^{2} ; \\
@@ -358,7 +358,7 @@ the query length is $k$, where $k$ is the program's adaptivity.
     \label{fig:linear_regression}
 \end{figure}
 %
-Analysis Results: $ \progA(\kw{linearRegression(step, rate)}) = k$
+Analysis Results: $ \progA(\kw{linearRegressionGD(step, rate)}) = k$
 \end{example} 
 %
  
@@ -372,7 +372,7 @@ and one independent variable $x$, $y = a \times x + c$,
 through sending queries to a training data set.
 This training data set contains two columns (easy to extend to higher dimensional data sets), first column is used as the observed value for the independent variable $x$,
 second column is used as the observed label value for the dependent variable $y$.
-This algorithm is written in our {\tt Query While} language in Figure~\ref{fig:linear_regression}(a) as $linearRegression(step, rate)$ taking the iteration number $\kw{step}$ 
+This algorithm is written in our {\tt Query While} language in Figure~\ref{fig:linear_regression}(a) as $linearRegressionGD(step, rate)$ taking the iteration number $\kw{step}$ 
 and the learning rate $\kw{step}$ for gradient decent optimization.
 As a reminder,
 the notation 
