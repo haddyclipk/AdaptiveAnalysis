@@ -1,26 +1,28 @@
 \subsection{Implementation Results}  
     %
     \begin{center}
-        \begin{tabular}{ c c c }
-         programs & adaptivity rounds & $\THESYSTEM$ results \\ 
-         $\kw{seq()}$ & $4$ & $4$ \\ 
-         $\kw{seqMultiVar()}$ & $4$ & $4$ \\  
-         $ \kw{ifValueDependency}$ & $3$ & $3$  \\
-         $\kw{ifControlDependency()}$ & $3$ & $3$  \\
-         $ \kw{whileRec()}$ & $1+k$ & $1+k$  \\
-         $ \kw{whileMultiplePath(k)}$ & $1 + k$ & $1 + 2 * k$  \\
-         $ \kw{whileMultipleVar(k)}$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{whileValueControlDependency()}$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{whileMultiplePathValueControlDependency(k)}$ & $2 + k$ & $2 + k$  \\
-         $ \kw{nestWhileValueDependency(k)}$ & $2 + k^2$ & $2 + k^2$  \\
-         $ \kw{nestedWhileRecAcross(k)}$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{nestedWhileMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  \\
-         $ \kw{nestedWhileMultiPathMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  \\
+        \begin{tabular}{ c c c c}
+         Program $c$ & adaptivity rounds & $A(c)$ & $\THESYSTEM$ Results \\ 
+         $\kw{seq()}$ & $4$ & $4$ & $4$ \\ 
+         $\kw{seqMultiVar()}$ & $4$ & $4$ & $4$ \\  
+         $ \kw{ifValueDependency}$ & $3$ & $3$ & $3$ \\
+         $\kw{ifControlDependency()}$ & $3$ & $3$ & $3$  \\
+         $ \kw{whileRec()}$ & $1+k$ & $1+k$ & $1+k$  \\
+         $ \kw{whileMultiplePath(k)}$ & $1 + k$ & $1 + k$ & $1 + 2 * k$  \\
+         $ \kw{whileMultipleVar(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
+         $ \kw{whileValueControlDependency()}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
+         $ \kw{whileMultiplePathValueControlDependency(k)}$ & $2 + k$ & $2 + k$  & $2 + k$  \\
+         $ \kw{nestWhileValueDependency(k)}$ & $2 + k^2$ & $2 + k^2$  & $2 + k$  \\
+         $ \kw{nestedWhileRecAcross(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
+         $ \kw{nestedWhileMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$  \\
+         $ \kw{nestedWhileMultiPathMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$  \\
         %  $ \kw{sorting(k)}$ & cell8 & cell9  \\
         %  $ \kw{gradientDescent(k)}$ & cell8 & cell9  \\
-         $ \kw{linearRegressionGD(k)}$ & $k$ & $k$  \\
-         $ \kw{twoRoundComplete(k)}$ & $2$ & $2$  \\
-         $ \kw{multipleRoundComplete(k)}$ & $k$ & $k$  \\
+         $ \kw{linearRegressionGD(k)}$ & $k$ & $k$ & $k$  \\
+         $ \kw{twoRoundComplete(k)}$ & $2$ & $2$ & $2$ \\
+         $ \kw{multipleRoundComplete(k)}$ & $k$ & $k$ & $k$  \\
+         $ \kw{multipleRoundOdd(k)}$ & $1 + k$ & $1 + k$ & $1 + 2*k$  \\
+         $ \kw{multipleRoundSingle(k)}$ & $3$ & $2 + k$ & $2 + k$  \\
         \end{tabular}
         \end{center}
         %

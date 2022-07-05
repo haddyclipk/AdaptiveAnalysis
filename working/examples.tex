@@ -410,8 +410,9 @@ In this graph, the dotted path corresponds to a finite walk with the longest que
 By static analysis, we obtained identical graph and identical weights and annotations, as well as the adaptivity $k$.
 %
 \begin{example}
-[Over-approximation Algorithm]
-Our algorithm comes across an over-approximation on the estimation due to its path-insensitive nature. It occurs when the control flow can be decided in a particular way in front of conditional branches, while the static analysis fails to witness. 
+[Over-approximation Algorithm ]
+The $\THESYSTEM$ comes across an over-approximation on the estimation due to its path-insensitive nature. 
+It occurs when the control flow can be decided in a particular way in front of conditional branches, while the static analysis fails to witness. 
 
 We use one example to show the over-approximation, Figure~\ref{fig:overappr_example}(a). This example is the variant of the multiple rounds strategy, 
 we call it a multiple rounds odd iteration algorithm. In this algorithm, at line 5 of every iteration, 
@@ -431,7 +432,8 @@ However, {\THESYSTEM} fails to realize that odd iteration will always execute th
 it considers both branches for every iteration. 
 In this sense, the weight estimated for $y^6$ and $w^6$ are both 
 $k$.
-As a result, the adaptivity estimated from the Program-Based Dependency graph from {\THESYSTEM} by finding the walk with the longest query length is $1 + 2 * k$, instead of $1 + k$. We show the estimated graph in Figure~\ref{fig:overappr_example}(c). 
+As a result, the adaptivity estimated from the Program-Based Dependency graph from {\THESYSTEM} by finding the walk with the longest query length is $1 + 2 * k$, instead of $1 + k$. 
+We omitted the the estimated graph, which is identical to the graph in Figure~\ref{fig:overappr_example}(b). 
 %
 { \small
 \begin{figure}
@@ -502,3 +504,5 @@ As a result, the adaptivity estimated from the Program-Based Dependency graph fr
 }
 %
 \end{example}
+
+\input{limitation}
