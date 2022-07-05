@@ -528,9 +528,9 @@ n = 1 \iff x^l \in \qvar_{c} \land n = 0 \iff  x^l \notin \qvar_{c} .
 \]
 }
 % \mg{I don't understand what is the set of query labels above. Specifically, the formula with three iff is confusing.}\\
-\jl{TODO: I actually don't need this query annotation in the graph, I can just use $\qvar(c)$ in defining the 
-query length and computing the adaptivity?
-But it need to change many notations later. So I think to think if it is necessary to remove or leave it.}
+% \jl{TODO: I actually don't need this query annotation in the graph, I can just use $\qvar(c)$ in defining the 
+% query length and computing the adaptivity?
+% But it need to change many notations later. So I think to think if it is necessary to remove or leave it.}
 % \mg{there is a dangling , below}\\
 % \mg{what is ``i.ts'' referring to in the sentence below?}\\
 % , where $\lvar_c$ is program $c$'s set of labeled variables.
@@ -575,6 +575,17 @@ in program's execution trace,
 % $v$ in a program $c$'s execution-based dependency graph $\traceG({c}) = (\vertxs, \edges, \weights, \qflag)$.}
 $x^l$ in $c$'s execution-based dependency graph $\traceG(c)$. }
 %
+\jl{
+Notice here, the program contains free variables, which are the user's input variable.
+% in the trace, we have the input variables free in the program. 
+In order to compute the weight for each vertex, we need to be able to execute the program and obtain program's execution trace.
+So, we assume the 
+initial trace contains initial event $(k, in, K, \bullet)$ for every input variable $k$. 
+In every initial event, 
+$(k, in, K, \bullet)$, $k$ is the input variable name,
+$in$ is the label for this variable and the upper case $K$ represents
+its initial value. 
+The weight is computed based on this initial value from initial trace. }
 % \mg{Is this definition given a ``labelled weighted graph'' or an ``execution-based dependency graph''? you did not define the former but only the latter. Also, you say ``there exists'', can there be more sequences of vertices satisfying this definition given a sequence of edges?}
 % \jl{execution-based dependency graph}
 % \begin{defn}[Finite Walk ($k$)].
