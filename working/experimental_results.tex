@@ -1,30 +1,72 @@
-\subsection{Implementation Results}  
-    %
-    \begin{center}
+\subsection{Implementation Results}
+We implemented the $\THESYSTEM$, which takes the labeled command as input and 
+% labeled command 
+and output the upper bound for adaptivity and the number of query requests.
+This implementation consists of the 
+abstract control flow graph generation in Section~\ref{sec:abscfg}, weight estimation in Section~\ref{sec:alg_weightgen},
+edge estimation in Section~\ref{sec:alg_edgegen} in Ocaml, 
+and the adaptivity computation algorithm shown in Section~\ref{sec:alg_adaptcompute} in python.
+The OCaml program takes the labeled command as input and output the Program-Based Dependency graph as defined in Section~\ref{sec:alg_graphgen},
+feeds into the python program and output the adaptivity upper bound and the query requesting number as the final output.
+\\
+We evaluated this implementation on 18 example programs with the evaluation results shown below in Table~\ref{tb:imp}.
+In this table, each row represents a program and
+the first column is the name of each program.
+For each program, the second column is its intuitive adaptivity rounds,
+the third column is the Adaptivity we defined through our formal semantic model in Section~\ref{sec:dep_adaptivity}.
+The last column is the output of the $\THESYSTEM$ implementation, which consists of two expressions.
+The first one is the upper bound for adaptivity and the second one is the 
+upper bound for the total number of query requests in the program.
+\\
+The first 3 programs we evaluated are complete 
+two round example, multiple rounds algorithms, 
+and the  $ \kw{linearRegressionGD(k)}$ which we discussed in overview and Section~\ref{sec:examples}.
+% The same for the third programprograms in the table row 
+The $A(c)$ based dynamic analysis gives the accurate adaptivity definition, 
+simultaneously the $\THESYSTEM$ outputs the tight bounds for both of the adaptivity and query requesting number as expected.
+% Look at 
+% the $ \kw{linearRegressionGD(k)}$ which we discussed in Section~\ref{sec:examples}, the $\THESYSTEM$ outputs the accurate bound $k$ as expected.
+But for the the forth program $\kw{multipleRoundOdd(k)}$, the $\THESYSTEM$ outputs an over-approximated upper bound $1 + 2*k$ for the $A(c)$, which is consistent with our expectation as discussed in Example~\ref{ex:overapproximate}. 
+The fifth program is the evaluation results for the example in Example~\ref{ex:overdefined_adapt}, where $\THESYSTEM$ outputs
+the tight bound for $A(c)$ but $A(c)$ is a loose definition of the program's actual adaptivity rounds.
+%
+The rests programs in the table from  $\kw{seq()}$ to $ \kw{nestedWhileMultiPathMultiVarRecAcross(k)}$ are 
+designed for testing the programs under different possible situitions.
+These programs contains control dependency, data value dependency 
+the nested while, dependency through multiple variables, dependency across nested loops. 
+Overall these examples, our system gives both the accurate adaptivity definition and 
+adaptivity upper bound simultaneously through the dynamic analysis and 
+static analysis.
+The full programs are presented below from Example~\ref{}
+%
+{\footnotesize
+\begin{center}
         \begin{tabular}{ c c c c}
-         Program $c$ & adaptivity rounds & $A(c)$ & $\THESYSTEM$ Results \\ 
-         $\kw{seq()}$ & $4$ & $4$ & $4$ \\ 
-         $\kw{seqMultiVar()}$ & $4$ & $4$ & $4$ \\  
-         $ \kw{ifValueDependency}$ & $3$ & $3$ & $3$ \\
-         $\kw{ifControlDependency()}$ & $3$ & $3$ & $3$  \\
+        \label{tb:imp}
+         Program $c$ & adaptivity rounds & $A(c)$ & $\THESYSTEM$ \\ 
+         $ \kw{twoRoundComplete(k)}$ & $2$ & $2$ & $2$, $k$ \\
+         $ \kw{multipleRoundComplete(k)}$ & $k$ & $k$ & $k$, $k$  \\
+         $ \kw{linearRegressionGD(k)}$ & $k$ & $k$ & $k$, $k$  \\
+         $ \kw{multipleRoundOdd(k)}$ & $1 + k$ & $1 + k$ & $1 + 2*k$, $1 + 2*k$  \\
+         $ \kw{multipleRoundSingle(k)}$ & $2$ & $2 + k$ & $2 + k$ , $2 + k$  \\
+         $\kw{seq()}$ & $4$ & $4$ & $4$, $4$  \\ 
+         $\kw{seqMultiVar()}$ & $4$ & $4$ & $4$, $4$ \\  
+         $ \kw{ifValueDependency}$ & $3$ & $3$ & $3$, $3$ \\
+         $\kw{ifControlDependency()}$ & $3$ & $3$ & $3$, $3$  \\
          $ \kw{whileRec()}$ & $1+k$ & $1+k$ & $1+k$  \\
-         $ \kw{whileMultiplePath(k)}$ & $1 + k$ & $1 + k$ & $1 + 2 * k$  \\
-         $ \kw{whileMultipleVar(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{whileValueControlDependency()}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{whileMultiplePathValueControlDependency(k)}$ & $2 + k$ & $2 + k$  & $2 + k$  \\
-         $ \kw{nestWhileValueDependency(k)}$ & $2 + k^2$ & $2 + k^2$  & $2 + k$  \\
-         $ \kw{nestedWhileRecAcross(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$  \\
-         $ \kw{nestedWhileMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$  \\
-         $ \kw{nestedWhileMultiPathMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$  \\
+        %  $ \kw{whileMultiplePath(k)}$ & $1 + k$ & $1 + k$ & $1 + 2 * k$, $1 + 2 * k$  \\
+         $ \kw{whileMultipleVar(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$, $1 + 2 * k$  \\
+         $ \kw{whileValueControlDependency()}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2 * k$, $1 + 2 * k$  \\
+         $ \kw{whileMultiplePathValueControlDependency(k)}$ & $2 + k$ & $2 + k$  & $2 + k$, $1 + 2 * k$   \\
+         $ \kw{nestWhileValueDependency(k)}$ & $2 + k^2$ & $2 + k^2$  & $2 + k^2$, $2 + k^2$   \\
+         $ \kw{nestedWhileRecAcross(k)}$ & $1 + 2*k$ & $1 + 2*k$ & $1 + 2*k$, $1 + 2*k$   \\
+         $ \kw{nestedWhileMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$,  $1 + k + k^2$  \\
+         $ \kw{nestedWhileMultiPathMultiVarRecAcross(k)}$ & $1 + k + k^2$ & $1 + k + k^2$  & $1 + k + k^2$,  $1 + k + k^2$  \\
         %  $ \kw{sorting(k)}$ & cell8 & cell9  \\
         %  $ \kw{gradientDescent(k)}$ & cell8 & cell9  \\
-         $ \kw{linearRegressionGD(k)}$ & $k$ & $k$ & $k$  \\
-         $ \kw{twoRoundComplete(k)}$ & $2$ & $2$ & $2$ \\
-         $ \kw{multipleRoundComplete(k)}$ & $k$ & $k$ & $k$  \\
-         $ \kw{multipleRoundOdd(k)}$ & $1 + k$ & $1 + k$ & $1 + 2*k$  \\
-         $ \kw{multipleRoundSingle(k)}$ & $3$ & $2 + k$ & $2 + k$  \\
         \end{tabular}
-        \end{center}
+      \end{center}
+}  
         %
     \begin{example}[Complete Two Round Algorithm]
         \[
@@ -240,6 +282,7 @@
                   \end{example}    
     
     \begin{example}[Sequence with Single Variable Linear Data Value Dependency]
+        \label{ex:seq}
         %
         %
         \[
@@ -256,6 +299,7 @@
         \end{example}
     %
     \begin{example}[Sequence with Multiple Variables Data Value Dependency]
+        \label{ex:seqMultiVar}
         %
         %
         \[
@@ -272,6 +316,7 @@
     \end{example}
     %
         \begin{example}[If with Data-Value Dependency Separated]
+            \label{ex:ifValueDependency}
             %
             %
             \[
@@ -289,6 +334,7 @@
         \end{example}
     
             \begin{example}[If with Data-Control Dependency Overlapped]
+                \label{ex:ifValueDependency}
                 %
                 %
                 \[
@@ -308,6 +354,7 @@
     
     
                 \begin{example}[Simple While with Recursive Data-Value Dependency]
+                    \label{ex:ifValueDependency}
                     %
                     %
                     \[
@@ -327,7 +374,8 @@
                 \end{example}
     %
             \begin{example}[Simple While with Multi-Path Data-Value Dependency]
-            %
+                \label{ex:ifValueDependency}
+                %
             %
             \[
             %
@@ -348,6 +396,7 @@
         \end{example}
     %
             \begin{example}[Simple While with Recursive Multiple-Variable Data-Value Dependency]
+                \label{ex:whileMultipleVar}
                 \[
                 %
                 \kw{whileMultipleVar}(k) \triangleq 
@@ -369,6 +418,7 @@
                 %
                 %
                 \begin{example}[Simple While with Data-Value and Data-Control Dependency]
+                    \label{ex:whileValueControlDependency}
                     %
                     \[
                     \kw{whileValueControlDependency}() \triangleq
@@ -386,6 +436,7 @@
                 \end{example}
     %
                 \begin{example}[Simple While with MultiplePath Data-Value and Data-Control Dependency]
+                    \label{ex:whileMultiplePathValueControlDependency}
                     %
                     \[
                         %
@@ -407,6 +458,7 @@
                     \end{example}
                                     %
                     \begin{example}[Nested While with Recursive Data-Value Dependency]
+                        \label{ex:nestWhileValueDependency}
                         %
                         %
                         \[
@@ -431,6 +483,7 @@
                     \end{example}
     
                         \begin{example}[Nested While with Nested Recursive Data-Value Dependency Across Outer and Inner Loop]
+                            \label{ex:nestedWhileRecAcross}
                             %
                             %
                             \[
@@ -458,6 +511,7 @@
                 
                             \begin{example}[Nested While with Nested Recursive Multiple Variable 
                                 Data-Value Dependency Across Outer and Inner Loop]
+                                \label{ex:nestedWhileMultiVarRecAcross}
                                 %
                                 \[
                                 %
@@ -492,6 +546,7 @@
 
                                 \begin{example}[Nested While with MultiplePath and Nested Recursive Multiple Variable 
                                     Data-Value Dependency Across Outer and Inner Loop]
+                                    \label{ex:nestedWhileMultiPathMultiVarRecAcross}
                                     %
                                     We then show a more complex example with nested while command and nested data-flow across the outer and inner while loop through multiple variables.
                                     This example also contains the if command with data dependency occurred through the if guard.
@@ -532,7 +587,8 @@
 
 
                \begin{example}[Two Round Odd Elements ]
-          We present a variant of the previous two round example in Figure~\ref{fig:tworound_odd}. In this odd example, only the data at odd index of the database is used.
+                \label{ex:nestedWhileMultiVarRecAcross}
+                We present a variant of the previous two round example in Figure~\ref{fig:tworound_odd}. In this odd example, only the data at odd index of the database is used.
           %
           {\small
           \begin{figure}
@@ -580,14 +636,11 @@
           }
           \end{example}
           %
-          This algorithm only touches the odd part of the database, by adding an extra if statement to checking the index $j$ in Figure~\ref{fig:tworound_odd}(a). The extra complexity is added to handle the newly generated variables in the loop and if statement in the SSA version in Figure~\ref{fig:tworound_odd}(b). 
-          The query-based dependency graph does not change a lot compared to the previous two rounds example in Figure~\ref{fig:simpl-two-round-graph}(c), but the node does change according to the trace. We assume $a = n$ in the final memory is the result of the sum of previous query results in the loop.
-          We give the trace $t = [q(\chi[1])^{5,[3:1]}, q(\chi[1])^{6,[3:2]}, q(\chi[3])^{5,[3:3]}, q(n* \chi[3])^{9,\emptyset} ]$ and use $q_1$ for $q(\chi[1])$, $q_3$ representing for $q(\chi[3])$, $q_4$ for $q(n* \chi[3])$. The query-based dependency graph based on this trace is shown in Figure~\ref{fig:odd_graphs}(a). We show the red path, which is a sequence of adaptively chosen queries of length $2$. So among the total $4$ queries, we have 2-round adaptive queries. According to the Theorem\ref{thm:gaussiannoise} and \ref{thm:gaussiannoise2}, we will have a tighter upper bound on the generalization error if we know the adaptivity $2$, obtained from the red path in Figure~\ref{fig:odd_graphs}(a). 
+        %   This algorithm only touches the odd part of the database, by adding an extra if statement to checking the index $j$ in Figure~\ref{fig:tworound_odd}(a). The extra complexity is added to handle the newly generated variables in the loop and if statement in the SSA version in Figure~\ref{fig:tworound_odd}(b). 
+        %   The query-based dependency graph does not change a lot compared to the previous two rounds example in Figure~\ref{fig:simpl-two-round-graph}(c), but the node does change according to the trace. We assume $a = n$ in the final memory is the result of the sum of previous query results in the loop.
+        %   We give the trace $t = [q(\chi[1])^{5,[3:1]}, q(\chi[1])^{6,[3:2]}, q(\chi[3])^{5,[3:3]}, q(n* \chi[3])^{9,\emptyset} ]$ and use $q_1$ for $q(\chi[1])$, $q_3$ representing for $q(\chi[3])$, $q_4$ for $q(n* \chi[3])$. The query-based dependency graph based on this trace is shown in Figure~\ref{fig:odd_graphs}(a). We show the red path, which is a sequence of adaptively chosen queries of length $2$. So among the total $4$ queries, we have 2-round adaptive queries. According to the Theorem\ref{thm:gaussiannoise} and \ref{thm:gaussiannoise2}, we will have a tighter upper bound on the generalization error if we know the adaptivity $2$, obtained from the red path in Figure~\ref{fig:odd_graphs}(a). 
           
-          Our algorithm {\THESYSTEM} gives us the upper bound on the aforementioned adaptivity $2$. We construct the variable-based weighted dependency graph in Figure~\ref{fig:odd_graphs}(b). The weighted nodes are in the red dashed circle and the red dashed paths show the most weighted path in the graph, with the weight $2$. So, for this two rounds odd algorithm, our system gives a tight upper bound $2$, which can be used to get a better generalization error bound.
-          
-          
-          
+        %   Our algorithm {\THESYSTEM} gives us the upper bound on the aforementioned adaptivity $2$. We construct the variable-based weighted dependency graph in Figure~\ref{fig:odd_graphs}(b). The weighted nodes are in the red dashed circle and the red dashed paths show the most weighted path in the graph, with the weight $2$. So, for this two rounds odd algorithm, our system gives a tight upper bound $2$, which can be used to get a better generalization error bound.          
           
           \begin{figure}
               \begin{subfigure}{0.4\textwidth}

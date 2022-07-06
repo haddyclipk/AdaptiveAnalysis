@@ -2088,42 +2088,191 @@ the program-based adaptivity for $c$ is defined as%
 }
 \end{defn} 
 
-The following algorithm finds the walk with the longest query length on a program $c$'s execution-based dependency graph 
-$\progG(c)$
-%  = (\vertxs, \edges, \weights, \qflag)$, 
-through a combination of 
-% DFS and BFS algorithm 
-deep first search and breath first search strategy
-% as defined 
-in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
+% The following algorithm finds the walk with the longest query length on a program $c$'s execution-based dependency graph 
+% $\progG(c)$
+% %  = (\vertxs, \edges, \weights, \qflag)$, 
+% through a combination of 
+% % DFS and BFS algorithm 
+% deep first search and breath first search strategy
+% % as defined 
+% in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
 
-\paragraph*{Challenges}
-Following is the challenge of computing the adaptivity on a program based dependency graph.
-\\
-In order to 
-% search for the finite walk having the longest query length, which isn't a simple longest weighted path.
-compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
-search for the finite walk having the longest query length.
-\\
-% However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
-However, by Definition~\ref{def:finitewalk}, this finite walk isn't easy to find, below are the challenges in order to find this walk.
-\\
+% \paragraph*{Challenges}
+% Following is the challenge of computing the adaptivity on a program based dependency graph.
+% \\
+% In order to 
+% % search for the finite walk having the longest query length, which isn't a simple longest weighted path.
+% compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
+% search for the finite walk having the longest query length.
+% \\
+% % However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
+% However, by Definition~\ref{def:finitewalk}, this finite walk isn't easy to find, below are the challenges in order to find this walk.
+% \\
+% \textbf{Non-Termination Challenge:}
+% % Moreover, b
+% We can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
+% The simple 
+% traversing strategy leads to non-termination for most programs. 
+% Specifically, this challenge comes from the weight of each vertex estimated in program's Program-Based Dependency Graph,
+% which isn't a number but a symbolic expression. 
+% % because the weight is symbolic and simply traversing leads to non-termination.
+% It is difficult to tell when to terminate the recursion when the domain of this symbolic expression isn't finite,
+% while, in most of our cases, the programs' Program-Based Dependency Graphs are having symbolic weights with infinite domains on vertices.
+% \todo{for example:}
+% Look at the simple example in Figure~\ref{fig:alg_adaptsearch_simplewhile}, where $k$ is the input variable from domain $\mathbb{N}$,
+% %  in Figure~\ref{} in Section~\ref{sec:overview},
+% \begin{figure}
+% \centering
+% {\footnotesize
+% \begin{subfigure}{.25\textwidth}
+% \begin{centering}
+% $ 
+% \begin{array}{l}
+%   \kw{whileSim(k)} \triangleq \\
+%   \clabel{ \assign{j}{k} }^{0} ; \\
+%   \clabel{ \assign{x}{\query(\chi[0])} }^{1} ; \\
+%       \ewhile ~ \clabel{j > 0}^{2} ~ \edo ~ \\
+%       \Big(
+%        \clabel{\assign{x}{\query(\chi[x]) }}^{3}  ; \\
+%       \clabel{\assign{j}{j-1}}^{4}       \Big)
+%   \end{array}
+% $
+% \caption{}
+% \end{centering}
+% \end{subfigure}
+% \quad
+%   \begin{subfigure}{.6\textwidth}
+%   \begin{centering}
+%   \begin{tikzpicture}[scale=\textwidth/18cm,samples=200]
+% \draw[] (0, 7) circle (0pt) node
+% {\textbf{$x^1: {}^{1}_{1}$}};
+% \draw[] (0, 4) circle (0pt) node
+% {{ $x^3: {}^{k}_{1}$}};
+% % Counter Variables
+% \draw[] (5, 9) circle (0pt) node {{$j^2: {}^{1}_{0}$}};
+% \draw[] (5, 6) circle (0pt) node {{ $j^4: {}^{k}_{0}$}};
+% %
+% % Value Dependency Edges:
+% \draw[ ultra thick, -latex, densely dotted,] (0, 4.5)  -- (0, 6.5) ;
+% \draw[ ultra thick, -latex, densely dotted,] (0.5, 4.2) arc (150:-180:1);
+% \draw[ thick, -Straight Barb] (5.5, 6.2) arc (150:-150:1);
+% \draw[ thick, -latex] (5, 6.5)  -- (5, 8.5) ;
+% % Control Dependency
+% \draw[ thick,-latex] (1.5, 7)  -- (4, 9) ;
+% \draw[ thick,-latex] (1.5, 4)  -- (4, 9) ;
+% \draw[ thick,-latex] (1.5, 7)  -- (4, 6) ;
+% \draw[ thick,-latex] (1.5, 4)  -- (4, 6) ;
+% \end{tikzpicture}
+% \caption{}
+%   \end{centering}
+%   \end{subfigure}
+% }
+% % \end{wrapfigure}
+% % \end{equation*}
+% \vspace{-0.4cm}
+%  \caption{(a) Simple While Loop Example, (b) Execution-Based Dependency Graph, (c) The Static Program-Based Dependency graph.}
+% \label{fig:alg_adaptsearch_simplewhile}
+% \vspace{-0.5cm}
+% \end{figure}
+% % Analysis Results: $ \progA(\kw{whileRec}(k)) = 1 + k$
+% %
+% If we traverse on it's $\progG(c)$, and decrease the weight of $x^3$ by one after every visit,
+% % We can simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as 
+% % in Algorithm~\ref{alg:overadp_alg}.
+% we will never terminate because we only know $k \in \mathbb{N}$.
+% % However, this gives us over-approximation to a large extend.
+% % In Algorithm~\ref{alg:adpt_alg}, 
+% % we first find all the strong connected components of this graph, 
+% \\
+% \textbf{Approximation Challenge:}
+% % As in Definition~\ref{def:finitewalk}, w
+% We cannot 
+% % simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
+% simply adopt a deep first strategy to 
+% search for the longest weighted path
+% estimate the adaptivity as the weighted query length of this path
+% % of the longest weight path, 
+% as in Algorithm~\ref{alg:overadp_alg}.
+% % However, this gives us over-approximation to a large extend.
+% It is easy to see that this gives us over-approximation to a large extend.
+% \\
+% Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
+% the visiting time of every vertex on a walk should be no more than its weight.
+% % which is a symbolic expression.
+% % So we cannot simply 
+% However, by searching for the longest weighted path, 
+% % and approximating the finite walk by this weight path, 
+% and use it as the approximated finite walk with the longest query length, 
+% the visiting times of the vertex on 
+% % it 
+% this approximated walk could 
+% % possibly 
+% exceed 
+% % its weights. 
+% the visiting times it can have.
+% Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
+% and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
+% This over-approximation could result in a $\infty$ adaptivity upper bound on the program with actual adaptivity $2$.
+% \todo{For example}
+% \\
+% Look at the two-round example in overview, 
+% it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
+% If we use this path to approximate a finite walk, and weight of each vertex as
+% %  their visiting times, 
+% its visiting time,
+% then it isn't a qualified walk. 
+% In the approximated walk, we have the vertices as $x^3 \to \cdots \to x^3 \to a^5 \to \cdots \to a^5 \to l^6$.
+% Because $l^6$ can only be visited as most once by its weight,
+% % and this lead to 
+% resulting in the restriction on the maximum visiting time of $x^3$,
+% such that $x^3$ is only able to be visited at most once as well.
+% %
+% However, $x^3$ is visited $k$ times in this approximated walk.
+% % Moever, with the longest query length, then 
+% In order to have $x^3$ be visited $k$ time, we need to go back to 
+% $x^3$ on this walk from either $a^5$ or $l^6$ for $k$ time.
+% This is impossible since there is no edge going back to $x^3$ in $\progG(twoRound)$.
+% Obviously,
+% % the with the weighted length $1 + k$. It is obviously
+% its weighted query length, $1 + k$, 
+% % which is 
+% over approximates 
+% % its 
+% the adaptivity of this example to a large extend, which supposed to be $2$. 
+% %  for this program, 
+% % that 
+% \\
+As indicated by our definition of prograpm-based adaptivity, the key point is to find the walks in the program-based dependency graph. We develop some walk-finding algorithms,  Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}, which use both the deep first search and breath first search strategy.  
+
+By Definition~\ref{def:finitewalk}, this finite walk isn't easy to find. We first discuss two challenges when we try to find the walks in the dependency graph, and show that how we solve them using our algorithms.
+
+% \paragraph*{Challenges}
+% Following is the challenge of computing the adaptivity on a program based dependency graph.
+% \\
+% In order to 
+% % search for the finite walk having the longest query length, which isn't a simple longest weighted path.
+% compute the adaptivity for a program $c$ on its estimated Program-Based Dependency Graph $\progG(c)$, we need to 
+% search for the finite walk having the longest query length.
+% \\
+% % However, the finite walk isn't a simple weighted path by Definition~\ref{def:finitewalk}, there are two challenges in order to find this walk.
+% However, by Definition~\ref{def:finitewalk}, this finite walk isn't easy to find, below are the challenges in order to find this walk.
+% \\
 \textbf{Non-Termination Challenge:}
 % Moreover, b
-We can neither simply traverse on this graph by decreasing the weight of every node by one after every visiting. 
-The simple 
-traversing strategy leads to non-termination for most programs. 
+One naive walk finding method is to simply traverse on this graph by decreasing the weight of every node by one after every visiting. However, this simple 
+traversing strategy leads to non-termination dilemma for most programs we are interested in. 
 Specifically, this challenge comes from the weight of each vertex estimated in program's Program-Based Dependency Graph,
-which isn't a number but a symbolic expression. 
+which is not only a number but also can be a symbolic expression. 
+
 % because the weight is symbolic and simply traversing leads to non-termination.
-It is difficult to tell when to terminate the recursion when the domain of this symbolic expression isn't finite,
-while, in most of our cases, the programs' Program-Based Dependency Graphs are having symbolic weights with infinite domains on vertices.
-\todo{for example:}
-Look at the simple example in Figure~\ref{fig:alg_adaptsearch_simplewhile}, where $k$ is the input variable from domain $\mathbb{N}$,
+It is difficult to tell when to terminate the recursion when the domain of this symbolic expression isn't finite, some the walk may also be infinite.
+While, in most of our cases, the programs' Program-Based Dependency Graphs are having symbolic weights with infinite domains on vertices.
+Look at the simple example in Figure~\ref{fig:alg_adaptsearch_simplewhile}, where $k$ is the input variable from domain $\mathbb{N}$.
 %  in Figure~\ref{} in Section~\ref{sec:overview},
 \begin{figure}
 \centering
-{\footnotesize
+{
+% \footnotesize
 \begin{subfigure}{.25\textwidth}
 \begin{centering}
 $ 
@@ -2170,51 +2319,51 @@ $
 % \end{wrapfigure}
 % \end{equation*}
 \vspace{-0.4cm}
- \caption{(a) Simple While Loop Example, (b) Execution-Based Dependency Graph, (c) The Static Program-Based Dependency graph.}
+ \caption{(a) Simple While Loop Example, (b) The Program-Based Dependency Graph generated from $\THESYSTEM$.}
 \label{fig:alg_adaptsearch_simplewhile}
 \vspace{-0.5cm}
 \end{figure}
 % Analysis Results: $ \progA(\kw{whileRec}(k)) = 1 + k$
 %
-If we traverse on it's $\progG(c)$, and decrease the weight of $x^3$ by one after every visit,
+If we traverse on the program-based dependency graph, and decrease the weight of $x^3$ (the weight $k$ is symbolic) by one after every visit,
 % We can simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as 
 % in Algorithm~\ref{alg:overadp_alg}.
 we will never terminate because we only know $k \in \mathbb{N}$.
-% However, this gives us over-approximation to a large extend.
+
+To solve this non-termination challenge, we switch to another walk finding approach: we first find a  longest path in the program-based dependency graph and then approximate the walk with the path.
+Through a simple deep first search algorithm, we find the longest weighted path as the dotted arrow in Figure~\ref{fig:alg_adaptsearch_simplewhile},
+$x^3: {}^k_1 \to x^1: {}^1_1 $.
+Then, by summing up the weights on this path where the vertices has query annotation $1$, deep first search algorithm gives the adaptivity bound $1 + k$.
+This is a the tight bound for this program's adaptivity.
+% Look at the two-round example in overview, 
+% it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
+% If we use this path to approximate a finite walk, and weight of each vertex as
+% %  their visiting times, 
+% its visiting time,
+% then it isn't a qualified walk. 
+% In the approximated walk, we have the vertices as $x^3 \to \cdots \to x^3 \to a^5 \to \cdots \to a^5 \to l^6$.
+
+% However, this gives us over-approximation to a large extend in other cases as in \textbf{Approximation Challenge}.
 % In Algorithm~\ref{alg:adpt_alg}, 
 % we first find all the strong connected components of this graph, 
-\\
 \textbf{Approximation Challenge:}
 % As in Definition~\ref{def:finitewalk}, w
-We cannot 
-% simply adopt either a deep first strategy to estimate the adaptivity as the length of the longest weight path, as in Algorithm~\ref{alg:overadp_alg}.
-simply adopt a deep first strategy to 
-search for the longest weighted path
-estimate the adaptivity as the weighted query length of this path
-% of the longest weight path, 
-as in Algorithm~\ref{alg:overadp_alg}.
-% However, this gives us over-approximation to a large extend.
-It is easy to see that this gives us over-approximation to a large extend.
-\\
-Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
-the visiting time of every vertex on a walk should be no more than its weight.
-% which is a symbolic expression.
-% So we cannot simply 
-However, by searching for the longest weighted path, 
-% and approximating the finite walk by this weight path, 
-and use it as the approximated finite walk with the longest query length, 
-the visiting times of the vertex on 
-% it 
-this approximated walk could 
-% possibly 
-exceed 
-% its weights. 
-the visiting times it can have.
-Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
-and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
+When we adopt a deep first strategy to search for the longest weighted path, and then use the path to approximate the adaptivity. We find that this gives us over-approximation to a large extend.
+% Specifically, according to the finite walk definition in Definition~\ref{def:finitewalk},
+% the visiting time of every vertex on a walk should be no more than its weight.
+% However, by searching for the longest weighted path, 
+% % and approximating the finite walk by this weight path, 
+% and use it as the approximated finite walk with the longest query length, 
+% the visiting times of the vertex on 
+% % it 
+% this approximated walk could 
+% % possibly 
+% exceed 
+% % its weights. 
+% the visiting times it can have.
+% Then, this approximated walk isn't a qualified walk by Definition~\ref{def:finitewalk}, 
+% and the weighted query length of this path is obviously greater than the maximum query length of the finite walk.
 This over-approximation could result in a $\infty$ adaptivity upper bound on the program with actual adaptivity $2$.
-\todo{For example}
-\\
 Look at the two-round example in overview, 
 it is easy to find that the longest weighted path is  $x^3 : {}^{k}_{1} \to a^5 : {}^{k}_{0} \to l^6 : {}^{1}_{0}$ with weighted query length $1 + k$.
 If we use this path to approximate a finite walk, and weight of each vertex as
@@ -2241,12 +2390,70 @@ over approximates
 the adaptivity of this example to a large extend, which supposed to be $2$. 
 %  for this program, 
 % that 
-\\
-These challenges give us the necessary to design a walk search algorithm through a combination of 
+
+
+These challenges motivate us to design a walk search algorithm through a combination of 
 % DFS and BFS algorithm 
-deep first search and breath first search strategy
-% as defined 
-as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
+deep first search and breath first search strategy. 
+% \wq{
+This walk search algorithm consists of two components:
+the path searching algorithm, $\pathsearch$ (in Algorithm~\ref{alg:adpt_alg})
+which search for a 'suitable' path relying on the strong connected components of the program based dependency graph, 
+and $\kw{\pathsearch_{scc}(G)}$ (in Algorithm~\ref{alg:adaptscc}) which approximates the
+path.
+% path found by Algorithm~\ref{alg:adpt_alg} 
+% to a precise walk on the SCC
+% and computes the adaptivity.
+% These challenges give us the necessary to design a walk search algorithm through a combination of 
+% % DFS and BFS algorithm 
+% deep first search and breath first search strategy
+% % as defined 
+% as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
+%
+The $\pathsearch$ as shown in Appendix Algorithm~I, takes our program-based dependency graph as input, and outputs the estimated adaptivity by two steps. 1. Process the input graph to a simplified graph 2. Perform
+     the standard breath first search strategy to find the longest weighted path on this simplified graph and return the length as adaptivity.
+The step 2 is not interesting, we now discuss step 1. 
+The input dependency graph may contain circle due to the while loop, we simplify (shrank) the input graph by replacing every strong connected components(circle) of the graph with, the vertex whose weight is the adaptivity of the SCC 
+(a subgraph of the input one) calculated by the $\pathsearch_{\kw{scc}}$. 
+The SCC is found by using the Kosaraju's algorithm  \wq{cite}. 
+The details of this algorithm is explained as follows.
+    % This algorithm first finds all the strong connected components (SCC) of $\progG(c)$ using the Kosaraju’s algorithm in line:3. 
+    % Every $\kw{SCC_1}, \cdots, \kw{SCC_n}$
+    % where $0 \leq n \leq |\vertxs|$ is a sub-graph of $\progG(c)$, where $\kw{SCC_i} = (\vertxs_i, \edges_i, \weights_i, \qflag_i)$.
+    % % where $\kw{SCC_i} = (\vertxs_i, \edges_i, \weights_i, \qflag_i)$.
+    % Then, 
+    % % we compute the adaptivity on every SCC, which is a subgraph of the $\progG(c)$, in line:4-5 by Algorithm~\ref{alg:adaptscc}.
+    % it computes the adaptivity on every SCC
+    % % , which is a subgraph of the $\progG(c)$, 
+    % in line:4-5 by Algorithm~\ref{alg:adaptscc}.
+    % % We guarantee the soundness of the adaptivity on SCC by Lemma~\ref{lem:sound_adaptalg_scc} with proof 
+    % in Appendix.
+    % % ~\ref{apdx:adaptalg_soundness}.
+    % The $\progG(c)$ is then shrunk into an acyclic directed graph where 
+    % % vertices are all the SCCs and edges are between every SCCs with their adaptivities as weights.
+    % $\kw{SCC_1}, \cdots, \kw{SCC_n}$ are vertices with their adaptivities as weights.
+    % % , and directed edges are .
+    % For every $(v_i, v_j) \in \edges$ such that $v_1 \in \vertxs_i$, $v_j \in \vertxs_j$ and $i \neq j$,
+    % there is a edge $(s_i, s_j)$ in this shrank graph. \\ 
+    % Then, we use the standard breath first search strategy to find the longest weighted path
+    % %  w.r.t. all the SCCs and their adaptivities.
+    % on this shrank graph and return the length as adaptivity.
+    % \\
+%     We guarantee that 
+%     % this longest weighted path is a sound computation of the adaptivity on this,
+%     the length of this longest weighted path is a sound computation of the adaptivity for program $c$,
+%     % as well as 
+%     and this longest weighted path a sound computation of the finite walk having the longest query length 
+%     % on this graph, in Theorem~\ref{thm:sound_adaptalg}
+%     on $c$'s program based dependency graph, in Theorem~\ref{thm:sound_adaptalg}
+%     in Appendix.
+%     % ~\ref{apdx:adaptalg_soundness}.
+% %    
+% % \todo{add proof} 
+% We also guarantee the conditional completeness of the adaptivity computation for graphs under the case that 
+% $c$'s Program-Based Dependency Graph $\progG(c)$ is acyclic directed
+% in Theorem~\ref{thm:adaptalg_pcomplete} 
+% in Appendix~\ref{apdx:adaptalg_completeness}.
 %
 \paragraph*{The Adaptivity Computation Algorithm ($\pathsearch$)}
 \begin{algorithm}
@@ -2338,11 +2545,13 @@ as in Algorithm~\ref{alg:adpt_alg} and Algorithm~\ref{alg:adaptscc}.
     and this longest weighted path a sound computation of the finite walk having the longest query length 
     % on this graph, in Theorem~\ref{thm:sound_adaptalg}
     on $c$'s program based dependency graph, in Theorem~\ref{thm:sound_adaptalg}
-    in Appendix~\ref{apdx:adaptalg_soundness}.
+    in Appendix.
+    % ~\ref{apdx:adaptalg_soundness}.
 %    
 % \todo{add proof} 
-We also guarantee the completeness of the adaptivity computation for graphs under the condition that 
-$c$'s Program-Based Dependency Graph $\progG(c)$ is acyclic directed in Theorem~\ref{thm:adaptalg_pcomplete} 
+We also guarantee the conditional completeness of the adaptivity computation for graphs under the case that 
+$c$'s Program-Based Dependency Graph $\progG(c)$ is acyclic directed
+in Theorem~\ref{thm:adaptalg_pcomplete} 
 in Appendix~\ref{apdx:adaptalg_completeness}.
     % for every vertex which isn't on any SCC, it is easy to know that it will be visited 
     % at most once given no edges going back to this vertex. We can know the adaptivity on the SCC 
@@ -2527,26 +2736,69 @@ in Appendix~\ref{apdx:adaptalg_completeness}.
 % because the weight is symbolic and simply traversing leads to non-termination.
 % \\
 % In Algorithm~\ref{alg:adaptscc}, 
+This algorithm takes a subgraph of the program-based dependency graph as input, to be precise, the input graph is SCC, and the output is the adaptivity of this SCC. 
+For an SCC containing only one vertex without any edge, it returns the query annotation of this vertex as adaptivity.
+For SCC containing at least one edge, 
+There are three steps in this algorithm: 1. find out all the paths in the input SCC 2. Calculate the adaptivity of every path using our designed adaptivity counting method. 3. Return the maximal adaptivity among all the paths. The step 3 is trivial. Because our input graph is SCC, when we start traversing from a vertex, we will finally go back to this vertex. The paths we find in step 1 are all those with the same starting and ending vertex. The most interesting part is step 2. 
+We discuss as follows.
+
 This algorithm first check if an SCC contains only one vertex without any edge, as in line:4-5 in Algorithm~\ref{alg:adaptscc}.
 % then 
-\\
-If yes, then it's easy to know that it will be visited 
-at most once since there isn't edge going back to this vertex. 
-So we can know that the adaptivity on this SCC is at most one if it is a query vertex,
+% \\
+% If yes, then it's easy to know that it will be visited 
+% at most once since there isn't edge going back to this vertex. 
+% So we can know that the adaptivity on this SCC is at most one if it is a query vertex,
+% and zero otherwise.
+% \\
+% If not, then 
+Again, for 
+the SCC containing only one vertex without any edge, as in line:4-5 in Algorithm~\ref{alg:adaptscc}.
+% then 
+% If yes, then i
+% it's easy to know that it will be visited 
+% at most once since there isn't edge going back to this vertex. 
+% So we can know 
+The adaptivity on this SCC is at most one if it is a query vertex,
 and zero otherwise.
+$\kw{\pathsearch_{scc}(G)}$ return query annotation directly as in line:4-5.
+% So $\kw{\pathsearch_{scc}(G)}$ return query annotation directly as in line:4-5.
 \\
-If not, then the SCC contains at least one edge, we are searching for the finite walk having the longest query length through a deep first search strategy.
+% For the SCC contains at least one edge, we are searching for the finite walk having the longest query length through a deep first search strategy.
+For the SCC containing at least one edge, 
+we compute the adaptivity for each path 
+on the fly of searching for the paths 
+in the
+% design a 
+recursion algorithm $\kw{dfs}$ designed based on 
+a deep first search strategy 
+% of this algorithm is described as follows,
+from line: 6-16 in $\kw{\pathsearch_{scc}(G)}$ in Algorithm~\ref{alg:adaptscc}.
 \\
 % The difficulty is, the visiting times of every vertex on this walk should be no more than its weight, which is a symbolic expression.
-As the two challenges discussed above, we want to guarantee the visiting time of each vertex smaller than 
-its weight, in the meantime the algorithm termination. 
+% As the two challenges discussed above, we want to guarantee the visiting time of each vertex smaller than 
+% its weight, in the meantime the algorithm termination. 
+% Additionally, we are computing the query length rather than sum of the weights.
+% We design a deep first search strategy
+% % of this algorithm is described as follows,
+% from line: 6-16 in Algorithm~\ref{alg:adaptscc}, 
+% searching for the finite walk having the longest query length
+% %  through a deep first search strategy
+% with a capacity limitation and use special parameter to compute the adaptivity.
+%
+As the \textbf{Approximation Challenge} discussed above, 
+we want to guarantee the visiting time of each vertex smaller than 
+its weight and compute the adaptivity accurately, in the meantime guarantee the algorithm termination. 
+It uses a capacity limitation and  special parameters to achieve it,
+specifically as follows.
 Additionally, we are computing the query length rather than sum of the weights.
 We design a deep first search strategy
 % of this algorithm is described as follows,
 from line: 6-16 in Algorithm~\ref{alg:adaptscc}, 
-searching for the finite walk having the longest query length
+% searching for the finite walk having the longest query length
 %  through a deep first search strategy
 with a capacity limitation and use special parameter to compute the adaptivity.
+% for every path.
+%
 % for every path.
 % So we cannot simply search for the longest weight path where the visiting times of the vertex on it could possibly exceed its weights.
 % We can neither simply traverse on this graph by decreasing the weight of every node by 1 after every visiting,
@@ -2563,15 +2815,30 @@ This guaranteed the termination and solved the \textbf{Challenge II.} discussed 
 % search for finite walk  
 % So we use the dfs to search for the 
 \\
+% In order to
+% solve the \textbf{Challenge I},
+% specifically guarantee the visiting times of each vertex by its weight, 
+% we use a special parameter $\kw{flowcapacity}$  to track the minimum weight during the 
+% % dfs process, 
+% deep first searching along the walk, 
+% also a parameter $\kw{querynum}$
+% % to compute the query length of this walk
+% to track the total number of vertices which are query vertices along the walk in order to compute the query length of this walk.
 In order to
-solve the \textbf{Challenge I},
-specifically guarantee the visiting times of each vertex by its weight, 
-we use a special parameter $\kw{flowcapacity}$  to track the minimum weight during the 
+solve the \textbf{Approximation Challenge},
+specifically guarantee the visiting times of each vertex by its weight
+and compute the adaptivity accurately, 
+we use a special parameter $\kw{flowcapacity}$  to track the minimum weight
+along the path during the 
 % dfs process, 
-deep first searching along the walk, 
-also a parameter $\kw{querynum}$
+% deep first 
+searching procedure, 
+and a parameter $\kw{querynum}$
 % to compute the query length of this walk
-to track the total number of vertices which are query vertices along the walk in order to compute the query length of this walk.
+to track the total number of vertices with query annotation $1$
+% which are query vertices 
+along the path 
+in order to compute the query length.
 % 
 % \todo{solve the challenge 1, specifically in the dfs strategy
 % of this algorithm is described as follows,
@@ -2585,8 +2852,53 @@ The detail steps of this dfs strategy
 % of this algorithm is described as follows,
 from line: 3-16 in Algorithm~\ref{alg:adaptscc},
 particularly from line: 7-15 on how to 
-use these two special parameters to resolve \textbf{Challenge I}
+use these two special parameters to resolve \textbf{Approximation Challenge}
  is described as follows.
+ %
+ $\kw{flowcapacity}$ is a list of symbolic expressions for every vertex, recording the minimum weight when the path reaches that vertex, which is initialized by $\infty$.
+% , inside a cycle\}
+
+$\kw{querynum}$ is a list of integer with length $|\vertxs|$, which is initialized with $\qflag(v)$ for every vertex. 
+For every vertex, 
+% recording the query numbers when the path reaching.
+% in order to 
+it records the total query numbers when the path reaching this vertex.
+
+We maintain the minimum weight for the 
+$\kw{flowcapacity}$, 
+number of query vertices 
+$\kw{querynum}$ 
+and update the adaptivity for this path $\kw{r}$
+alone the path and update the adaptivity reaching 
+this vertex, 
+when traversing on this graph, as in Algorithm~\ref{alg:adaptscc} from line: 8-13.
+% and then recursively dfs on all vertices heading out from this vertex.
+% \\
+At line: 15 where this vertex is visited, i.e., this path 
+going back to its starting node,
+we only update the adaptivity $\kw{r}$ reaching this vertex.
+% and neither recursion nor update the $\kw{flowcapacity}$  and 
+% $\kw{querynum}$.
+\\
+% Again, Non-recursion in the second branch
+% % in order to 
+% guarantees the termination and resolves \textbf{Non-Termination Challenge}.
+% \\
+The updating operations
+during the traversing 
+(in line: 11) and 
+at the end of the traverse (in line: 15),
+% in these two branches, 
+specifically the $\kw{flowcapacity[v] \times querynum[v]}$ 
+% in line: 11 and line: 15 
+computes the query length for this path. 
+it guarantees 
+the visiting times of each vertex on the path reaching a vertex $v$ is no more than 
+the maximum visiting it can be on a qualified walk, through $\kw{flowcapacity[v]}$,
+and in the same time  compute the query length instead of weighted length accurately through 
+$\kw{ querynum[v]}$.
+%  its minimum visiting time, 
+In this way, we resolve the \textbf{Approximation Challenge} and in the same time without losing the soundness,
 % searching for the finite walk having the longest query length through a deep first search strategy
 % with a capacity limitation and use special parameter to compute the adaptivity
 % for every path.
@@ -2611,10 +2923,10 @@ this vertex, and then recursively dfs on all vertices heading out from this vert
 At line: 12 where this vertex is visited, 
 we only update the adaptivity reaching this vertex and neither recursion nor update the $\kw{flowcapacity}$  and 
 $\kw{querynum}$.
-\\
-Again, Non-recursion in the second branch
-% in order to 
-guarantees the termination and resolves \textbf{Challenge I}.
+% \\
+% Again, Non-recursion in the second branch
+% % in order to 
+% guarantees the termination and resolves \textbf{Challenge I}.
 \\
 The updating operation in these two branches, 
 specifically $\kw{flowcapacity[v] \times querynum[v]}$ in line: 11 and line: 15 
@@ -2622,13 +2934,44 @@ guarantees
 1.the visiting times of each vertex on the walk reaching $v$ is no more than 
 the maximum visiting it can be on this walk, through $\kw{flowcapacity[v]}$. 
 %  its minimum visiting time, 
-In this way, we resolve the \textbf{Challenge II} and in the same time without losing the soundness 
+In this way, we resolve the \textbf{Approximation Challenge}  and in the same time without losing the soundness 
 % this 
 % 2. then 
 by using $\kw{flowcapacity[v] \times querynum[v]}$ to compute the query length. 
 % without lose the adaptivity.
 %
 \\
+Notice here, another special operation we have in the second branch is Non-updating of
+% Non-updating the 
+$\kw{querynum}$ and $\kw{flowcapacity}$.
+This guarantees both the accuracy and the soundness, formally in Lemma~\ref{thm:sound_adaptalg} in Appendix~\ref{apdx:adaptalg_soundness}.
+
+Now, we show an example illustrating how our two updating operations for adaptivity 
+for each path can guarantee both the accuracy and the soundness. 
+Look at a Nested While Loop example program in Figure~\ref{fig:alg_adaptsearch_nestedwhile}.
+% Notice here, another special operation we have in the second branch is Non-updating of
+% % Non-updating the 
+% $\kw{querynum}$ and $\kw{flowcapacity}$.
+% This guarantees both the accuracy and the soundness.
+% Specifically,
+% % because a second visiting of the same vertex 
+% if this vertex is visited, it indicates that a cycle is monitored and  
+% % indicates there is a cycle goes back to this vertex, 
+% the traversing on this cycle is finished by going back to this vertex.
+% %
+% % then, when 
+% When we continuously search for walks heading out of this vertex, 
+% the minimum weight on this cycle does not affect the walks going out of this vertex that not pass this cycle.
+% However, if we keep recording the minimum weight, then we
+% %  are restricting 
+% restrict the visiting times of vertices on a walk by
+%  using the minimum weight of vertices not on this walk.
+% %  , it is unsound anymore.
+% Then, it is obviously that this leads to unsoundness.
+% \todo{example} 
+% To under stand how the two operations 
+We first search for a path: $y^6 \to y^6$, and compute the adaptivity for this path as 
+$k$.
 Notice here, another special operation we have in the second branch is Non-updating of
 % Non-updating the 
 $\kw{querynum}$ and $\kw{flowcapacity}$.
@@ -2645,10 +2988,52 @@ the minimum weight on this cycle does not affect the walks going out of this ver
 However, if we keep recording the minimum weight, then we
 %  are restricting 
 restrict the visiting times of vertices on a walk by
- using the minimum weight of vertices not on this walk.
+using the minimum weight of vertices not on this walk.
 %  , it is unsound anymore.
 Then, it is obviously that this leads to unsoundness.
-\todo{example} Look at a Nested While Loop example program in Figure~\ref{fig:alg_adaptsearch_nestedwhile}.
+If we update the $\kw{flowcapacity}[y^6]$ as $k$ after visiting $y^6$ the second time 
+on this walk,
+% the walk $y^6 \to y^6$,
+and continuously visit $x^9$,
+then the $\kw{flowcapacity[k]}$ is 
+updated as $\min(k, k^2)$.
+So
+%  which 
+% restricting 
+the visiting times of $x^9$ is restricted by $k$ on the walk $y^6 \to y^6 \to x^9$.
+This restriction excludes the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ and $x^9$ visited by $k^2$ times
+in the computation. 
+However, the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ is visited $k$ times and $x^9$ $k^2$ times is 
+a qualified walk, and exactly the longest walk we aim to find. So, by Non-updating the $\kw{flowcapacity}$ after 
+visiting $y$ again, we guarantee that the visiting times og vertices on every searched walk will not be restricted by weights not on this walk,
+i.e., the soundness.
+\\
+In the last line of this dfs algorithm, line: 16, it returns the adaptivity heading out from its input vertex.
+\\
+By applying this deep first search strategy on every vertex on this SCC, 
+we compute the adaptivity of this SCC by taking the maximum 
+% adaptivity reaching every vertex on this SCC.
+value over every vertex.
+%
+The soundness is formally guaranteed in Lemma~\ref{lem:sound_adaptalg_scc} in Appendix~\ref{apdx:adaptalg_soundness}.
+
+% Look at a Nested While Loop example program in Figure~\ref{fig:alg_adaptsearch_nestedwhile}.
+
+% Specifically,
+% % because a second visiting of the same vertex 
+% if this vertex is visited, it indicates that a cycle is monitored and  
+% % indicates there is a cycle goes back to this vertex, 
+% the traversing on this cycle is finished by going back to this vertex.
+% %
+% % then, when 
+% When we continuously search for walks heading out of this vertex, 
+% the minimum weight on this cycle does not affect the walks going out of this vertex that not pass this cycle.
+% However, if we keep recording the minimum weight, then we
+% %  are restricting 
+% restrict the visiting times of vertices on a walk by
+%  using the minimum weight of vertices not on this walk.
+% %  , it is unsound anymore.
+% Then, it is obviously that this leads to unsoundness.
  %
   %
   \begin{figure}
@@ -2727,32 +3112,32 @@ Then, it is obviously that this leads to unsoundness.
     \vspace{-0.5cm}
     \end{figure}
     %
-    When we searched for a walk: $y^6 \to y^6$,
-  if we update the $\kw{flowcapacity}[y^6]$ as $k$ after visiting $y^6$ the second time 
-  on this walk,
-  % the walk $y^6 \to y^6$,
-  and continuously visit $x^9$,
-  then the $\kw{flowcapacity[k]}$ is 
-  updated as $\min(k, k^2)$.
-  So
-  %  which 
-  % restricting 
-  the visiting times of $x^9$ is restricted by $k$ on the walk $y^6 \to y^6 \to x^9$.
-  This restriction excludes the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ and $x^9$ visited by $k^2$ times
-  in the computation. 
-  However, the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ is visited $k$ times and $x^9$ $k^2$ times is 
-  a qualified walk, and exactly the longest walk we aim to find. So, by Non-updating the $\kw{flowcapacity}$ after 
-  visiting $y$ again, we guarantee that the visiting times og vertices on every searched walk will not be restricted by weights not on this walk,
-  i.e., the soundness.
- \\
-In the last line of this dfs algorithm, line: 16, it returns the adaptivity heading out from its input vertex.
-\\
-By applying this deep first search strategy on every vertex on this SCC, 
-we compute the adaptivity of this SCC by taking the maximum 
-% adaptivity reaching every vertex on this SCC.
-value over every vertex.
-%
-The soundness is formally guaranteed in Lemma~\ref{lem:sound_adaptalg_scc} in Appendix~\ref{apdx:adaptalg_soundness}.
+%     When we searched for a walk: $y^6 \to y^6$,
+%   if we update the $\kw{flowcapacity}[y^6]$ as $k$ after visiting $y^6$ the second time 
+%   on this walk,
+%   % the walk $y^6 \to y^6$,
+%   and continuously visit $x^9$,
+%   then the $\kw{flowcapacity[k]}$ is 
+%   updated as $\min(k, k^2)$.
+%   So
+%   %  which 
+%   % restricting 
+%   the visiting times of $x^9$ is restricted by $k$ on the walk $y^6 \to y^6 \to x^9$.
+%   This restriction excludes the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ and $x^9$ visited by $k^2$ times
+%   in the computation. 
+%   However, the finite walk $y^6 \to y^6 \to x^9 \to x^9$ where $y^6$ is visited $k$ times and $x^9$ $k^2$ times is 
+%   a qualified walk, and exactly the longest walk we aim to find. So, by Non-updating the $\kw{flowcapacity}$ after 
+%   visiting $y$ again, we guarantee that the visiting times og vertices on every searched walk will not be restricted by weights not on this walk,
+%   i.e., the soundness.
+%  \\
+% In the last line of this dfs algorithm, line: 16, it returns the adaptivity heading out from its input vertex.
+% \\
+% By applying this deep first search strategy on every vertex on this SCC, 
+% we compute the adaptivity of this SCC by taking the maximum 
+% % adaptivity reaching every vertex on this SCC.
+% value over every vertex.
+% %
+% The soundness is formally guaranteed in Lemma~\ref{lem:sound_adaptalg_scc} in Appendix~\ref{apdx:adaptalg_soundness}.
             % \begin{algorithm}
         % \caption{
         % {Refined Adaptivity on $\kw{SCC}$}
