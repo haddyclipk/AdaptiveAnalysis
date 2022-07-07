@@ -3,7 +3,8 @@
   Given a program ${c}$, we have:
   %
   \[
-  \progA({c}) \geq A({c})
+    \forall \trace \in \mathcal{T} \st 
+    \config{A(c), \trace} \earrow n \implies n \geq A(c)(\trace)
   \]
   \end{thm}
   %
@@ -37,7 +38,13 @@ by Definition~\ref{def:prog_graph}
 \\ and 
 trace-based graph $\traceG({c}) = (\traceV, \traceE, \traceW, \traceF)$  by Definition~\ref{def:trace_graph}.
 \\
-To show $\progA({c}) \geq A({c})$, according to the Definition \ref{def:prog_adapt} and Definition~\ref{def:trace_adapt}, it is sufficient to show:
+The parameter $(c)$ for the components in the two graphs are omitted for concise.
+\\
+Taking arbitarty trace such that 
+\[ 
+\config{A(c), \trace} \earrow n\]
+to show $n \geq A(c)(\trace)$, 
+according to the Definition \ref{def:prog_adapt} and Definition~\ref{def:trace_adapt}, it is sufficient to show:
 %
 $$
 \max \big 
@@ -52,7 +59,7 @@ It is sufficient to show that:
   \forall k_t \st 
   k_t \in \walks(\traceG({c}) \implies
   \exists k_p \in \walks(\progG({c})) \land 
-  \qlen(k_t) \leq \qlen(k_p)
+  \qlen(k_t(\trace)) \leq \qlen(k_p)
 \]
 %
 Let $k_t = (e_1, \cdots, e_{n-1}) \in \walks(\traceG(c))$ be an arbitrary walk in $\traceG(c)$ with its vertices sequence 

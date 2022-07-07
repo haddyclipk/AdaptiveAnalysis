@@ -1391,27 +1391,55 @@ The same way for the rest weights' computation.
 \paragraph{Vertex Weight Computation}
 % The weight for each vertex in $\progV(c)$ is computed as follows,
 Then we compute the weight for each vertex in $\progV(c)$,
-as a set of pairs $\progW(c) \in \mathcal{P}(\mathcal{LV} \times \mathcal{LV} \times EXPR(\constdom))$ 
+% as a set of pairs $\progW(c) \in \mathcal{P}(\mathcal{LV} \times \mathcal{LV} \times EXPR(\constdom))$ 
+as a set of pairs 
 % is the set of pairs 
 % The weight for each vertex in $\progV(c)$ is computed 
-mapping each $x^l \in \progV(c)$ to a symbolic expression over $\constdom$
+mapping each $x^l \in \progV(c)$ to a symbolic expression over $\constdom$. Since symbolic expression 
+over $\constdom$ is a subset of arithmetic expressions,
+we use $\mathcal{A}_{in}$ denotes the arithmetic expression 
+over $\mathcal{N}$ and input variable and $\progW(c) \in \mathcal{P}(\mathcal{LV} \times \mathcal{A}_{in})$ 
 as follows,
 \highlight{
 % :
 % \\
  \[\progW(c) \triangleq
-   \left\{ (x^l, w) \in  \mathcal{LV} \times EXPR(\constdom)
+   \left\{ (x^l, w) 
+  %  \in  \mathcal{LV} \times \expr
 \mid
 x^l \in \progV(c) \land (l, w) \in \absW(c)
 \right\}.
 \]
 }
 %
+% Since 
 We prove that this 
 % symbolic expression is the upper bound for $x^l$'s 
 symbolic expression for $x^l \in \progV(c)$ is a sound upper bound of 
-the maximum visiting times of $x^l$ over all execution traces of $c$ in Appendix~\ref{apdx:reachability_soundness}. 
+the weight for the same vertex $x^l$ in Program's execution-based dependency graph in Appendix~\ref{apdx:reachability_soundness}.
+The maximum visiting times of $x^l$ over all execution traces of $c$ in Appendix~\ref{apdx:reachability_soundness}. 
 %
+\begin{thm}[Soundness of the Reachability Bounds Estimation]
+  \label{thm:addweight_soundness}
+Given a program ${c}$ with its program-based dependency graph 
+$\progG = (\progV, \progE, \progW, \progF)$,
+$\traceG = (\traceV, \traceE, \traceW, \traceF)$, we have:
+%
+\[
+\forall (x^l, w_{t}) \in \traceW,
+(x^l, w_{p}) \in \progW, \vtrace \in \mathcal{T} \st
+% \lvar_c \st 
+%  \vcounter(\vtrace') l ~ \middle\vert~
+% \forall \vtrace \in \mathcal{T} \st 
+\config{{c}, \trace} \to^{*} \config{\eskip, \trace\tracecat\vtrace'} 
+\land 
+\config{w_{p}, \trace} \earrow v
+\implies
+% \right\} 
+\leq 
+w_{t}(\trace) \leq v
+\]
+\end{thm}
 \paragraph*{Example}
 Now let's 
 % where we goes 
@@ -1948,7 +1976,7 @@ x^l \in \lvar_{c}
 \progW & := &
 % \bigcup
 % \begin{array}{l}
-\left\{ (x^l, w) \in  \mathcal{LV} \times EXPR(\constdom)
+\left\{ (x^l, w) \in  \mathcal{LV} \times \mathcal{A}_{in}
 \mid
 x^l \in \lvar_{{c}} \land (l, w) \in \absW(c)
 \right\}
@@ -2069,6 +2097,99 @@ in Algorithm~\ref{alg:adpt_alg}.
 % It is formally defined in \ref{def:prog_adapt}.
 % defined formally as follows.
 %
+% %
+% \begin{defn}
+% [{Program-Based Adaptivity}].
+% \label{def:prog_adapt}
+% \\
+% {
+% Given a program ${c}$ and its program-based graph 
+% $\progG({c})$
+% %  = (\vertxs, \edges, \weights, \qflag)$,
+% %
+% the program-based adaptivity for $c$ is defined as%
+% \[
+% \progA({c}) 
+% \triangleq \max
+% \left\{ \qlen(k)\ \mid \  k\in \walks(\progG({c}))\right \}.
+% \]
+% }
+% \end{defn} 
+
+% We use $\walks(\progG(c))$ represents the walks over the program-based dependency graph for $c$.
+Different from the finite walk on a program $c$'s execution based graph,
+%  $\traceG(c)$, 
+% $k \in \walks(\progG(c))$ 
+the finite walk in $\progG(c)$ doesn't rely on initial trace.
+The occurrence times of every $v_i $ in $k$'s vertex sequence is bound by 
+an arithmetic expression $w_i$ where $(v_i, w_i) \in \progW(c)$, is $v_i$'s estimated weight. 
+% Then $\qlen(k) \in \mathcal{A}_{in}$ as well. 
+% The full definition for $\walks(\progG(c))$ and $\qlen$ over $\walks(\progG(c))$ is in Apdix.
+%
+Formally defined as follows.
+\begin{defn}[Finite Walk on Program-Based Dependency Graph ($k$)].
+  \label{def:prog_finitewalk}
+  \\
+%   Given a program $c$'s execution-based dependency graph $\traceG({c})(\trace)$, 
+%   a \emph{finite walk} $fw$ in $\traceG({c})(\trace)$ is a sequence of edges $(e_1 \ldots e_{n - 1})$ 
+%   for which there is a sequence of vertices $(v_1, \ldots, v_{n})$ such that:
+%   \begin{itemize}
+%       \item $e_i = (v_{i},v_{i + 1})$ for every $1 \leq i < n$.
+%       \item every vertex $v \in \traceV({c}) $ appears in $(v_1, \ldots, v_{n})$ at most 
+%       \wq{$\traceW({c})(\trace)$} times.  
+%   \end{itemize}
+%   %
+%   The length of $fw$ is the number of vertices in its vertex sequence, i.e., $\len(k) = n$.
+  Given a program $c$'s program-based dependency graph 
+  $\progG({c}) = (\progV(c), \progE(c), \progW(c), \progF(c))$, 
+  a \emph{finite walk} $k$ in $\traceG({c})$ is
+  % function $k: \mathcal{T} \to $ 
+  % sequence of edges.
+  % For a initial trace $\trace_0 \in \mathcal{T}$, 
+  % $k(\trace_0)$ is
+  a sequence of edges $(e_1 \ldots e_{n - 1})$ 
+  for which there is a sequence of vertices 
+  $(v_1, \ldots, v_{n})$ such that:
+  \begin{itemize}
+      \item $e_i = (v_{i},v_{i + 1}) \in \progE(c)$ for every $1 \leq i < n$.
+      \item every vertex $v_i \in \progV(c)$,
+      and $(v_i, w_i) \in \progW(c)$, 
+       $v_i$ appears in $(v_1, \ldots, v_{n})$ at most 
+    %   \wq{$\traceW({c})(\trace)$} 
+    $w_i$
+      times.  
+  \end{itemize}
+  %
+  The length of $k$ is the number of vertices in its vertex sequence, i.e., $\len(k) = a$.
+ \end{defn}
+  We abuse the notation $\walks(\progG(c))$ represents the walks over the program-based dependency graph for $c$.
+Different from the walks on a program $c$'s execution based graph,
+ $k \in \walks(\traceG(c))$, 
+$k \in \walks(\progG(c))$ doesn't rely on initial trace.
+The occurrence times of every $v_i $ in $k$'s vertex sequence is bound by 
+an arithmetic expression $w_i$ where $(v_i, w_i) \in \progW(c)$, is $v_i$'s estimated weight. 
+% Notice here, for a walk in $\progG(c)$, the occurrence times of every vertex in vertices sequence, 
+%  and its 
+ The length of a finite walk $k \in \walks(\progG(c))$ is an arithmetic expression
+ as well, i.e., $\len(k) \in \mathcal{A}_{in}$
+
+ Then the query length of a finite walk in  $\progG(c)$ is an arithmetic expression as well as follows,
+%  $\qlen(k) \in \mathcal{A}_{in}$ as well. 
+% The adaptivity upper bound 
+% is estimated as
+% Then the adaptivity bound based on program analysis for ${c}$ 
+% is the number of query vertices on a finite walk in $\progG({c})$. This finite walk satisfies:
+% \begin{itemize}
+% \item the number of query vertices on this walk is maximum
+% \item the visiting times of each vertex $v$ on this walk is bound by its reachability bound $\weights(v)$.
+% \end{itemize}
+
+% is computed as the maximum query length over all finite walks in $\walks(\progG({c}))$, and computed 
+
+%
+% It is formally defined in \ref{def:prog_adapt}.
+% defined formally as follows.
+%
 %
 \begin{defn}
 [{Program-Based Adaptivity}].
@@ -2079,15 +2200,36 @@ Given a program ${c}$ and its program-based graph
 $\progG({c})$
 %  = (\vertxs, \edges, \weights, \qflag)$,
 %
-the program-based adaptivity for $c$ is defined as%
+the program-based adaptivity for $c$ is 
+% a function $\progA({c}): \mathcal{T} \to\mathbb{N} $,
+% for an initial trace $\trace_0 \in \mathcal{T}$,
+defined as%
 \[
-\progA({c}) 
+\progA({c})
 \triangleq \max
-\left\{ \qlen(k)\ \mid \  k\in \walks(\progG({c}))\right \}.
+\left\{ \qlen(k) \ \mid \  k \in \walks(\progG(c))\right \}.
 \]
 }
-\end{defn} 
-
+\end{defn}
+Based on our soundness of the program-based adaptivity, our program-based adaptivity is a sound upper bound of its adaptivity in Definition~\ref{def:trace_adapt}. 
+\begin{thm}[Soundness of \THESYSTEM]
+    \label{thm:sound_progadapt}
+    For every program $c$, 
+    % for any initial trace $\trace_0$, 
+    its program-based adaptivity is a sound upper bound of its adaptivity.
+     $$  \progA(c) \geq A(c)$$
+\end{thm}
+For $\progA(c) \geq A(c)$ comparing between function and arithmetic expression,
+we are specifically comparing, $\forall \trace \in \mathcal{T} \st 
+\config{A(c), \trace} \earrow n \implies n \geq A(c)(\trace) $.
+To estimate a sound and precise upper bound on adaptivity, we develop an adaptivity estimation algorithm called $\pathsearch$ (in Apdix Algorithm~I), which uses both the deep first search and breath first search strategy to find the walk. We also show that the estimated adaptivity from our $\pathsearch$ is sound with respect to the program-based adaptivity. 
+\begin{thm}[Soundness of $\pathsearch$]
+    \label{thm:sound_adaptalg}
+    For every program $c$.
+    % for any initial trace $\trace_0$,
+     $$\pathsearch(\progG({c})) \geq \progA(c).$$
+\end{thm}
+The full details of all the soundness can be found in the appendix.
 % The following algorithm finds the walk with the longest query length on a program $c$'s execution-based dependency graph 
 % $\progG(c)$
 % %  = (\vertxs, \edges, \weights, \qflag)$, 
